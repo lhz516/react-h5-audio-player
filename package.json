@@ -1,0 +1,29 @@
+{
+  "name": "react-h5-audio-player",
+  "version": "0.0.1",
+  "description": "A react audio player with progress bar. Mobile compatible.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/lhz516/react-h5-audio-player.git"
+  },
+  "keywords": [
+    "react",
+    "music",
+    "audio",
+    "player",
+    "mobile"
+  ],
+  "author": "Hanz Luo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lhz516/react-h5-audio-player/issues"
+  },
+  "homepage": "https://github.com/lhz516/react-h5-audio-player#readme",
+  "dependencies": {
+    "react": "^15.3.x"
+  }
+}
