@@ -1,9 +1,10 @@
 {
   "name": "react-h5-audio-player",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A react audio player with progress bar. Mobile compatible.",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "scripts": {
+    "build:lib": "babel src --out-dir lib",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,5 +26,9 @@
   "homepage": "https://github.com/lhz516/react-h5-audio-player#readme",
   "dependencies": {
     "react": "^15.3.x"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-plugin-transform-react-jsx": "^6.8.0"
   }
 }

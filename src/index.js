@@ -1,19 +1,22 @@
 import React from 'react';
 
 const style = {
-  audioPlayerWrapper(showPlayer) {
+  audioPlayerWrapper(hidePlayer) {
     return {
-      height: '60px',
-      display: showPlayer ? 'flex' : 'none',
+      boxSizing: 'border-box',
+      height: '70px',
+      display: hidePlayer ? 'none' : 'flex',
       justifyContent: 'space-between',
       width: '100%',
       padding: '15px 0',
       backgroundColor: 'white',
+      position: 'relative',
       zIndex: '100',
       boxShadow: '0 0 3px 0 rgba(0, 0, 0, 0.2)'
     };
   },
   pause: {
+    boxSizing: 'content-box',
     display: 'block',
     width: '14px',
     height: '18px',
@@ -25,6 +28,7 @@ const style = {
     boxShadow: 'inset 7px 0 0 0 rgb(251, 86, 21)'
   },
   play: {
+    boxSizing: 'content-box',
     display: 'block',
     width: '0',
     height: '0',
@@ -36,13 +40,13 @@ const style = {
     left: '13px',
   },
   togglePlayWrapper: {
+    boxSizing: 'border-box',
     flex: '1 0 60px',
     position: 'relative',
-    padding: '10px 0',
   },
   togglePlay: {
-    position: 'absolute',
     boxSizing: 'border-box',
+    position: 'absolute',
     left: '50%',
     marginLeft: '-20px',
     backgroundColor: '#FB5615',
@@ -54,12 +58,14 @@ const style = {
     paddingTop: '10px'
   },
   progressBar: {
+    boxSizing: 'border-box',
     position: 'relative',
     flex: '10 0 auto',
     alignSelf: 'center',
     padding: '5px 4% 0 0'
   },
   progressBac: {
+    boxSizing: 'border-box',
     width: '100%',
     height: '5px',
     left: '0',
@@ -69,6 +75,7 @@ const style = {
   },
   drag(left) {
     return {
+      boxSizing: 'border-box',
       position: 'absolute',
       width: '20px',
       height: '20px',
@@ -255,7 +262,7 @@ class H5AudioPlayer extends React.Component {
         <p>Your browser does not support the <code>audio</code> element.</p>
       );
 
-    const { showPlayer } = this.props;
+    const { hidePlayer } = this.props;
     let currentTimeMin = Math.floor(this.state.currentTime / 60);
     let currentTimeSec = Math.floor(this.state.currentTime % 60);
     let durationMin = Math.floor(this.state.duration / 60);
@@ -268,7 +275,7 @@ class H5AudioPlayer extends React.Component {
     durationSec = addHeadingZero(durationSec);
 
     return (
-      <div style={style.audioPlayerWrapper(!showPlayer)} className="react-h5-audio-player">
+      <div style={style.audioPlayerWrapper(hidePlayer)} className="react-h5-audio-player">
         <audio
           src={this.props.src}
           autoPlay={this.props.autoPlay}
