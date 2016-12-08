@@ -169,17 +169,23 @@ class H5AudioPlayer extends React.Component {
       this.props.onPause && this.props.onPause(e);
     });
 
-    // When the user drags the time indicator to a new time
-    audio.addEventListener('seeked', (e) => {
-      this.clearListenTrack();
-      this.props.onSeeked && this.props.onSeeked(e);
-    });
+    let dragX;
     slider.addEventListener('dragstart', (e) => {
-      const crt = slider.cloneNode(true);
-      e.dataTransfer.setDragImage(crt, 0, 0);
-      this.setState({ isDragging: true });
+      if (!this.audio.src) {
+        return;
+      }
+      e.dataTransfer.setData('text', 'slider');
+      if (e.dataTransfer.setDragImage) {
+        const crt = slider.cloneNode(true);
+        e.dataTransfer.setDragImage(crt, 0, 0);
+      }
+      this.audio.pause();
+      document.addEventListener('dragover', (event) => {
+        event = event || window.event;
+        dragX = event.pageX;
+      });
       this.props.onDragStart && this.props.onDragStart(e);
-      setTimeout(() => this.audio.pause(), 0);
+      this.setState({ isDragging: true });
     });
 
     slider.addEventListener('touchstart', (e) => {
@@ -188,19 +194,26 @@ class H5AudioPlayer extends React.Component {
       setTimeout(() => this.audio.pause(), 0);
     });
     slider.addEventListener('drag', (e) => {
-      if (e.clientX) {
-        this.setState({ dragLeft: e.clientX - this.bar.getBoundingClientRect().left });
+      if (!this.audio.src) {
+        return;
+      }
+      if (dragX) {
+        this.setState({ dragLeft: dragX - this.bar.getBoundingClientRect().left });
         this.props.onDragMove && this.props.onDragMove(e);
       }
     });
+
     slider.addEventListener('touchmove', (e) => {
       this.setState({ dragLeft: e.touches[0].clientX - this.bar.getBoundingClientRect().left });
       this.props.onDragMove && this.props.onDragMove(e);
     });
 
     slider.addEventListener('dragend', (e) => {
+      if (!this.audio.src) {
+        return;
+      }
       const audio = this.audio;
-      audio.currentTime = audio.duration * this.state.dragLeft / this.bar.offsetWidth;
+      audio.currentTime = audio.duration * this.state.dragLeft / this.bar.offsetWidth || 0;
       audio.play();
       this.setState({ isDragging: false });
       this.props.onDragEnd && this.props.onDragEnd(e);
@@ -262,7 +275,6 @@ class H5AudioPlayer extends React.Component {
         <p>Your browser does not support the <code>audio</code> element.</p>
       );
 
-    const { hidePlayer } = this.props;
     let currentTimeMin = Math.floor(this.state.currentTime / 60);
     let currentTimeSec = Math.floor(this.state.currentTime % 60);
     let durationMin = Math.floor(this.state.duration / 60);
@@ -275,7 +287,7 @@ class H5AudioPlayer extends React.Component {
     durationSec = addHeadingZero(durationSec);
 
     return (
-      <div style={style.audioPlayerWrapper(hidePlayer)} className="react-h5-audio-player">
+      <div style={style.audioPlayerWrapper(this.props.hidePlayer)} className="react-h5-audio-player">
         <audio
           src={this.props.src}
           autoPlay={this.props.autoPlay}
@@ -301,7 +313,8 @@ class H5AudioPlayer extends React.Component {
             <div
               draggable="true"
               ref={(ref) => { this.slider = ref; }}
-              style={style.drag(this.state.dragLeft)} id="drag"
+              style={style.drag(this.state.dragLeft)}
+              id="drag"
             />
           </div>
           <div style={style.time}>
@@ -328,13 +341,12 @@ H5AudioPlayer.propTypes = {
   onListen: React.PropTypes.func,
   onPause: React.PropTypes.func,
   onPlay: React.PropTypes.func,
-  onSeeked: React.PropTypes.func,
   onDragStart: React.PropTypes.func,
   onDragMove: React.PropTypes.func,
   onDragEnd: React.PropTypes.func,
   preload: React.PropTypes.string,
   src: React.PropTypes.string,
-  controls: React.PropTypes.bool,
+  hidePlayer: React.PropTypes.bool,
 };
 
 export default H5AudioPlayer;
