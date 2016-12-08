@@ -1,7 +1,7 @@
 {
   "name": "react-h5-audio-player",
-  "version": "0.0.3",
-  "description": "A react audio player with progress bar. Mobile compatible.",
+  "version": "0.1.0",
+  "description": "A React audio player with UI. Mobile compatible.",
   "main": "./lib/index.js",
   "scripts": {
     "build:lib": "babel src --out-dir lib",

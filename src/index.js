@@ -197,17 +197,21 @@ class H5AudioPlayer extends React.Component {
       if (!this.audio.src) {
         return;
       }
-      if (dragX) {
-        this.setState({ dragLeft: dragX - this.bar.getBoundingClientRect().left });
+      if (dragX ) {
+        let dragLeft = dragX - this.bar.getBoundingClientRect().left;
+        if (dragLeft < 0) {
+          dragLeft = 0;
+        } else if (dragLeft > this.bar.offsetWidth) {
+          dragLeft = this.bar.offsetWidth - 1;
+        }
+        this.setState({ dragLeft });
         this.props.onDragMove && this.props.onDragMove(e);
       }
     });
-
     slider.addEventListener('touchmove', (e) => {
       this.setState({ dragLeft: e.touches[0].clientX - this.bar.getBoundingClientRect().left });
       this.props.onDragMove && this.props.onDragMove(e);
     });
-
     slider.addEventListener('dragend', (e) => {
       if (!this.audio.src) {
         return;
