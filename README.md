@@ -16,7 +16,7 @@ Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE (≥10)
 
 ## Usage
 
-```jsx harmony
+```jsx
 import AudioPlayer from 'react-h5-audio-player';
 
 const Player = () => (
@@ -81,7 +81,7 @@ Indicates whether the browser should preload the media. See the [audio tag docum
 ### Access to the audio element
 You can get direct access to the underlying audio element.  First get a ref to ReactAudioPlayer:
 
-```jsx harmony
+```jsx
 <ReactAudioPlayer
   ref={c => this.player = c}
 />
