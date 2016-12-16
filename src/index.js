@@ -57,14 +57,14 @@ const style = {
     textAlign: 'center',
     paddingTop: '10px'
   },
-  progressBar: {
+  progressBarWrapper: {
     boxSizing: 'border-box',
     position: 'relative',
     flex: '10 0 auto',
     alignSelf: 'center',
     padding: '5px 4% 0 0'
   },
-  progressBac: {
+  progressBar: {
     boxSizing: 'border-box',
     width: '100%',
     height: '5px',
@@ -301,8 +301,8 @@ class H5AudioPlayer extends React.Component {
         >
           {incompatibilityMessage}
         </audio>
-        <div style={style.togglePlayWrapper}>
-          <a onClick={(e) => this.togglePlay(e)} style={style.togglePlay}>
+        <div className="toggle-play-wrapper" style={style.togglePlayWrapper}>
+          <a className="toggle-play-button" onClick={(e) => this.togglePlay(e)} style={style.togglePlay}>
             {
               this.state.isPlaying ?
                 <i style={style.pause} /> :
@@ -310,22 +310,19 @@ class H5AudioPlayer extends React.Component {
             }
           </a>
         </div>
-        <div style={style.progressBar}>
-          <div>
-            <div ref={(ref) => { this.bar = ref; }} style={style.progressBac}></div>
-            <div className="speed" id="speed"></div>
-            <div
-              draggable="true"
-              ref={(ref) => { this.slider = ref; }}
-              style={style.drag(this.state.dragLeft)}
-              id="drag"
-            />
-          </div>
-          <div style={style.time}>
-            <div className="tiemDetail">
-              <span className="currentTime" id="currentTime">{currentTimeMin}:{currentTimeSec}</span>/
-              <span className="allTime" id="allTime">{durationMin}:{durationSec}</span>
-            </div>
+        <div className="progress-bar-wrapper" style={style.progressBarWrapper}>
+          <div ref={(ref) => { this.bar = ref; }} style={style.progressBar}></div>
+          {/*TODO: color change for sought part */}
+          <div className="sought" />
+          <div
+            className="indicator"
+            draggable="true"
+            ref={(ref) => { this.slider = ref; }}
+            style={style.drag(this.state.dragLeft)}
+          />
+          <div className="time" style={style.time}>
+            <span className="current-time">{currentTimeMin}:{currentTimeSec}</span>/
+            <span className="total-time">{durationMin}:{durationSec}</span>
           </div>
         </div>
       </div>

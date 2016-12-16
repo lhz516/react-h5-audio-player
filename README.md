@@ -76,6 +76,23 @@ Called when the user finish dragging the time indicator. Passed the event.
 #### preload {String}
 Indicates whether the browser should preload the media. See the [audio tag documentation](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio) for details.
 
+## UI Overwrites
+
+React H5 Audio Player provides built-in class names for developers to overwrite.
+
+For example:
+```sass
+.react-h5-audio-player {
+  .toggle-play-wrapper {
+    .toggle-play-button {
+      /* Remember to use !important to overwrite inline style. */
+      background-color: red !important;
+    }
+  }
+}
+```
+You can find more class names by inspecting element on you browser.
+
 ## Advanced Usage
 
 ### Access to the audio element

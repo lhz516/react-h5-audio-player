@@ -1,6 +1,6 @@
 {
   "name": "react-h5-audio-player",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A React audio player with UI. Mobile compatible.",
   "main": "./lib/index.js",
   "scripts": {
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
-    "babel-plugin-transform-react-jsx": "^6.8.0"
+    "babel-plugin-transform-react-jsx": "^6.8.0",
+    "babel-preset-latest": "^6.16.0"
   }
 }
