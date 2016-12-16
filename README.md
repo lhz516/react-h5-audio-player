@@ -82,10 +82,11 @@ React H5 Audio Player provides built-in class names for developers to overwrite.
 
 For example:
 ```sass
+// In a SASS or LESS file
 .react-h5-audio-player {
   .toggle-play-wrapper {
     .toggle-play-button {
-      /* Remember to use !important to overwrite inline style. */
+      // Remember to use !important to overwrite inline style.
       background-color: red !important;
     }
   }
