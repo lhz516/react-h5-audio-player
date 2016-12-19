@@ -94,6 +94,31 @@ For example:
 ```
 You can find more class names by inspecting element on you browser.
 
+To be compatible with some old browsers, you can add some prefixer to flex container
+
+```sass
+.react-h5-audio-player {
+  .flex {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    .toggle-play-wrapper {
+      flex: 1 0 60px;
+      -webkit-box-flex: 1 0 60px;
+      -moz-box-flex: 1 0 60px;
+      -ms-flex: 1 0 60px;
+    }
+    .progress-bar-wrapper {
+      flex: 10 0 auto;
+      -webkit-box-flex: 10 0 auto;
+      -moz-box-flex: 10 0 auto;
+      -ms-flex: 10 0 auto;
+    }
+  }
+}
+```
+
 ## Advanced Usage
 
 ### Access to the audio element

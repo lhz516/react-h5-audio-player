@@ -3,17 +3,20 @@ import React from 'react';
 const style = {
   audioPlayerWrapper(hidePlayer) {
     return {
-      boxSizing: 'border-box',
-      height: '70px',
-      display: hidePlayer ? 'none' : 'flex',
-      justifyContent: 'space-between',
-      width: '100%',
-      padding: '15px 0',
-      backgroundColor: 'white',
-      position: 'relative',
-      zIndex: '100',
-      boxShadow: '0 0 3px 0 rgba(0, 0, 0, 0.2)'
+      display: hidePlayer ? 'none' : 'block'
     };
+  },
+  flexWrapper: {
+    boxSizing: 'border-box',
+    height: '70px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+    padding: '15px 0',
+    backgroundColor: 'white',
+    position: 'relative',
+    zIndex: '100',
+    boxShadow: '0 0 3px 0 rgba(0, 0, 0, 0.2)'
   },
   pause: {
     boxSizing: 'content-box',
@@ -292,37 +295,39 @@ class H5AudioPlayer extends React.Component {
 
     return (
       <div style={style.audioPlayerWrapper(this.props.hidePlayer)} className="react-h5-audio-player">
-        <audio
-          src={this.props.src}
-          autoPlay={this.props.autoPlay}
-          preload={this.props.preload}
-          ref={(ref) => { this.audio = ref; }}
-          onPlay={this.onPlay}
-        >
-          {incompatibilityMessage}
-        </audio>
-        <div className="toggle-play-wrapper" style={style.togglePlayWrapper}>
-          <a className="toggle-play-button" onClick={(e) => this.togglePlay(e)} style={style.togglePlay}>
-            {
-              this.state.isPlaying ?
-                <i style={style.pause} /> :
-                <i style={style.play} />
-            }
-          </a>
-        </div>
-        <div className="progress-bar-wrapper" style={style.progressBarWrapper}>
-          <div ref={(ref) => { this.bar = ref; }} style={style.progressBar}></div>
-          {/*TODO: color change for sought part */}
-          <div className="sought" />
-          <div
-            className="indicator"
-            draggable="true"
-            ref={(ref) => { this.slider = ref; }}
-            style={style.drag(this.state.dragLeft)}
-          />
-          <div className="time" style={style.time}>
-            <span className="current-time">{currentTimeMin}:{currentTimeSec}</span>/
-            <span className="total-time">{durationMin}:{durationSec}</span>
+        <div style={style.flexWrapper} className="flex">
+          <audio
+            src={this.props.src}
+            autoPlay={this.props.autoPlay}
+            preload={this.props.preload}
+            ref={(ref) => { this.audio = ref; }}
+            onPlay={this.onPlay}
+          >
+            {incompatibilityMessage}
+          </audio>
+          <div className="toggle-play-wrapper" style={style.togglePlayWrapper}>
+            <a className="toggle-play-button" onClick={(e) => this.togglePlay(e)} style={style.togglePlay}>
+              {
+                this.state.isPlaying ?
+                  <i style={style.pause} /> :
+                  <i style={style.play} />
+              }
+            </a>
+          </div>
+          <div className="progress-bar-wrapper" style={style.progressBarWrapper}>
+            <div ref={(ref) => { this.bar = ref; }} style={style.progressBar}></div>
+            {/*TODO: color change for sought part */}
+            <div className="sought" />
+            <div
+              className="indicator"
+              draggable="true"
+              ref={(ref) => { this.slider = ref; }}
+              style={style.drag(this.state.dragLeft)}
+            />
+            <div className="time" style={style.time}>
+              <span className="current-time">{currentTimeMin}:{currentTimeSec}</span>/
+              <span className="total-time">{durationMin}:{durationSec}</span>
+            </div>
           </div>
         </div>
       </div>
