@@ -123,7 +123,7 @@ class H5AudioPlayer extends React.Component {
       const duration = this.audio.duration;
       const barWidth = this.bar.offsetWidth;
       const left = barWidth * currentTime / duration || 0;
-      if (!this.audio.paused && !this.state.isDragging) {
+      if (!this.audio.paused && !this.state.isDragging && !!duration) {
         this.setState({
           currentTime,
           duration,

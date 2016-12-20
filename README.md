@@ -86,7 +86,7 @@ For example:
 .react-h5-audio-player {
   .toggle-play-wrapper {
     .toggle-play-button {
-      // Remember to use !important to overwrite inline style.
+      // Remember to use !important to overwrite inline styles.
       background-color: red !important;
     }
   }
@@ -94,7 +94,7 @@ For example:
 ```
 You can find more class names by inspecting element on you browser.
 
-To be compatible with some old browsers, you can add some prefixer to flex container
+To be compatible with some **old browsers**, you can add prefixers to flex container
 
 ```sass
 .react-h5-audio-player {
