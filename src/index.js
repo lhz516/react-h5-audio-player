@@ -121,7 +121,7 @@ class H5AudioPlayer extends React.Component {
     this.intervalId = setInterval(() => {
       const currentTime = this.audio.currentTime;
       const duration = this.audio.duration;
-      const barWidth = this.bar.offsetWidth;
+      const barWidth = this.bar.offsetWidth - 20;
       const left = barWidth * currentTime / duration || 0;
       if (!this.audio.paused && !this.state.isDragging && !!duration) {
         this.setState({
@@ -204,15 +204,21 @@ class H5AudioPlayer extends React.Component {
         let dragLeft = dragX - this.bar.getBoundingClientRect().left;
         if (dragLeft < 0) {
           dragLeft = 0;
-        } else if (dragLeft > this.bar.offsetWidth) {
-          dragLeft = this.bar.offsetWidth - 1;
+        } else if (dragLeft > this.bar.offsetWidth - 20) {
+          dragLeft = this.bar.offsetWidth - 21;
         }
         this.setState({ dragLeft });
         this.props.onDragMove && this.props.onDragMove(e);
       }
     });
     slider.addEventListener('touchmove', (e) => {
-      this.setState({ dragLeft: e.touches[0].clientX - this.bar.getBoundingClientRect().left });
+      let dragLeft = e.touches[0].clientX - this.bar.getBoundingClientRect().left;
+      if (dragLeft < 0) {
+        dragLeft = 0;
+      } else if (dragLeft > this.bar.offsetWidth - 20) {
+        dragLeft = this.bar.offsetWidth - 21;
+      }
+      this.setState({ dragLeft });
       this.props.onDragMove && this.props.onDragMove(e);
     });
     slider.addEventListener('dragend', (e) => {
@@ -220,7 +226,7 @@ class H5AudioPlayer extends React.Component {
         return;
       }
       const audio = this.audio;
-      audio.currentTime = audio.duration * this.state.dragLeft / this.bar.offsetWidth || 0;
+      audio.currentTime = audio.duration * this.state.dragLeft / (this.bar.offsetWidth - 20) || 0;
       audio.play();
       this.setState({ isDragging: false });
       this.props.onDragEnd && this.props.onDragEnd(e);
@@ -230,7 +236,7 @@ class H5AudioPlayer extends React.Component {
       this.props.onDragEnd && this.props.onDragEnd(e);
       setTimeout(() => {
         const audio = this.audio;
-        audio.currentTime = audio.duration * this.state.dragLeft / this.bar.offsetWidth;
+        audio.currentTime = audio.duration * this.state.dragLeft / (this.bar.offsetWidth - 20);
         audio.play();
       }, 0);
     });
