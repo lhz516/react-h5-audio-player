@@ -1,6 +1,6 @@
 {
   "name": "react-h5-audio-player",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A React audio player with UI. Mobile compatible.",
   "main": "./lib/index.js",
   "scripts": {
@@ -24,8 +24,8 @@
     "url": "https://github.com/lhz516/react-h5-audio-player/issues"
   },
   "homepage": "https://github.com/lhz516/react-h5-audio-player#readme",
-  "dependencies": {
-    "react": "^15.3.x"
+  "peerDependencies": {
+    "react": "^0.14.7 || ^15.x"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
