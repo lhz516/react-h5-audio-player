@@ -246,10 +246,10 @@ class H5AudioPlayer extends React.Component {
     clearInterval(this.intervalId);
   }
 
-  componentDidUpdate() {
-    const { audioFile, isPlaying } = this.props;
-    if (isPlaying && this.audio.paused && !!audioFile) {
-      this.play();
+  componentDidUpdate(prevProps, prevState) {
+    const { src } = this.props;
+    if (src !== prevProps.src) {
+      this.audio.play();
     }
   }
 
@@ -315,8 +315,8 @@ class H5AudioPlayer extends React.Component {
             <a className="toggle-play-button" onClick={(e) => this.togglePlay(e)} style={style.togglePlay}>
               {
                 this.state.isPlaying ?
-                  <i style={style.pause} /> :
-                  <i style={style.play} />
+                  <i className="pause-icon" style={style.pause} /> :
+                  <i className="play-icon" style={style.play} />
               }
             </a>
           </div>
