@@ -1,11 +1,12 @@
 {
   "name": "react-h5-audio-player",
-  "version": "0.2.5",
+  "version": "1.0.0",
   "description": "A React audio player with UI. Mobile compatible.",
   "main": "./lib/index.js",
   "scripts": {
-    "build:lib": "babel src --out-dir lib",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "babel src --out-dir lib",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "storybook": "start-storybook -p 9000"
   },
   "repository": {
     "type": "git",
@@ -25,11 +26,23 @@
   },
   "homepage": "https://github.com/lhz516/react-h5-audio-player#readme",
   "peerDependencies": {
-    "react": "^0.14.7 || ^15.x"
+    "react": "^15.5.0 || ^16.0.0",
+    "react-dom": "^15.5.0 || ^16.0.0",
+    "prop-types": "^15.5.0 || ^16.0.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-plugin-transform-react-jsx": "^6.8.0",
-    "babel-preset-latest": "^6.16.0"
+    "@babel/cli": "^7.0.0-beta.39",
+    "@babel/core": "^7.0.0-beta.39",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.39",
+    "@babel/preset-env": "^7.0.0-beta.39",
+    "@babel/preset-react": "^7.0.0-beta.39",
+    "@storybook/addon-info": "^3.3.12",
+    "@storybook/addon-options": "^3.3.12",
+    "@storybook/react": "^3.3.12",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "^8.2.1",
+    "babel-loader": "^7.1.2",
+    "eslint": "^4.17.0",
+    "eslint-plugin-react": "^7.6.1"
   }
 }

@@ -10,6 +10,10 @@ Flexbox design with CSS shapes. No extra dependencies.
 
 Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE (≥10)
 
+### Breaking change from 0.x to 1.x
+
+In 1.x, we use `prop-types` package instead of using it directly in React. Thus we dropped support under `react@15.5.0`. The usage will remain the same.
+
 ## Installation
 
 `npm i --save react-h5-audio-player`
