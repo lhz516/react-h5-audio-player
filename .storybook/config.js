@@ -1,8 +1,10 @@
-import { configure, addDecorator, setAddon } from '@storybook/react'
-import infoAddon from '@storybook/addon-info'
-import { setOptions } from '@storybook/addon-options'
+import { configure } from '@storybook/react'
+import { setDefaults } from '@storybook/addon-info'
 
-setAddon(infoAddon)
+// Docs: https://github.com/storybooks/storybook/tree/master/addons/info
+setDefaults({
+  header: true,
+})
 
 configure(() => {
   require('../stories/index')

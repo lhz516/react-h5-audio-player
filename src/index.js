@@ -125,6 +125,10 @@ class H5AudioPlayer extends React.Component {
      */
     preload: PropTypes.oneOf(['auto', 'metadata', 'none']),
     /**
+     * Pregress indicator refresh interval
+     */
+    progressRefreshInterval: PropTypes.number,
+    /**
      * HTML5 Audio tag src property
      */
     src: PropTypes.string,
@@ -137,7 +141,8 @@ class H5AudioPlayer extends React.Component {
   static defaultProps = {
     autoPlay: false,
     listenInterval: 10000,
-    preload: 'none',
+    preload: 'auto',
+    progressRefreshInterval: 500,
     hidePlayer: false,
   }
 
@@ -168,7 +173,7 @@ class H5AudioPlayer extends React.Component {
           dragLeft: left,
         })
       }
-    }, 500)
+    }, this.props.progressRefreshInterval)
     audio.addEventListener('error', (e) => {
       this.props.onError && this.props.onError(e)
     })
