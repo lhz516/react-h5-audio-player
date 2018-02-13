@@ -92,24 +92,22 @@ const style = {
       cursor: 'pointer',
     }
   },
-  time: {
-
-  },
+  time: {},
 }
 
 class H5AudioPlayer extends React.Component {
   static propTypes = {
     /**
-    * HTML5 Audio tag autoPlay property
-    */
+     * HTML5 Audio tag autoPlay property
+     */
     autoPlay: PropTypes.bool,
     /**
-    * Display message when browser doesn't support
-    */
+     * Display message when browser doesn't support
+     */
     children: PropTypes.element,
     /**
-    * The time interval to trigger onListen
-    */
+     * The time interval to trigger onListen
+     */
     listenInterval: PropTypes.number,
     onAbort: PropTypes.func,
     onCanPlay: PropTypes.func,
@@ -123,16 +121,16 @@ class H5AudioPlayer extends React.Component {
     onDragMove: PropTypes.func,
     onDragEnd: PropTypes.func,
     /**
-    * HTML5 Audio tag preload property
-    */
+     * HTML5 Audio tag preload property
+     */
     preload: PropTypes.oneOf(['auto', 'metadata', 'none']),
     /**
-    * HTML5 Audio tag src property
-    */
+     * HTML5 Audio tag src property
+     */
     src: PropTypes.string,
     /**
-    * Set component `display` to none
-    */
+     * Set component `display` to none
+     */
     hidePlayer: PropTypes.bool,
   }
 
@@ -150,8 +148,6 @@ class H5AudioPlayer extends React.Component {
     isDragging: false,
     isPlaying: false,
   }
-
-  audio = {}
 
   componentDidMount() {
     // audio player object
@@ -326,14 +322,16 @@ class H5AudioPlayer extends React.Component {
 
   render() {
     const incompatibilityMessage = this.props.children || (
-      <p>Your browser does not support the <code>audio</code> element.</p>
+      <p>
+        Your browser does not support the <code>audio</code> element.
+      </p>
     )
 
     let currentTimeMin = Math.floor(this.state.currentTime / 60)
     let currentTimeSec = Math.floor(this.state.currentTime % 60)
     let durationMin = Math.floor(this.state.duration / 60)
     let durationSec = Math.floor(this.state.duration % 60)
-    const addHeadingZero = (num) => num > 9 ? num.toString() : '0' + num
+    const addHeadingZero = num => (num > 9 ? num.toString() : `0${num}`)
 
     currentTimeMin = addHeadingZero(currentTimeMin)
     currentTimeSec = addHeadingZero(currentTimeSec)
@@ -347,33 +345,46 @@ class H5AudioPlayer extends React.Component {
             src={this.props.src}
             autoPlay={this.props.autoPlay}
             preload={this.props.preload}
-            ref={(ref) => { this.audio = ref }}
+            ref={(ref) => {
+              this.audio = ref
+            }}
             onPlay={this.onPlay}
           >
             {incompatibilityMessage}
           </audio>
           <div className="toggle-play-wrapper" style={style.togglePlayWrapper}>
-            <a className="toggle-play-button" onClick={(e) => this.togglePlay(e)} style={style.togglePlay}>
-              {
-                this.state.isPlaying ?
-                  <i className="pause-icon" style={style.pause} /> :
-                  <i className="play-icon" style={style.play} />
-              }
+            <a className="toggle-play-button" onClick={e => this.togglePlay(e)} style={style.togglePlay}>
+              {this.state.isPlaying ? (
+                <i className="pause-icon" style={style.pause} />
+              ) : (
+                <i className="play-icon" style={style.play} />
+              )}
             </a>
           </div>
           <div className="progress-bar-wrapper" style={style.progressBarWrapper}>
-            <div ref={(ref) => { this.bar = ref }} style={style.progressBar}></div>
+            <div
+              ref={(ref) => {
+                this.bar = ref
+              }}
+              style={style.progressBar}
+            />
             {/*TODO: color change for sought part */}
             <div className="sought" />
             <div
               className="indicator"
               draggable="true"
-              ref={(ref) => { this.slider = ref }}
+              ref={(ref) => {
+                this.slider = ref
+              }}
               style={style.drag(this.state.dragLeft)}
             />
             <div className="time" style={style.time}>
-              <span className="current-time">{currentTimeMin}:{currentTimeSec}</span>/
-              <span className="total-time">{durationMin}:{durationSec}</span>
+              <span className="current-time">
+                {currentTimeMin}:{currentTimeSec}
+              </span>/
+              <span className="total-time">
+                {durationMin}:{durationSec}
+              </span>
             </div>
           </div>
         </div>

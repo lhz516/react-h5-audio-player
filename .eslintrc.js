@@ -1,5 +1,5 @@
 module.exports = {
-  parser: "babel-eslint",
+  parser: 'babel-eslint',
   env: {
     es6: true,
     browser: true,
@@ -14,6 +14,7 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
+    'arrow-parens': [2, 'as-needed', { requireForBlockBody: true }],
     camelcase: [2, { properties: 'never' }],
     curly: [2, 'multi-line'],
     indent: [2, 2, { SwitchCase: 1 }],
