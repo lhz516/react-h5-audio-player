@@ -12,13 +12,7 @@
     "type": "git",
     "url": "git+ssh://git@github.com/lhz516/react-h5-audio-player.git"
   },
-  "keywords": [
-    "react",
-    "music",
-    "audio",
-    "player",
-    "mobile"
-  ],
+  "keywords": ["react", "component", "music", "audio", "player", "mobile"],
   "author": "Hanz Luo",
   "license": "MIT",
   "bugs": {
@@ -31,18 +25,20 @@
     "prop-types": "^15.5.0 || ^16.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.39",
-    "@babel/core": "^7.0.0-beta.39",
-    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.39",
-    "@babel/preset-env": "^7.0.0-beta.39",
-    "@babel/preset-react": "^7.0.0-beta.39",
-    "@storybook/addon-info": "^3.3.12",
-    "@storybook/addon-options": "^3.3.12",
-    "@storybook/react": "^3.3.12",
+    "@babel/cli": "^7.0.0-beta.40",
+    "@babel/core": "^7.0.0-beta.40",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.40",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.40",
+    "@babel/preset-env": "^7.0.0-beta.40",
+    "@babel/preset-react": "^7.0.0-beta.40",
+    "@storybook/addon-actions": "^3.3.13",
+    "@storybook/addon-info": "^3.3.13",
+    "@storybook/addon-options": "^3.3.13",
+    "@storybook/react": "^3.3.13",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^8.2.1",
     "babel-loader": "^7.1.2",
-    "eslint": "^4.17.0",
+    "eslint": "^4.18.0",
     "eslint-plugin-react": "^7.6.1"
   }
 }

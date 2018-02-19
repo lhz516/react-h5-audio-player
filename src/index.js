@@ -106,9 +106,19 @@ class H5AudioPlayer extends React.Component {
      */
     children: PropTypes.element,
     /**
+     * custom classNames
+     */
+    className: PropTypes.string,
+    /**
+     * Set component `display` to none
+     */
+    hidePlayer: PropTypes.bool,
+    /**
      * The time interval to trigger onListen
      */
     listenInterval: PropTypes.number,
+    loop: PropTypes.bool,
+    muted: PropTypes.bool,
     onAbort: PropTypes.func,
     onCanPlay: PropTypes.func,
     onCanPlayThrough: PropTypes.func,
@@ -127,23 +137,25 @@ class H5AudioPlayer extends React.Component {
     /**
      * Pregress indicator refresh interval
      */
-    progressRefreshInterval: PropTypes.number,
+    progressUpdateInterval: PropTypes.number,
     /**
      * HTML5 Audio tag src property
      */
     src: PropTypes.string,
-    /**
-     * Set component `display` to none
-     */
-    hidePlayer: PropTypes.bool,
+    title: PropTypes.string,
+    volume: PropTypes.number,
   }
 
   static defaultProps = {
     autoPlay: false,
-    listenInterval: 10000,
-    preload: 'auto',
-    progressRefreshInterval: 500,
     hidePlayer: false,
+    listenInterval: 1000,
+    loop: false,
+    muted: false,
+    preload: 'auto',
+    progressUpdateInterval: 500,
+    src: '',
+    volume: 1.0,
   }
 
   state = {
@@ -173,7 +185,7 @@ class H5AudioPlayer extends React.Component {
           dragLeft: left,
         })
       }
-    }, this.props.progressRefreshInterval)
+    }, this.props.progressUpdateInterval)
     audio.addEventListener('error', (e) => {
       this.props.onError && this.props.onError(e)
     })
@@ -209,8 +221,9 @@ class H5AudioPlayer extends React.Component {
 
     // When the user pauses playback
     audio.addEventListener('pause', (e) => {
-      this.setState({ isPlaying: false })
       this.clearListenTrack()
+      if (!this.audio) return
+      this.setState({ isPlaying: false })
       this.props.onPause && this.props.onPause(e)
     })
 
@@ -310,7 +323,7 @@ class H5AudioPlayer extends React.Component {
     if (!this.listenTracker) {
       const listenInterval = this.props.listenInterval
       this.listenTracker = setInterval(() => {
-        this.props.onListen && this.props.onListen(this.audioEl.currentTime)
+        this.props.onListen && this.props.onListen(this.audio.currentTime)
       }, listenInterval)
     }
   }
@@ -326,16 +339,18 @@ class H5AudioPlayer extends React.Component {
   }
 
   render() {
-    const incompatibilityMessage = this.props.children || (
+    const { className, children, hidePlayer, src, preload, autoPlay, title = src, mute, loop, volume } = this.props
+    const { currentTime, duration, isPlaying, dragLeft } = this.state
+    const incompatibilityMessage = children || (
       <p>
         Your browser does not support the <code>audio</code> element.
       </p>
     )
 
-    let currentTimeMin = Math.floor(this.state.currentTime / 60)
-    let currentTimeSec = Math.floor(this.state.currentTime % 60)
-    let durationMin = Math.floor(this.state.duration / 60)
-    let durationSec = Math.floor(this.state.duration % 60)
+    let currentTimeMin = Math.floor(currentTime / 60)
+    let currentTimeSec = Math.floor(currentTime % 60)
+    let durationMin = Math.floor(duration / 60)
+    let durationSec = Math.floor(duration % 60)
     const addHeadingZero = num => (num > 9 ? num.toString() : `0${num}`)
 
     currentTimeMin = addHeadingZero(currentTimeMin)
@@ -344,22 +359,26 @@ class H5AudioPlayer extends React.Component {
     durationSec = addHeadingZero(durationSec)
 
     return (
-      <div style={style.audioPlayerWrapper(this.props.hidePlayer)} className="react-h5-audio-player">
+      <div style={style.audioPlayerWrapper(hidePlayer)} className={`react-h5-audio-player ${className}`}>
         <div style={style.flexWrapper} className="flex">
           <audio
-            src={this.props.src}
-            autoPlay={this.props.autoPlay}
-            preload={this.props.preload}
+            src={src}
+            controls={false}
+            title={title}
+            mute={mute}
+            loop={loop}
+            volume={volume}
+            autoPlay={autoPlay}
+            preload={preload}
             ref={(ref) => {
               this.audio = ref
             }}
-            onPlay={this.onPlay}
           >
             {incompatibilityMessage}
           </audio>
           <div className="toggle-play-wrapper" style={style.togglePlayWrapper}>
             <a className="toggle-play-button" onClick={e => this.togglePlay(e)} style={style.togglePlay}>
-              {this.state.isPlaying ? (
+              {isPlaying ? (
                 <i className="pause-icon" style={style.pause} />
               ) : (
                 <i className="play-icon" style={style.play} />
@@ -381,7 +400,7 @@ class H5AudioPlayer extends React.Component {
               ref={(ref) => {
                 this.slider = ref
               }}
-              style={style.drag(this.state.dragLeft)}
+              style={style.drag(dragLeft)}
             />
             <div className="time" style={style.time}>
               <span className="current-time">
