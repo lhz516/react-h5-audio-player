@@ -10,7 +10,7 @@ storiesOf('Player', module)
   .add(
     'Basic',
     withInfo(`Basic usage
-`)(() => <Player src={SAMPLE_MP3_URL} />),
+`)(() => <Player src={SAMPLE_MP3_URL} volume={0.8} />),
   )
   .add(
     'Auto Play',

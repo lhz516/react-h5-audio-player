@@ -62,6 +62,10 @@ const style = {
     paddingTop: '10px',
   },
   progressBarWrapper: {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
     boxSizing: 'border-box',
     position: 'relative',
     flex: '10 0 auto',
@@ -73,9 +77,7 @@ const style = {
     width: '100%',
     height: '5px',
     left: '0',
-    top: '-5px',
     background: '#e4e4e4',
-    marginBottom: '7px',
   },
   drag(left) {
     return {
@@ -92,7 +94,33 @@ const style = {
       cursor: 'pointer',
     }
   },
+  audioInfo: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
   time: {},
+  volumeControl: {
+    zIndex: 20,
+    cursor: 'pointer',
+    position: 'relative',
+    width: 0,
+    height: 0,
+    borderBottom: '15px solid rgb(228, 228, 228)',
+    borderLeft: '45px solid transparent',
+  },
+  volume(currentVolume) {
+    const height = 15
+    return {
+      zIndex: 19,
+      position: 'absolute',
+      left: '-45px',
+      bottom: '-15px',
+      width: 0,
+      height: 0,
+      borderBottom: `${height * currentVolume}px solid skyblue`,
+      borderLeft: `${height * currentVolume * 3}px solid transparent`,
+    }
+  },
 }
 
 class H5AudioPlayer extends React.Component {
@@ -161,6 +189,7 @@ class H5AudioPlayer extends React.Component {
   state = {
     duration: 0,
     currentTime: 0,
+    currentVolume: this.props.volume,
     dragLeft: 0,
     isDragging: false,
     isPlaying: false,
@@ -316,6 +345,39 @@ class H5AudioPlayer extends React.Component {
     }
   }
 
+  volumnControlDrag = (e) => {
+    if (e.clientX < 0) return
+    const relativePos = e.clientX - this.volumeControl.getBoundingClientRect().left
+    let currentVolume
+    if (relativePos < 0) {
+      currentVolume = 0
+    } else if (relativePos > 45) {
+      currentVolume = 1
+    } else {
+      currentVolume = relativePos / 45
+    }
+    e.currentTarget.style.cursor = 'pointer'
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move'
+    }
+    this.audio.volume = currentVolume
+    this.setState({ currentVolume })
+  }
+
+  volumnControlDragOver = (e) => {
+    e.dataTransfer.dropEffect = 'move'
+  }
+
+  volumnControlDragStart = (e) => {
+    // e.target.style.cursor = 'pointer'
+    e.dataTransfer.setData('text', 'volume')
+    e.dataTransfer.effectAllowed = 'move'
+    if (e.dataTransfer.setDragImage) {
+      const crt = e.target.cloneNode(true)
+      e.dataTransfer.setDragImage(crt, 0, 0)
+    }
+  }
+
   /**
    * Set an interval to call props.onListen every props.listenInterval time period
    */
@@ -339,8 +401,8 @@ class H5AudioPlayer extends React.Component {
   }
 
   render() {
-    const { className, children, hidePlayer, src, preload, autoPlay, title = src, mute, loop, volume } = this.props
-    const { currentTime, duration, isPlaying, dragLeft } = this.state
+    const { className, volume, children, hidePlayer, src, preload, autoPlay, title = src, mute, loop } = this.props
+    const { currentTime, currentVolume, duration, isPlaying, dragLeft } = this.state
     const incompatibilityMessage = children || (
       <p>
         Your browser does not support the <code>audio</code> element.
@@ -402,13 +464,29 @@ class H5AudioPlayer extends React.Component {
               }}
               style={style.drag(dragLeft)}
             />
-            <div className="time" style={style.time}>
-              <span className="current-time">
-                {currentTimeMin}:{currentTimeSec}
-              </span>/
-              <span className="total-time">
-                {durationMin}:{durationSec}
-              </span>
+            <div className="audio-info" style={style.audioInfo}>
+              <div className="time" style={style.time}>
+                <span className="current-time">
+                  {currentTimeMin}:{currentTimeSec}
+                </span>/
+                <span className="total-time">
+                  {durationMin}:{durationSec}
+                </span>
+              </div>
+              <div
+                ref={(ref) => {
+                  this.volumeControl = ref
+                }}
+                draggable="true"
+                onDragStart={this.volumnControlDragStart}
+                onDrag={this.volumnControlDrag}
+                onDragOver={this.volumnControlDragOver}
+                onMouseDown={this.volumnControlDrag}
+                className="volume-controls"
+                style={style.volumeControl}
+              >
+                <div className="volumn" style={style.volume(currentVolume)} />
+              </div>
             </div>
           </div>
         </div>
