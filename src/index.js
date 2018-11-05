@@ -205,7 +205,7 @@ class H5AudioPlayer extends React.Component {
       const currentTime = this.audio.currentTime
       const duration = this.audio.duration
       const barWidth = this.bar.offsetWidth - 20
-      const left = barWidth * currentTime / duration || 0
+      const left = (barWidth * currentTime) / duration || 0
       if (!this.audio.paused && !this.state.isDragging && !!duration) {
         this.setState({
           currentTime,
@@ -310,7 +310,7 @@ class H5AudioPlayer extends React.Component {
         return
       }
       const audio = this.audio
-      audio.currentTime = audio.duration * this.state.dragLeft / (this.bar.offsetWidth - 20) || 0
+      audio.currentTime = (audio.duration * this.state.dragLeft) / (this.bar.offsetWidth - 20) || 0
       audio.play()
       this.setState({ isDragging: false })
       this.props.onDragEnd && this.props.onDragEnd(e)
@@ -320,7 +320,7 @@ class H5AudioPlayer extends React.Component {
       this.props.onDragEnd && this.props.onDragEnd(e)
       setTimeout(() => {
         const audio = this.audio
-        audio.currentTime = audio.duration * this.state.dragLeft / (this.bar.offsetWidth - 20)
+        audio.currentTime = (audio.duration * this.state.dragLeft) / (this.bar.offsetWidth - 20)
         audio.play()
       }, 0)
     })
@@ -468,7 +468,8 @@ class H5AudioPlayer extends React.Component {
               <div className="time" style={style.time}>
                 <span className="current-time">
                   {currentTimeMin}:{currentTimeSec}
-                </span>/
+                </span>
+                /
                 <span className="total-time">
                   {durationMin}:{durationSec}
                 </span>
