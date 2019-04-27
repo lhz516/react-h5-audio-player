@@ -429,7 +429,6 @@ class H5AudioPlayer extends React.Component {
             title={title}
             mute={mute}
             loop={loop}
-            volume={volume}
             autoPlay={autoPlay}
             preload={preload}
             ref={(ref) => {
