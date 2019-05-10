@@ -32,22 +32,22 @@
     "prop-types": "^15.5.0 || ^16.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.1.2",
-    "@babel/core": "^7.1.2",
-    "@babel/plugin-proposal-class-properties": "^7.1.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
-    "@babel/preset-env": "^7.1.0",
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
     "@babel/preset-react": "^7.0.0",
-    "@storybook/addon-actions": "^4.0.2",
-    "@storybook/addon-info": "^4.0.2",
-    "@storybook/addon-options": "^4.0.2",
-    "@storybook/react": "^4.0.2",
+    "@storybook/addon-actions": "^5.0.11",
+    "@storybook/addon-info": "^5.0.11",
+    "@storybook/addon-options": "^5.0.11",
+    "@storybook/react": "^5.0.11",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
-    "babel-loader": "^8.0.4",
-    "eslint": "^5.8.0",
-    "eslint-plugin-react": "^7.11.1",
-    "react": "^16.6.0",
-    "react-dom": "^16.6.0"
+    "babel-loader": "^8.0.5",
+    "eslint": "^5.16.0",
+    "eslint-plugin-react": "^7.13.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   }
 }
