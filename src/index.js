@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 const style = {
@@ -123,7 +123,7 @@ const style = {
   },
 }
 
-class H5AudioPlayer extends React.Component {
+class H5AudioPlayer extends Component {
   static propTypes = {
     /**
      * HTML5 Audio tag autoPlay property
@@ -181,7 +181,7 @@ class H5AudioPlayer extends React.Component {
     loop: false,
     muted: false,
     preload: 'auto',
-    progressUpdateInterval: 500,
+    progressUpdateInterval: 200,
     src: '',
     volume: 1.0,
   }
@@ -202,17 +202,8 @@ class H5AudioPlayer extends React.Component {
     const slider = this.slider
 
     this.intervalId = setInterval(() => {
-      const currentTime = this.audio.currentTime
-      const duration = this.audio.duration
-      const barWidth = this.bar.offsetWidth - 20
-      const left = (barWidth * currentTime) / duration || 0
-      if (!this.audio.paused && !this.state.isDragging && !!duration) {
-        this.setState({
-          currentTime,
-          duration,
-          barWidth,
-          dragLeft: left,
-        })
+      if (!this.audio.paused && !this.state.isDragging && !!this.audio.duration) {
+        this.updateDisplayTime()
       }
     }, this.props.progressUpdateInterval)
     audio.addEventListener('error', (e) => {
@@ -291,7 +282,8 @@ class H5AudioPlayer extends React.Component {
         } else if (dragLeft > this.bar.offsetWidth - 20) {
           dragLeft = this.bar.offsetWidth - 21
         }
-        this.setState({ dragLeft })
+        audio.currentTime = (audio.duration * dragLeft) / (this.bar.offsetWidth - 20) || 0
+        this.updateDisplayTime()
         this.props.onDragMove && this.props.onDragMove(e)
       }
     })
@@ -302,7 +294,7 @@ class H5AudioPlayer extends React.Component {
       } else if (dragLeft > this.bar.offsetWidth - 20) {
         dragLeft = this.bar.offsetWidth - 21
       }
-      this.setState({ dragLeft })
+      this.updateDisplayTime()
       this.props.onDragMove && this.props.onDragMove(e)
     })
     slider.addEventListener('dragend', (e) => {
@@ -335,6 +327,19 @@ class H5AudioPlayer extends React.Component {
     if (src !== prevProps.src) {
       this.audio.play()
     }
+  }
+
+  updateDisplayTime = () => {
+    const currentTime = this.audio.currentTime
+    const duration = this.audio.duration
+    const barWidth = this.bar.offsetWidth - 20
+    const left = (barWidth * currentTime) / duration || 0
+    this.setState({
+      currentTime,
+      duration,
+      barWidth,
+      dragLeft: left,
+    })
   }
 
   togglePlay = () => {
@@ -375,6 +380,22 @@ class H5AudioPlayer extends React.Component {
     if (e.dataTransfer.setDragImage) {
       const crt = e.target.cloneNode(true)
       e.dataTransfer.setDragImage(crt, 0, 0)
+    }
+  }
+
+  /* Handle mouse click on progress bar event */
+  mouseDownProgressBar = (e) => {
+    const { audio, bar } = this
+    const mousePageX = e.pageX
+    if (mousePageX) {
+      let dragLeft = mousePageX - bar.getBoundingClientRect().left
+      if (dragLeft < 0) {
+        dragLeft = 0
+      } else if (dragLeft > bar.offsetWidth - 20) {
+        dragLeft = bar.offsetWidth - 21
+      }
+      audio.currentTime = (audio.duration * dragLeft) / (bar.offsetWidth - 20) || 0
+      this.updateDisplayTime()
     }
   }
 
@@ -449,10 +470,12 @@ class H5AudioPlayer extends React.Component {
           </div>
           <div className="progress-bar-wrapper" style={style.progressBarWrapper}>
             <div
+              className="progress-bar"
               ref={(ref) => {
                 this.bar = ref
               }}
               style={style.progressBar}
+              onMouseDown={this.mouseDownProgressBar}
             />
             {/*TODO: color change for sought part */}
             <div className="sought" />
