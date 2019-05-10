@@ -283,7 +283,7 @@ class H5AudioPlayer extends Component {
           dragLeft = this.bar.offsetWidth - 21
         }
         audio.currentTime = (audio.duration * dragLeft) / (this.bar.offsetWidth - 20) || 0
-        this.updateDisplayTime()
+        this.updateDisplayTime(dragLeft)
         this.props.onDragMove && this.props.onDragMove(e)
       }
     })
@@ -294,7 +294,8 @@ class H5AudioPlayer extends Component {
       } else if (dragLeft > this.bar.offsetWidth - 20) {
         dragLeft = this.bar.offsetWidth - 21
       }
-      this.updateDisplayTime()
+      audio.currentTime = (audio.duration * dragLeft) / (this.bar.offsetWidth - 20) || 0
+      this.updateDisplayTime(dragLeft)
       this.props.onDragMove && this.props.onDragMove(e)
     })
     slider.addEventListener('dragend', (e) => {
@@ -329,11 +330,11 @@ class H5AudioPlayer extends Component {
     }
   }
 
-  updateDisplayTime = () => {
+  updateDisplayTime = (dragLeft) => {
     const currentTime = this.audio.currentTime
     const duration = this.audio.duration
     const barWidth = this.bar.offsetWidth - 20
-    const left = (barWidth * currentTime) / duration || 0
+    const left = dragLeft || (barWidth * currentTime) / duration || 0
     this.setState({
       currentTime,
       duration,
@@ -395,7 +396,7 @@ class H5AudioPlayer extends Component {
         dragLeft = bar.offsetWidth - 21
       }
       audio.currentTime = (audio.duration * dragLeft) / (bar.offsetWidth - 20) || 0
-      this.updateDisplayTime()
+      this.updateDisplayTime(dragLeft)
     }
   }
 
