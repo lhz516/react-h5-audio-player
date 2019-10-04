@@ -59,7 +59,9 @@ const style = {
     height: '40px',
     borderRadius: '50%',
     textAlign: 'center',
-    paddingTop: '10px',
+    paddingTop: '0',
+    border: 'none',
+    outline: '0',
   },
   progressBarWrapper: {
     height: '100%',
@@ -461,13 +463,13 @@ class H5AudioPlayer extends Component {
             {incompatibilityMessage}
           </audio>
           <div className="toggle-play-wrapper" style={style.togglePlayWrapper}>
-            <a className="toggle-play-button" onClick={e => this.togglePlay(e)} style={style.togglePlay}>
+            <button className="toggle-play-button" onClick={e => this.togglePlay(e)} style={style.togglePlay}>
               {isPlaying ? (
                 <i className="pause-icon" style={style.pause} />
               ) : (
                 <i className="play-icon" style={style.play} />
               )}
-            </a>
+            </button>
           </div>
           <div className="progress-bar-wrapper" style={style.progressBarWrapper}>
             <div
