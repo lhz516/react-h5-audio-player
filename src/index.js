@@ -247,76 +247,76 @@ class H5AudioPlayer extends Component {
       this.props.onPause && this.props.onPause(e)
     })
 
-    let dragX
-    slider.addEventListener('dragstart', (e) => {
-      if (!this.audio.src) {
-        return
-      }
-      e.dataTransfer.setData('text', 'slider')
-      if (e.dataTransfer.setDragImage) {
-        const crt = slider.cloneNode(true)
-        e.dataTransfer.setDragImage(crt, 0, 0)
-      }
-      this.audio.pause()
-      document.addEventListener('dragover', (event) => {
-        event = event || window.event
-        dragX = event.pageX
-      })
-      this.props.onDragStart && this.props.onDragStart(e)
-      this.setState({ isDragging: true })
-    })
+    // let dragX
+    // slider.addEventListener('dragstart', (e) => {
+    //   if (!this.audio.src) {
+    //     return
+    //   }
+    //   e.dataTransfer.setData('text', 'slider')
+    //   if (e.dataTransfer.setDragImage) {
+    //     const crt = slider.cloneNode(true)
+    //     e.dataTransfer.setDragImage(crt, 0, 0)
+    //   }
+    //   this.audio.pause()
+    //   document.addEventListener('dragover', (event) => {
+    //     event = event || window.event
+    //     dragX = event.pageX
+    //   })
+    //   this.props.onDragStart && this.props.onDragStart(e)
+    //   this.setState({ isDragging: true })
+    // })
 
-    slider.addEventListener('touchstart', (e) => {
-      this.setState({ isDragging: true })
-      this.props.onDragStart && this.props.onDragStart(e)
-      setTimeout(() => this.audio.pause(), 0)
-    })
-    slider.addEventListener('drag', (e) => {
-      if (!this.audio.src) {
-        return
-      }
-      if (dragX) {
-        let dragLeft = dragX - this.bar.getBoundingClientRect().left
-        if (dragLeft < 0) {
-          dragLeft = 0
-        } else if (dragLeft > this.bar.offsetWidth - 20) {
-          dragLeft = this.bar.offsetWidth - 21
-        }
-        audio.currentTime = (audio.duration * dragLeft) / (this.bar.offsetWidth - 20) || 0
-        this.updateDisplayTime(dragLeft)
-        this.props.onDragMove && this.props.onDragMove(e)
-      }
-    })
-    slider.addEventListener('touchmove', (e) => {
-      let dragLeft = e.touches[0].clientX - this.bar.getBoundingClientRect().left
-      if (dragLeft < 0) {
-        dragLeft = 0
-      } else if (dragLeft > this.bar.offsetWidth - 20) {
-        dragLeft = this.bar.offsetWidth - 21
-      }
-      audio.currentTime = (audio.duration * dragLeft) / (this.bar.offsetWidth - 20) || 0
-      this.updateDisplayTime(dragLeft)
-      this.props.onDragMove && this.props.onDragMove(e)
-    })
-    slider.addEventListener('dragend', (e) => {
-      if (!this.audio.src) {
-        return
-      }
-      const audio = this.audio
-      audio.currentTime = (audio.duration * this.state.dragLeft) / (this.bar.offsetWidth - 20) || 0
-      audio.play()
-      this.setState({ isDragging: false })
-      this.props.onDragEnd && this.props.onDragEnd(e)
-    })
-    slider.addEventListener('touchend', (e) => {
-      this.setState({ isDragging: false })
-      this.props.onDragEnd && this.props.onDragEnd(e)
-      setTimeout(() => {
-        const audio = this.audio
-        audio.currentTime = (audio.duration * this.state.dragLeft) / (this.bar.offsetWidth - 20)
-        audio.play()
-      }, 0)
-    })
+    // slider.addEventListener('touchstart', (e) => {
+    //   this.setState({ isDragging: true })
+    //   this.props.onDragStart && this.props.onDragStart(e)
+    //   setTimeout(() => this.audio.pause(), 0)
+    // })
+    // slider.addEventListener('drag', (e) => {
+    //   if (!this.audio.src) {
+    //     return
+    //   }
+    //   if (dragX) {
+    //     let dragLeft = dragX - this.bar.getBoundingClientRect().left
+    //     if (dragLeft < 0) {
+    //       dragLeft = 0
+    //     } else if (dragLeft > this.bar.offsetWidth - 20) {
+    //       dragLeft = this.bar.offsetWidth - 21
+    //     }
+    //     audio.currentTime = (audio.duration * dragLeft) / (this.bar.offsetWidth - 20) || 0
+    //     this.updateDisplayTime(dragLeft)
+    //     this.props.onDragMove && this.props.onDragMove(e)
+    //   }
+    // })
+    // slider.addEventListener('touchmove', (e) => {
+    //   let dragLeft = e.touches[0].clientX - this.bar.getBoundingClientRect().left
+    //   if (dragLeft < 0) {
+    //     dragLeft = 0
+    //   } else if (dragLeft > this.bar.offsetWidth - 20) {
+    //     dragLeft = this.bar.offsetWidth - 21
+    //   }
+    //   audio.currentTime = (audio.duration * dragLeft) / (this.bar.offsetWidth - 20) || 0
+    //   this.updateDisplayTime(dragLeft)
+    //   this.props.onDragMove && this.props.onDragMove(e)
+    // })
+    // slider.addEventListener('dragend', (e) => {
+    //   if (!this.audio.src) {
+    //     return
+    //   }
+    //   const audio = this.audio
+    //   audio.currentTime = (audio.duration * this.state.dragLeft) / (this.bar.offsetWidth - 20) || 0
+    //   audio.play()
+    //   this.setState({ isDragging: false })
+    //   this.props.onDragEnd && this.props.onDragEnd(e)
+    // })
+    // slider.addEventListener('touchend', (e) => {
+    //   this.setState({ isDragging: false })
+    //   this.props.onDragEnd && this.props.onDragEnd(e)
+    //   setTimeout(() => {
+    //     const audio = this.audio
+    //     audio.currentTime = (audio.duration * this.state.dragLeft) / (this.bar.offsetWidth - 20)
+    //     audio.play()
+    //   }, 0)
+    // })
   }
 
   componentWillUnmount() {
