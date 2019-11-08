@@ -324,8 +324,8 @@ class H5AudioPlayer extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { src } = this.props
-    if (src !== prevProps.src) {
+    const { src, autoPlay } = this.props
+    if (src !== prevProps.src && autoPlay) {
       this.audio.play()
     }
   }
