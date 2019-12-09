@@ -3,15 +3,15 @@ module.exports = {
   env: {
     es6: true,
     browser: true,
-    node: true,
   },
   extends: ['eslint:recommended', 'plugin:react/recommended'],
   parserOptions: {
-    allowImportExportEverywhere: true,
-    ecmaFeatures: {
-      experimentalObjectRestSpread: true,
-    },
     sourceType: 'module',
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
   },
   rules: {
     'arrow-parens': [2, 'as-needed', { requireForBlockBody: true }],
