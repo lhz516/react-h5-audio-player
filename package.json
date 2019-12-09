@@ -1,6 +1,6 @@
 {
   "name": "react-h5-audio-player",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "A React audio player with UI. Mobile compatible.",
   "main": "./lib/index.js",
   "scripts": {
@@ -32,22 +32,22 @@
     "prop-types": "^15.5.0 || ^16.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-react": "^7.0.0",
-    "@storybook/addon-actions": "^5.1.11",
-    "@storybook/addon-info": "^5.1.11",
-    "@storybook/addon-options": "^5.1.11",
-    "@storybook/react": "^5.1.11",
+    "@babel/cli": "^7.7.5",
+    "@babel/core": "^7.7.5",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.7.4",
+    "@babel/preset-env": "^7.7.6",
+    "@babel/preset-react": "^7.7.4",
+    "@storybook/addon-actions": "^5.2.8",
+    "@storybook/addon-info": "^5.2.8",
+    "@storybook/addon-options": "^5.2.8",
+    "@storybook/react": "^5.2.8",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
     "eslint": "^5.16.0",
-    "eslint-plugin-react": "^7.14.3",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0"
+    "eslint-plugin-react": "^7.17.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
   }
 }
