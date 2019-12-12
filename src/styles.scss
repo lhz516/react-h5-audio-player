@@ -1,0 +1,151 @@
+.rhap_container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 90px;
+  width: 100%;
+  min-width: 300px;
+  padding: 10px 15px;
+  background-color: white;
+  position: relative;
+  z-index: 100;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.rhap_progress-section {
+  display: flex;
+  flex: 0 0;
+  align-items: center;
+}
+
+.rhap_progress-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  justify-content: space-between;
+  box-sizing: border-box;
+  position: relative;
+  flex: 10 0 auto;
+  align-self: center;
+  margin: 0 2%;
+}
+
+.rhap_progress-bar {
+  box-sizing: border-box;
+  width: 100%;
+  height: 5px;
+  background: #e4e4e4;
+}
+
+.rhap_progress-indicator {
+  box-sizing: border-box;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 0;
+  top: -1px;
+  background: grey;
+  opacity: 0.8;
+  border-radius: 50px;
+  box-shadow: #fff 0 0 5px;
+  cursor: pointer;
+}
+
+.rhap_controls-section {
+  display: flex;
+  flex: 1 0;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.rhap_additional-controls {
+  flex: 1 0;
+}
+
+.rhap_main-controls {
+  flex: 0 0 130px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  
+}
+
+.rhap_main-controls-button {
+  color: grey;
+
+  :hover {
+    color: lightgray;
+  }
+}
+
+.rhap_play-pause-button {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  
+}
+
+.rhap_skip-button {
+  font-size: 35px;
+  width: 35px;
+  height: 35px;
+}
+
+.rhap_volume-controls {
+  display: flex;
+  flex: 1 0;
+  justify-content: flex-end;
+}
+
+.rhap_volume-button {
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+  color: grey;
+  margin-right: 5px;
+}
+
+.rhap_volume-container {
+  display: flex;
+  align-items: center;
+  flex: 0 1 100px;
+}
+
+.rhap_volume-bar-area {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 14px;
+  cursor: pointer;
+}
+
+.rhap_volume-bar {
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background: #e4e4e4;
+}
+
+.rhap_volume-indicator {
+  box-sizing: border-box;
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  left: 0;
+  top: -4px;
+  background: grey;
+  opacity: 0.8;
+  border-radius: 50px;
+  box-shadow: #fff 0 0 5px;
+  cursor: pointer;
+}
+
+/* Utils */
+.rhap_button-clear {
+  background-color: transparent;
+  border: none;
+  outline: 0;
+  padding: 0;
+  cursor: pointer;
+}

@@ -9,19 +9,22 @@ storiesOf('Player', module)
   .add('Basic', () => <Player src={SAMPLE_MP3_URL} volume={0.8} />)
   .add('Auto Play', () => <Player autoPlay progressUpdateInterval={100} src={SAMPLE_MP3_URL} />)
   .add('Action Logger', () => (
-    <Player
-      onAbort={action('onAbort')}
-      onCanPlay={action('onCanPlay')}
-      onCanPlayThrough={action('onCanPlayThrough')}
-      onEnded={action('onEnded')}
-      onError={action('onError')}
-      onListen={action('onListen')}
-      onPause={action('onPause')}
-      onPlay={action('onPlay')}
-      onDragStart={action('onDragStart')}
-      onDragMove={action('onDragMove')}
-      onDragEnd={action('onDragEnd')}
-      progressUpdateInterval={100}
-      src={SAMPLE_MP3_URL}
-    />
+    <div style={{ width: '90%' }}>
+      <Player
+        onAbort={action('onAbort')}
+        onCanPlay={action('onCanPlay')}
+        onCanPlayThrough={action('onCanPlayThrough')}
+        onEnded={action('onEnded')}
+        onError={action('onError')}
+        onListen={action('onListen')}
+        onPause={action('onPause')}
+        onPlay={action('onPlay')}
+        onDragStart={action('onDragStart')}
+        onDragMove={action('onDragMove')}
+        onDragEnd={action('onDragEnd')}
+        volume={1}
+        progressUpdateInterval={100}
+        src={SAMPLE_MP3_URL}
+      />
+    </div>
   ))

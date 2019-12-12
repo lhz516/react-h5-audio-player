@@ -1,128 +1,16 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { Icon } from '@iconify/react'
+import playCircle from '@iconify/icons-mdi/play-circle'
+import pauseCircle from '@iconify/icons-mdi/pause-circle'
+import skipPreviousCircle from '@iconify/icons-mdi/skip-previous-circle'
+import skipNextCircle from '@iconify/icons-mdi/skip-next-circle'
+import volumeHigh from '@iconify/icons-mdi/volume-high'
+import volumeMute from '@iconify/icons-mdi/volume-mute'
 
-const style = {
-  audioPlayerWrapper(hidePlayer) {
-    return {
-      display: hidePlayer ? 'none' : 'block',
-    }
-  },
-  flexWrapper: {
-    boxSizing: 'border-box',
-    height: '70px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    width: '100%',
-    padding: '15px 0',
-    backgroundColor: 'white',
-    position: 'relative',
-    zIndex: '100',
-    boxShadow: '0 0 3px 0 rgba(0, 0, 0, 0.2)',
-  },
-  pause: {
-    boxSizing: 'content-box',
-    display: 'block',
-    width: '14px',
-    height: '18px',
-    borderLeft: '7px solid white',
-    position: 'relative',
-    zIndex: '1',
-    left: '4px',
-    backgroundColor: 'white',
-    boxShadow: 'inset 7px 0 0 0 rgb(251, 86, 21)',
-  },
-  play: {
-    boxSizing: 'content-box',
-    display: 'block',
-    width: '0',
-    height: '0',
-    borderTop: '10px solid transparent',
-    borderBottom: '10px solid transparent',
-    borderLeft: '20px solid white',
-    position: 'relative',
-    zIndex: '1',
-    left: '6px',
-  },
-  togglePlayWrapper: {
-    boxSizing: 'border-box',
-    flex: '1 0 60px',
-    position: 'relative',
-  },
-  togglePlay: {
-    boxSizing: 'border-box',
-    position: 'absolute',
-    left: '50%',
-    marginLeft: '-20px',
-    backgroundColor: '#FB5615',
-    color: 'white',
-    width: '40px',
-    height: '40px',
-    borderRadius: '50%',
-    paddingTop: '0',
-    border: 'none',
-    outline: '0',
-  },
-  progressBarWrapper: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    boxSizing: 'border-box',
-    position: 'relative',
-    flex: '10 0 auto',
-    alignSelf: 'center',
-    padding: '5px 4% 0 0',
-  },
-  progressBar: {
-    boxSizing: 'border-box',
-    width: '100%',
-    height: '5px',
-    left: '0',
-    background: '#e4e4e4',
-  },
-  drag(left) {
-    return {
-      boxSizing: 'border-box',
-      position: 'absolute',
-      width: '20px',
-      height: '20px',
-      left,
-      top: '-3px',
-      background: 'skyblue',
-      opacity: '0.8',
-      borderRadius: '50px',
-      boxShadow: '#fff 0 0 5px',
-      cursor: 'pointer',
-    }
-  },
-  audioInfo: {
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-  time: {},
-  volumeControl: {
-    zIndex: 20,
-    cursor: 'pointer',
-    position: 'relative',
-    width: 0,
-    height: 0,
-    borderBottom: '15px solid rgb(228, 228, 228)',
-    borderLeft: '45px solid transparent',
-  },
-  volume(currentVolume) {
-    const height = 15
-    return {
-      zIndex: 19,
-      position: 'absolute',
-      left: '-45px',
-      bottom: '-15px',
-      width: 0,
-      height: 0,
-      borderBottom: `${height * currentVolume}px solid skyblue`,
-      borderLeft: `${height * currentVolume * 3}px solid transparent`,
-    }
-  },
-}
+import './styles.scss'
+
+const VOLUME_INDICATOR_SIZE = 12
 
 class H5AudioPlayer extends Component {
   static propTypes = {
@@ -185,14 +73,17 @@ class H5AudioPlayer extends Component {
     progressUpdateInterval: 200,
     src: '',
     volume: 1.0,
+    className: '',
   }
 
   state = {
     duration: 0,
     currentTime: 0,
     currentVolume: this.props.volume,
+    currentVolumePos: `${this.props.volume * 100}%`,
     dragLeft: 0,
     isDragging: false,
+    isDraggingVolume: false,
     isPlaying: false,
   }
 
@@ -202,11 +93,14 @@ class H5AudioPlayer extends Component {
     // progress bar slider object
     const slider = this.slider
 
+    this.lastVolume = audio.volume
+
     this.intervalId = setInterval(() => {
       if (!this.audio.paused && !this.state.isDragging && !!this.audio.duration) {
         this.updateDisplayTime()
       }
     }, this.props.progressUpdateInterval)
+    
     audio.addEventListener('error', (e) => {
       this.props.onError && this.props.onError(e)
     })
@@ -335,13 +229,23 @@ class H5AudioPlayer extends Component {
     const currentTime = this.audio.currentTime
     const duration = this.audio.duration
     const barWidth = this.bar.offsetWidth - 20
-    const left = dragLeft || (barWidth * currentTime) / duration || 0
+    const left = dragLeft || `calc(${currentTime / duration * 100}% - 19px)` || 0
     this.setState({
       currentTime,
       duration,
       barWidth,
       dragLeft: left,
     })
+  }
+
+  updateDisplayVolume = (volume) => {
+    if (volume === 0) {
+      return this.setState({ currentVolume: 0, currentVolumePos: '0%' })
+    }
+    const volumeBarRect = this.volumeControl.getBoundingClientRect()
+    const maxRelativePos = volumeBarRect.width - VOLUME_INDICATOR_SIZE
+
+    this.setState({ currentVolume: volume, currentVolumePos: `${volume * (maxRelativePos / volumeBarRect.width) * 100}%` })
   }
 
   togglePlay = () => {
@@ -352,37 +256,67 @@ class H5AudioPlayer extends Component {
     }
   }
 
-  volumnControlDrag = (e) => {
-    if (e.clientX < 0) return
-    const relativePos = e.clientX - this.volumeControl.getBoundingClientRect().left
+  handleClickVolumeButton = () => {
+    const { currentVolume } = this.state
+    if (currentVolume > 0) {
+      this.lastVolume = this.audio.volume
+      this.audio.volume = 0
+      this.updateDisplayVolume(0)
+    } else {
+      this.audio.volume = this.lastVolume
+      this.updateDisplayVolume(this.lastVolume)
+    }
+  }
+
+  handleVolumnControlMouseDown = (event) => {
+    event.stopPropagation()
+    const { currentVolume, currentVolumePos } = this.getCurrentVolume(event)
+    this.audio.volume = currentVolume
+    this.setState({ isDraggingVolume: true, currentVolume, currentVolumePos })
+    window.addEventListener('mousemove', this.handleWindowMouseMove)
+    window.addEventListener('mouseup', this.handleWindowMouseUp)
+  }
+
+  handleWindowMouseMove = (event) => {
+    event.stopPropagation()
+    if (!this.state.isDraggingVolume) return
+    const { currentVolume, currentVolumePos } = this.getCurrentVolume(event)
+    this.audio.volume = currentVolume
+    this.setState({ currentVolume, currentVolumePos })
+  }
+
+  handleWindowMouseUp = (event) => {
+    event.stopPropagation()
+    this.setState((prevState) => {
+      if (prevState.isDraggingVolume) {
+        return { isDraggingVolume: false }
+      }
+    })
+    window.removeEventListener('mousemove', this.handleWindowMouseMove)
+    window.removeEventListener('mouseup', this.handleWindowMouseUp)
+  }
+
+  getCurrentVolume = (e) => {
+    const volumeBarRect = this.volumeControl.getBoundingClientRect()
+    const maxRelativePos = volumeBarRect.width - VOLUME_INDICATOR_SIZE
+    const relativePos = e.clientX - volumeBarRect.left
     let currentVolume
+    let currentVolumePos
+
     if (relativePos < 0) {
       currentVolume = 0
-    } else if (relativePos > 45) {
+      currentVolumePos = '0%'
+    } else if (relativePos > maxRelativePos) {
       currentVolume = 1
+      currentVolumePos = `${maxRelativePos / volumeBarRect.width * 100}%`
     } else {
-      currentVolume = relativePos / 45
+      currentVolume = relativePos / volumeBarRect.width
+      currentVolumePos = `${(relativePos / volumeBarRect.width) * 100}%`
     }
-    e.currentTarget.style.cursor = 'pointer'
     if (e.dataTransfer) {
       e.dataTransfer.dropEffect = 'move'
     }
-    this.audio.volume = currentVolume
-    this.setState({ currentVolume })
-  }
-
-  volumnControlDragOver = (e) => {
-    e.dataTransfer.dropEffect = 'move'
-  }
-
-  volumnControlDragStart = (e) => {
-    // e.target.style.cursor = 'pointer'
-    e.dataTransfer.setData('text', 'volume')
-    e.dataTransfer.effectAllowed = 'move'
-    if (e.dataTransfer.setDragImage) {
-      const crt = e.target.cloneNode(true)
-      e.dataTransfer.setDragImage(crt, 0, 0)
-    }
+    return { currentVolume, currentVolumePos }
   }
 
   /* Handle mouse click on progress bar event */
@@ -397,6 +331,7 @@ class H5AudioPlayer extends Component {
         dragLeft = bar.offsetWidth - 21
       }
       audio.currentTime = (audio.duration * dragLeft) / (bar.offsetWidth - 20) || 0
+      // this.setState({ isDragging: true })
       this.updateDisplayTime(dragLeft)
     }
   }
@@ -424,8 +359,8 @@ class H5AudioPlayer extends Component {
   }
 
   render() {
-    const { className, volume, children, hidePlayer, src, preload, autoPlay, title = src, mute, loop } = this.props
-    const { currentTime, currentVolume, duration, isPlaying, dragLeft } = this.state
+    const { className, children, src, preload, autoPlay, title = src, mute, loop } = this.props
+    const { currentTime, currentVolume, currentVolumePos, duration, isPlaying, dragLeft } = this.state
     const incompatibilityMessage = children || (
       <p>
         Your browser does not support the <code>audio</code> element.
@@ -444,78 +379,85 @@ class H5AudioPlayer extends Component {
     durationSec = addHeadingZero(durationSec)
 
     return (
-      <div style={style.audioPlayerWrapper(hidePlayer)} className={`react-h5-audio-player ${className}`}>
-        <div style={style.flexWrapper} className="flex">
-          <audio
-            src={src}
-            controls={false}
-            title={title}
-            mute={mute}
-            loop={loop}
-            volume={volume}
-            autoPlay={autoPlay}
-            preload={preload}
-            ref={(ref) => {
-              this.audio = ref
-            }}
-          >
-            {incompatibilityMessage}
-          </audio>
-          <div className="toggle-play-wrapper" style={style.togglePlayWrapper}>
-            <button className="toggle-play-button" onClick={e => this.togglePlay(e)} style={style.togglePlay}>
-              {isPlaying ? (
-                <i className="pause-icon" style={style.pause} />
-              ) : (
-                <i className="play-icon" style={style.play} />
-              )}
-            </button>
+      <div className={`rhap_container ${className}`}>
+        <audio
+          src={src}
+          controls={false}
+          title={title}
+          mute={mute}
+          loop={loop}
+          volume={currentVolume}
+          autoPlay={autoPlay}
+          preload={preload}
+          ref={(ref) => {
+            this.audio = ref
+          }}
+        />
+        <div className="rhap_progress-section">
+          <div className="rhap_current-time">
+            {currentTimeMin}:{currentTimeSec}
           </div>
-          <div className="progress-bar-wrapper" style={style.progressBarWrapper}>
+          <div className="rhap_progress-container">
             <div
-              className="progress-bar"
+              className="rhap_progress-bar"
               ref={(ref) => {
                 this.bar = ref
               }}
-              style={style.progressBar}
               onMouseDown={this.mouseDownProgressBar}
             />
-            {/*TODO: color change for sought part */}
-            <div className="sought" />
             <div
-              className="indicator"
+              className="rhap_progress-indicator"
               draggable="true"
               ref={(ref) => {
                 this.slider = ref
               }}
-              style={style.drag(dragLeft)}
+              style={{ left: dragLeft }}
             />
-            <div className="audio-info" style={style.audioInfo}>
-              <div className="time" style={style.time}>
-                <span className="current-time">
-                  {currentTimeMin}:{currentTimeSec}
-                </span>
-                /
-                <span className="total-time">
-                  {durationMin}:{durationSec}
-                </span>
-              </div>
+          </div>
+          <div className="rhap_total-time">
+            {durationMin}:{durationSec}
+          </div>
+        </div>
+
+        <div className="rhap_controls-section">
+          <div className="rhap_additional-controls">
+            <div className="rhap_repeat"></div>
+          </div>
+          <div className="rhap_main-controls">
+            <button className="rhap_button-clear rhap_main-controls-button rhap_skip-button" onClick={this.togglePlay}>
+              <Icon icon={skipPreviousCircle} />
+            </button>
+            <button className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button" onClick={this.togglePlay}>
+              {isPlaying ? (
+                <Icon icon={pauseCircle} />
+              ) : (
+                <Icon icon={playCircle} />
+              )}
+            </button>
+            <button className="rhap_button-clear rhap_main-controls-button rhap_skip-button" onClick={this.togglePlay}>
+              <Icon icon={skipNextCircle} />
+            </button>
+          </div>
+          <div className="rhap_volume-controls">
+            <div className="rhap_volume-container">
+              <button onClick={this.handleClickVolumeButton} className="rhap_button-clear rhap_volume-button">
+                <Icon icon={currentVolume ? volumeHigh : volumeMute} />
+              </button>
               <div
-                ref={(ref) => {
-                  this.volumeControl = ref
-                }}
-                draggable="true"
-                onDragStart={this.volumnControlDragStart}
-                onDrag={this.volumnControlDrag}
-                onDragOver={this.volumnControlDragOver}
-                onMouseDown={this.volumnControlDrag}
-                className="volume-controls"
-                style={style.volumeControl}
+                ref={(ref) => { this.volumeControl = ref }}
+                onMouseDown={this.handleVolumnControlMouseDown}
+                className="rhap_volume-bar-area"
               >
-                <div className="volumn" style={style.volume(currentVolume)} />
+                <div className="rhap_volume-bar">
+                  <div
+                    className="rhap_volume-indicator"
+                    style={{ left: currentVolumePos }}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </div>  
       </div>
     )
   }

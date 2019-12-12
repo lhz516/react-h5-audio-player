@@ -41,15 +41,20 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.7.4",
     "@babel/preset-env": "^7.7.6",
     "@babel/preset-react": "^7.7.4",
+    "@iconify/icons-mdi": "^1.0.35",
+    "@iconify/react": "^1.1.1",
     "@storybook/addon-actions": "^5.2.8",
     "@storybook/addon-info": "^5.2.8",
     "@storybook/addon-options": "^5.2.8",
     "@storybook/react": "^5.2.8",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
+    "css-loader": "^3.3.0",
     "eslint": "^6.7.2",
     "eslint-plugin-react": "^7.17.0",
+    "node-sass": "^4.13.0",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "sass-loader": "^8.0.0"
   }
 }
