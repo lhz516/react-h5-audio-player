@@ -10,8 +10,6 @@ import volumeMute from '@iconify/icons-mdi/volume-mute'
 
 import './styles.scss'
 
-const VOLUME_INDICATOR_SIZE = 12
-
 class H5AudioPlayer extends Component {
   static propTypes = {
     /**
@@ -44,9 +42,6 @@ class H5AudioPlayer extends Component {
     onListen: PropTypes.func,
     onPause: PropTypes.func,
     onPlay: PropTypes.func,
-    onDragStart: PropTypes.func,
-    onDragMove: PropTypes.func,
-    onDragEnd: PropTypes.func,
     /**
      * HTML5 Audio tag preload property
      */
@@ -79,10 +74,10 @@ class H5AudioPlayer extends Component {
   state = {
     duration: 0,
     currentTime: 0,
+    currentTimePos: 0,
     currentVolume: this.props.volume,
     currentVolumePos: `${this.props.volume * 100}%`,
-    dragLeft: 0,
-    isDragging: false,
+    isDraggingProgress: false,
     isDraggingVolume: false,
     isPlaying: false,
   }
@@ -90,14 +85,12 @@ class H5AudioPlayer extends Component {
   componentDidMount() {
     // audio player object
     const audio = this.audio
-    // progress bar slider object
-    const slider = this.slider
 
     this.lastVolume = audio.volume
 
     this.intervalId = setInterval(() => {
-      if (!this.audio.paused && !this.state.isDragging && !!this.audio.duration) {
-        this.updateDisplayTime()
+      if (!this.audio.paused && !this.state.isDraggingProgress && !!this.audio.duration) {
+        this.updateDisplayTime(this.audio.currentTime)
       }
     }, this.props.progressUpdateInterval)
     
@@ -141,77 +134,6 @@ class H5AudioPlayer extends Component {
       this.setState({ isPlaying: false })
       this.props.onPause && this.props.onPause(e)
     })
-
-    let dragX
-    slider.addEventListener('dragstart', (e) => {
-      if (!this.audio.src) {
-        return
-      }
-      e.dataTransfer.setData('text', 'slider')
-      if (e.dataTransfer.setDragImage) {
-        const crt = slider.cloneNode(true)
-        e.dataTransfer.setDragImage(crt, 0, 0)
-      }
-      this.audio.pause()
-      document.addEventListener('dragover', (event) => {
-        event = event || window.event
-        dragX = event.pageX
-      })
-      this.props.onDragStart && this.props.onDragStart(e)
-      this.setState({ isDragging: true })
-    })
-
-    slider.addEventListener('touchstart', (e) => {
-      this.setState({ isDragging: true })
-      this.props.onDragStart && this.props.onDragStart(e)
-      setTimeout(() => this.audio.pause(), 0)
-    })
-    slider.addEventListener('drag', (e) => {
-      if (!this.audio.src) {
-        return
-      }
-      if (dragX) {
-        let dragLeft = dragX - this.bar.getBoundingClientRect().left
-        if (dragLeft < 0) {
-          dragLeft = 0
-        } else if (dragLeft > this.bar.offsetWidth - 20) {
-          dragLeft = this.bar.offsetWidth - 21
-        }
-        audio.currentTime = (audio.duration * dragLeft) / (this.bar.offsetWidth - 20) || 0
-        this.updateDisplayTime(dragLeft)
-        this.props.onDragMove && this.props.onDragMove(e)
-      }
-    })
-    slider.addEventListener('touchmove', (e) => {
-      let dragLeft = e.touches[0].clientX - this.bar.getBoundingClientRect().left
-      if (dragLeft < 0) {
-        dragLeft = 0
-      } else if (dragLeft > this.bar.offsetWidth - 20) {
-        dragLeft = this.bar.offsetWidth - 21
-      }
-      audio.currentTime = (audio.duration * dragLeft) / (this.bar.offsetWidth - 20) || 0
-      this.updateDisplayTime(dragLeft)
-      this.props.onDragMove && this.props.onDragMove(e)
-    })
-    slider.addEventListener('dragend', (e) => {
-      if (!this.audio.src) {
-        return
-      }
-      const audio = this.audio
-      audio.currentTime = (audio.duration * this.state.dragLeft) / (this.bar.offsetWidth - 20) || 0
-      audio.play()
-      this.setState({ isDragging: false })
-      this.props.onDragEnd && this.props.onDragEnd(e)
-    })
-    slider.addEventListener('touchend', (e) => {
-      this.setState({ isDragging: false })
-      this.props.onDragEnd && this.props.onDragEnd(e)
-      setTimeout(() => {
-        const audio = this.audio
-        audio.currentTime = (audio.duration * this.state.dragLeft) / (this.bar.offsetWidth - 20)
-        audio.play()
-      }, 0)
-    })
   }
 
   componentWillUnmount() {
@@ -225,16 +147,13 @@ class H5AudioPlayer extends Component {
     }
   }
 
-  updateDisplayTime = (dragLeft) => {
-    const currentTime = this.audio.currentTime
+  updateDisplayTime = (currentTime) => {
     const duration = this.audio.duration
-    const barWidth = this.bar.offsetWidth - 20
-    const left = dragLeft || `calc(${currentTime / duration * 100}% - 19px)` || 0
+    const left = `${currentTime / duration * 100}%` || 0
     this.setState({
       currentTime,
       duration,
-      barWidth,
-      dragLeft: left,
+      currentTimePos: left,
     })
   }
 
@@ -242,10 +161,8 @@ class H5AudioPlayer extends Component {
     if (volume === 0) {
       return this.setState({ currentVolume: 0, currentVolumePos: '0%' })
     }
-    const volumeBarRect = this.volumeControl.getBoundingClientRect()
-    const maxRelativePos = volumeBarRect.width - VOLUME_INDICATOR_SIZE
 
-    this.setState({ currentVolume: volume, currentVolumePos: `${volume * (maxRelativePos / volumeBarRect.width) * 100}%` })
+    this.setState({ currentVolume: volume, currentVolumePos: `${volume * 100}%` })
   }
 
   togglePlay = () => {
@@ -279,17 +196,28 @@ class H5AudioPlayer extends Component {
 
   handleWindowMouseMove = (event) => {
     event.stopPropagation()
-    if (!this.state.isDraggingVolume) return
-    const { currentVolume, currentVolumePos } = this.getCurrentVolume(event)
-    this.audio.volume = currentVolume
-    this.setState({ currentVolume, currentVolumePos })
+    // Prevent Chrome drag selection bug
+    const windowSelection = window.getSelection()
+    if (windowSelection.type === 'Range') {
+      windowSelection.empty()
+    }
+    const { isDraggingVolume, isDraggingProgress } = this.state
+    if (isDraggingVolume) {
+      const { currentVolume, currentVolumePos } = this.getCurrentVolume(event)
+      this.audio.volume = currentVolume
+      this.setState({ currentVolume, currentVolumePos })
+    } else if (isDraggingProgress) {
+      const { currentTime, currentTimePos } = this.getCurrentProgress(event)
+      this.audio.currentTime = currentTime
+      this.setState({ currentTime, currentTimePos })
+    }
   }
 
   handleWindowMouseUp = (event) => {
     event.stopPropagation()
     this.setState((prevState) => {
-      if (prevState.isDraggingVolume) {
-        return { isDraggingVolume: false }
+      if (prevState.isDraggingVolume || prevState.isDraggingProgress) {
+        return { isDraggingVolume: false, isDraggingProgress: false }
       }
     })
     window.removeEventListener('mousemove', this.handleWindowMouseMove)
@@ -298,7 +226,6 @@ class H5AudioPlayer extends Component {
 
   getCurrentVolume = (e) => {
     const volumeBarRect = this.volumeControl.getBoundingClientRect()
-    const maxRelativePos = volumeBarRect.width - VOLUME_INDICATOR_SIZE
     const relativePos = e.clientX - volumeBarRect.left
     let currentVolume
     let currentVolumePos
@@ -306,34 +233,44 @@ class H5AudioPlayer extends Component {
     if (relativePos < 0) {
       currentVolume = 0
       currentVolumePos = '0%'
-    } else if (relativePos > maxRelativePos) {
+    } else if (relativePos > volumeBarRect.width) {
       currentVolume = 1
-      currentVolumePos = `${maxRelativePos / volumeBarRect.width * 100}%`
+      currentVolumePos = `${volumeBarRect.width / volumeBarRect.width * 100}%`
     } else {
       currentVolume = relativePos / volumeBarRect.width
       currentVolumePos = `${(relativePos / volumeBarRect.width) * 100}%`
     }
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'move'
-    }
+
     return { currentVolume, currentVolumePos }
   }
 
   /* Handle mouse click on progress bar event */
-  mouseDownProgressBar = (e) => {
-    const { audio, bar } = this
-    const mousePageX = e.pageX
-    if (mousePageX) {
-      let dragLeft = mousePageX - bar.getBoundingClientRect().left
-      if (dragLeft < 0) {
-        dragLeft = 0
-      } else if (dragLeft > bar.offsetWidth - 20) {
-        dragLeft = bar.offsetWidth - 21
-      }
-      audio.currentTime = (audio.duration * dragLeft) / (bar.offsetWidth - 20) || 0
-      // this.setState({ isDragging: true })
-      this.updateDisplayTime(dragLeft)
+  handleMouseDownProgressBar = (event) => {
+    event.stopPropagation()
+    const { currentTime, currentTimePos } = this.getCurrentProgress(event)
+    this.audio.currentTime = currentTime
+    this.setState({ isDraggingProgress: true, currentTime, currentTimePos })
+    window.addEventListener('mousemove', this.handleWindowMouseMove)
+    window.addEventListener('mouseup', this.handleWindowMouseUp)
+  }
+
+  getCurrentProgress = (e) => {
+    if (!this.audio.src) {
+      return
     }
+    
+    const progressBarRect = this.progressBar.getBoundingClientRect()
+    const maxRelativePos = progressBarRect.width
+    let relativePos = e.clientX - progressBarRect.left
+
+
+    if (relativePos < 0) {
+      relativePos = 0
+    } else if (relativePos > maxRelativePos) {
+      relativePos = maxRelativePos
+    }
+    const currentTime = (this.audio.duration * relativePos) / maxRelativePos
+    return { currentTime, currentTimePos: relativePos }
   }
 
   /**
@@ -358,9 +295,11 @@ class H5AudioPlayer extends Component {
     }
   }
 
+  static addHeadingZero = num => (num > 9 ? num.toString() : `0${num}`)
+
   render() {
     const { className, children, src, preload, autoPlay, title = src, mute, loop } = this.props
-    const { currentTime, currentVolume, currentVolumePos, duration, isPlaying, dragLeft } = this.state
+    const { currentTime, currentVolume, currentVolumePos, duration, isPlaying, currentTimePos } = this.state
     const incompatibilityMessage = children || (
       <p>
         Your browser does not support the <code>audio</code> element.
@@ -371,12 +310,15 @@ class H5AudioPlayer extends Component {
     let currentTimeSec = Math.floor(currentTime % 60)
     let durationMin = Math.floor(duration / 60)
     let durationSec = Math.floor(duration % 60)
-    const addHeadingZero = num => (num > 9 ? num.toString() : `0${num}`)
 
+    const addHeadingZero = this.constructor.addHeadingZero
     currentTimeMin = addHeadingZero(currentTimeMin)
     currentTimeSec = addHeadingZero(currentTimeSec)
     durationMin = addHeadingZero(durationMin)
     durationSec = addHeadingZero(durationSec)
+
+    const currentTimeDisplay = `${currentTimeMin}:${currentTimeSec}`
+    const totalTimeDisplay = `${durationMin}:${durationSec}`
 
     return (
       <div className={`rhap_container ${className}`}>
@@ -394,28 +336,26 @@ class H5AudioPlayer extends Component {
           }}
         />
         <div className="rhap_progress-section">
-          <div className="rhap_current-time">
-            {currentTimeMin}:{currentTimeSec}
+          <div className="rhap_time rhap_current-time">
+            {currentTimeDisplay}
           </div>
-          <div className="rhap_progress-container">
-            <div
-              className="rhap_progress-bar"
-              ref={(ref) => {
-                this.bar = ref
-              }}
-              onMouseDown={this.mouseDownProgressBar}
-            />
-            <div
-              className="rhap_progress-indicator"
-              draggable="true"
-              ref={(ref) => {
-                this.slider = ref
-              }}
-              style={{ left: dragLeft }}
-            />
+          <div
+            className="rhap_progress-container"
+            ref={(ref) => {
+              this.progressBar = ref
+            }}
+            draggable="false"
+            onMouseDown={this.handleMouseDownProgressBar}
+          >
+            <div className="rhap_progress-bar">
+              <div
+                className="rhap_progress-indicator"
+                style={{ left: currentTimePos }}
+              />
+            </div>
           </div>
-          <div className="rhap_total-time">
-            {durationMin}:{durationSec}
+          <div className="rhap_time rhap_total-time">
+            {totalTimeDisplay}
           </div>
         </div>
 

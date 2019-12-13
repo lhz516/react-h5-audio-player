@@ -21,17 +21,22 @@
 .rhap_progress-container {
   display: flex;
   align-items: center;
-  height: 100%;
-  justify-content: space-between;
-  box-sizing: border-box;
-  position: relative;
-  flex: 10 0 auto;
+  height: 18px;
+  flex: 1 0 auto;
   align-self: center;
-  margin: 0 2%;
+  margin: 0 3%;
+  cursor: pointer;
+}
+
+.rhap_time {
+  color: black;
+  font-size: 16px;
+  user-select: none;
 }
 
 .rhap_progress-bar {
   box-sizing: border-box;
+  position: relative;
   width: 100%;
   height: 5px;
   background: #e4e4e4;
@@ -42,13 +47,12 @@
   position: absolute;
   width: 20px;
   height: 20px;
-  left: 0;
-  top: -1px;
+  margin-left: -10px;
+  top: -8px;
   background: grey;
   opacity: 0.8;
   border-radius: 50px;
   box-shadow: #fff 0 0 5px;
-  cursor: pointer;
 }
 
 .rhap_controls-section {
@@ -102,7 +106,7 @@
   width: 26px;
   height: 26px;
   color: grey;
-  margin-right: 5px;
+  margin-right: 6px;
 }
 
 .rhap_volume-container {
@@ -132,6 +136,7 @@
   position: absolute;
   width: 12px;
   height: 12px;
+  margin-left: -6px;
   left: 0;
   top: -4px;
   background: grey;
