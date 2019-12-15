@@ -6,8 +6,9 @@ import Player from '../src'
 const SAMPLE_MP3_URL = 'https://ia802508.us.archive.org/5/items/testmp3testfile/mpthreetest.mp3'
 
 storiesOf('Player', module)
-  .add('Basic', () => <Player src={SAMPLE_MP3_URL} volume={0.8} />)
+  .add('Basic', () => <Player showSkipControls src={SAMPLE_MP3_URL} volume={0.8} />)
   .add('Auto Play', () => <Player autoPlay progressUpdateInterval={100} src={SAMPLE_MP3_URL} />)
+  .add('Hide Volume', () => <Player showVolumeControl={false} src={SAMPLE_MP3_URL} />)
   .add('Action Logger', () => (
     <div style={{ width: '90%' }}>
       <Player
@@ -19,9 +20,6 @@ storiesOf('Player', module)
         onListen={action('onListen')}
         onPause={action('onPause')}
         onPlay={action('onPlay')}
-        onDragStart={action('onDragStart')}
-        onDragMove={action('onDragMove')}
-        onDragEnd={action('onDragEnd')}
         volume={1}
         progressUpdateInterval={100}
         src={SAMPLE_MP3_URL}

@@ -34,6 +34,10 @@
     "react-dom": "^15.5.0 || ^16.0.0",
     "prop-types": "^15.5.0 || ^16.0.0"
   },
+  "dependencies": {
+    "@iconify/icons-mdi": "^1.0.37",
+    "@iconify/react": "^1.1.1"
+  },
   "devDependencies": {
     "@babel/cli": "^7.7.5",
     "@babel/core": "^7.7.5",
@@ -41,8 +45,6 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.7.4",
     "@babel/preset-env": "^7.7.6",
     "@babel/preset-react": "^7.7.4",
-    "@iconify/icons-mdi": "^1.0.35",
-    "@iconify/react": "^1.1.1",
     "@storybook/addon-actions": "^5.2.8",
     "@storybook/addon-info": "^5.2.8",
     "@storybook/addon-options": "^5.2.8",

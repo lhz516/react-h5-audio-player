@@ -17,10 +17,6 @@ class H5AudioPlayer extends Component {
      */
     autoPlay: PropTypes.bool,
     /**
-     * Display message when browser doesn't support
-     */
-    children: PropTypes.element,
-    /**
      * custom classNames
      */
     className: PropTypes.string,
@@ -42,6 +38,8 @@ class H5AudioPlayer extends Component {
     onListen: PropTypes.func,
     onPause: PropTypes.func,
     onPlay: PropTypes.func,
+    onClickPrevious: PropTypes.func,
+    onClickNext: PropTypes.func,
     /**
      * HTML5 Audio tag preload property
      */
@@ -56,6 +54,8 @@ class H5AudioPlayer extends Component {
     src: PropTypes.string,
     title: PropTypes.string,
     volume: PropTypes.number,
+    showVolumeControl: PropTypes.bool,
+    showSkipControls: PropTypes.bool,
   }
 
   static defaultProps = {
@@ -69,7 +69,13 @@ class H5AudioPlayer extends Component {
     src: '',
     volume: 1.0,
     className: '',
+    showVolumeControl: true,
+    showSkipControls: false,
+    onClickPrevious: null,
+    onClickNext: null,
   }
+
+  static addHeadingZero = num => (num > 9 ? num.toString() : `0${num}`)
 
   state = {
     duration: 0,
@@ -80,71 +86,6 @@ class H5AudioPlayer extends Component {
     isDraggingProgress: false,
     isDraggingVolume: false,
     isPlaying: false,
-  }
-
-  componentDidMount() {
-    // audio player object
-    const audio = this.audio
-
-    this.lastVolume = audio.volume
-
-    this.intervalId = setInterval(() => {
-      if (!this.audio.paused && !this.state.isDraggingProgress && !!this.audio.duration) {
-        this.updateDisplayTime(this.audio.currentTime)
-      }
-    }, this.props.progressUpdateInterval)
-    
-    audio.addEventListener('error', (e) => {
-      this.props.onError && this.props.onError(e)
-    })
-
-    // When enough of the file has downloaded to start playing
-    audio.addEventListener('canplay', (e) => {
-      this.props.onCanPlay && this.props.onCanPlay(e)
-    })
-
-    // When enough of the file has downloaded to play the entire file
-    audio.addEventListener('canplaythrough', (e) => {
-      this.props.onCanPlayThrough && this.props.onCanPlayThrough(e)
-    })
-
-    // When audio play starts
-    audio.addEventListener('play', (e) => {
-      this.setState({ isPlaying: true })
-      this.setListenTrack()
-      this.props.onPlay && this.props.onPlay(e)
-    })
-
-    // When unloading the audio player (switching to another src)
-    audio.addEventListener('abort', (e) => {
-      this.clearListenTrack()
-      this.props.onAbort && this.props.onAbort(e)
-    })
-
-    // When the file has finished playing to the end
-    audio.addEventListener('ended', (e) => {
-      this.clearListenTrack()
-      this.props.onEnded && this.props.onEnded(e)
-    })
-
-    // When the user pauses playback
-    audio.addEventListener('pause', (e) => {
-      this.clearListenTrack()
-      if (!this.audio) return
-      this.setState({ isPlaying: false })
-      this.props.onPause && this.props.onPause(e)
-    })
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.intervalId)
-  }
-
-  componentDidUpdate(prevProps) {
-    const { src, autoPlay } = this.props
-    if (src !== prevProps.src && autoPlay) {
-      this.audio.play()
-    }
   }
 
   updateDisplayTime = (currentTime) => {
@@ -295,16 +236,85 @@ class H5AudioPlayer extends Component {
     }
   }
 
-  static addHeadingZero = num => (num > 9 ? num.toString() : `0${num}`)
+  componentDidMount() {
+    // audio player object
+    const audio = this.audio
+
+    this.lastVolume = audio.volume
+
+    this.intervalId = setInterval(() => {
+      if (!this.audio.paused && !this.state.isDraggingProgress && !!this.audio.duration) {
+        this.updateDisplayTime(this.audio.currentTime)
+      }
+    }, this.props.progressUpdateInterval)
+    
+    audio.addEventListener('error', (e) => {
+      this.props.onError && this.props.onError(e)
+    })
+
+    // When enough of the file has downloaded to start playing
+    audio.addEventListener('canplay', (e) => {
+      this.props.onCanPlay && this.props.onCanPlay(e)
+    })
+
+    // When enough of the file has downloaded to play the entire file
+    audio.addEventListener('canplaythrough', (e) => {
+      this.props.onCanPlayThrough && this.props.onCanPlayThrough(e)
+    })
+
+    // When audio play starts
+    audio.addEventListener('play', (e) => {
+      this.setState({ isPlaying: true })
+      this.setListenTrack()
+      this.props.onPlay && this.props.onPlay(e)
+    })
+
+    // When unloading the audio player (switching to another src)
+    audio.addEventListener('abort', (e) => {
+      this.clearListenTrack()
+      this.props.onAbort && this.props.onAbort(e)
+    })
+
+    // When the file has finished playing to the end
+    audio.addEventListener('ended', (e) => {
+      this.clearListenTrack()
+      this.props.onEnded && this.props.onEnded(e)
+    })
+
+    // When the user pauses playback
+    audio.addEventListener('pause', (e) => {
+      this.clearListenTrack()
+      if (!this.audio) return
+      this.setState({ isPlaying: false })
+      this.props.onPause && this.props.onPause(e)
+    })
+  }
+
+  componentDidUpdate(prevProps) {
+    const { src, autoPlay } = this.props
+    if (src !== prevProps.src && autoPlay) {
+      this.audio.play()
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalId)
+  }
 
   render() {
-    const { className, children, src, preload, autoPlay, title = src, mute, loop } = this.props
-    const { currentTime, currentVolume, currentVolumePos, duration, isPlaying, currentTimePos } = this.state
-    const incompatibilityMessage = children || (
-      <p>
-        Your browser does not support the <code>audio</code> element.
-      </p>
-    )
+    const {
+      className,
+      src,
+      preload,
+      autoPlay,
+      title = src,
+      mute, loop,
+      showVolumeControl,
+      showSkipControls,
+      onClickPrevious,
+      onClickNext,
+    } = this.props
+    const { currentTime, currentVolume, currentVolumePos, duration, isPlaying, currentTimePos } = this.state 
 
     let currentTimeMin = Math.floor(currentTime / 60)
     let currentTimeSec = Math.floor(currentTime % 60)
@@ -364,9 +374,11 @@ class H5AudioPlayer extends Component {
             <div className="rhap_repeat"></div>
           </div>
           <div className="rhap_main-controls">
-            <button className="rhap_button-clear rhap_main-controls-button rhap_skip-button" onClick={this.togglePlay}>
-              <Icon icon={skipPreviousCircle} />
-            </button>
+            {showSkipControls && (
+              <button className="rhap_button-clear rhap_main-controls-button rhap_skip-button" onClick={onClickPrevious}>
+                <Icon icon={skipPreviousCircle} />
+              </button>
+            )}
             <button className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button" onClick={this.togglePlay}>
               {isPlaying ? (
                 <Icon icon={pauseCircle} />
@@ -374,28 +386,32 @@ class H5AudioPlayer extends Component {
                 <Icon icon={playCircle} />
               )}
             </button>
-            <button className="rhap_button-clear rhap_main-controls-button rhap_skip-button" onClick={this.togglePlay}>
-              <Icon icon={skipNextCircle} />
-            </button>
+            {showSkipControls && (
+              <button className="rhap_button-clear rhap_main-controls-button rhap_skip-button" onClick={onClickNext}>
+                <Icon icon={skipNextCircle} />
+              </button>
+            )}
           </div>
           <div className="rhap_volume-controls">
-            <div className="rhap_volume-container">
-              <button onClick={this.handleClickVolumeButton} className="rhap_button-clear rhap_volume-button">
-                <Icon icon={currentVolume ? volumeHigh : volumeMute} />
-              </button>
-              <div
-                ref={(ref) => { this.volumeControl = ref }}
-                onMouseDown={this.handleVolumnControlMouseDown}
-                className="rhap_volume-bar-area"
-              >
-                <div className="rhap_volume-bar">
-                  <div
-                    className="rhap_volume-indicator"
-                    style={{ left: currentVolumePos }}
-                  />
+            {showVolumeControl && (
+              <div className="rhap_volume-container">
+                <button onClick={this.handleClickVolumeButton} className="rhap_button-clear rhap_volume-button">
+                  <Icon icon={currentVolume ? volumeHigh : volumeMute} />
+                </button>
+                <div
+                  ref={(ref) => { this.volumeControl = ref }}
+                  onMouseDown={this.handleVolumnControlMouseDown}
+                  className="rhap_volume-bar-area"
+                >
+                  <div className="rhap_volume-bar">
+                    <div
+                      className="rhap_volume-indicator"
+                      style={{ left: currentVolumePos }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>  
       </div>
