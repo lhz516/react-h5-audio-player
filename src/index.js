@@ -7,8 +7,8 @@ import skipPreviousCircle from '@iconify/icons-mdi/skip-previous-circle'
 import skipNextCircle from '@iconify/icons-mdi/skip-next-circle'
 import volumeHigh from '@iconify/icons-mdi/volume-high'
 import volumeMute from '@iconify/icons-mdi/volume-mute'
-
-import './styles.scss'
+import repeat from '@iconify/icons-mdi/repeat'
+import repeatOff from '@iconify/icons-mdi/repeat-off'
 
 class H5AudioPlayer extends Component {
   static propTypes = {
@@ -54,6 +54,7 @@ class H5AudioPlayer extends Component {
     src: PropTypes.string,
     title: PropTypes.string,
     volume: PropTypes.number,
+    showLoopControl: PropTypes.bool,
     showVolumeControl: PropTypes.bool,
     showSkipControls: PropTypes.bool,
   }
@@ -69,6 +70,7 @@ class H5AudioPlayer extends Component {
     src: '',
     volume: 1.0,
     className: '',
+    showLoopControl: true,
     showVolumeControl: true,
     showSkipControls: false,
     onClickPrevious: null,
@@ -86,6 +88,7 @@ class H5AudioPlayer extends Component {
     isDraggingProgress: false,
     isDraggingVolume: false,
     isPlaying: false,
+    isLoopEnabled: this.props.loop,
   }
 
   updateDisplayTime = (currentTime) => {
@@ -193,6 +196,10 @@ class H5AudioPlayer extends Component {
     this.setState({ isDraggingProgress: true, currentTime, currentTimePos })
     window.addEventListener('mousemove', this.handleWindowMouseMove)
     window.addEventListener('mouseup', this.handleWindowMouseUp)
+  }
+
+  handleClickLoopButton = () => {
+    this.setState(prevState => ({ isLoopEnabled: !prevState.isLoopEnabled }))
   }
 
   getCurrentProgress = (e) => {
@@ -308,13 +315,22 @@ class H5AudioPlayer extends Component {
       preload,
       autoPlay,
       title = src,
-      mute, loop,
+      mute,
+      showLoopControl,
       showVolumeControl,
       showSkipControls,
       onClickPrevious,
       onClickNext,
     } = this.props
-    const { currentTime, currentVolume, currentVolumePos, duration, isPlaying, currentTimePos } = this.state 
+    const {
+      currentTime,
+      currentTimePos,
+      currentVolume,
+      currentVolumePos,
+      duration,
+      isPlaying,
+      isLoopEnabled,
+    } = this.state 
 
     let currentTimeMin = Math.floor(currentTime / 60)
     let currentTimeSec = Math.floor(currentTime % 60)
@@ -337,7 +353,7 @@ class H5AudioPlayer extends Component {
           controls={false}
           title={title}
           mute={mute}
-          loop={loop}
+          loop={isLoopEnabled}
           volume={currentVolume}
           autoPlay={autoPlay}
           preload={preload}
@@ -371,7 +387,11 @@ class H5AudioPlayer extends Component {
 
         <div className="rhap_controls-section">
           <div className="rhap_additional-controls">
-            <div className="rhap_repeat"></div>
+            {showLoopControl && (
+              <button className="rhap_button-clear rhap_main-controls-button rhap_repeat-button" onClick={this.handleClickLoopButton}>
+                <Icon icon={isLoopEnabled ? repeat : repeatOff} />
+              </button>
+            )}
           </div>
           <div className="rhap_main-controls">
             {showSkipControls && (

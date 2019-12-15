@@ -3,10 +3,12 @@ import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import Player from '../src'
 
+import '../src/styles.scss'
+
 const SAMPLE_MP3_URL = 'https://ia802508.us.archive.org/5/items/testmp3testfile/mpthreetest.mp3'
 
 storiesOf('Player', module)
-  .add('Basic', () => <Player showSkipControls src={SAMPLE_MP3_URL} volume={0.8} />)
+  .add('Basic', () => <Player />)
   .add('Auto Play', () => <Player autoPlay progressUpdateInterval={100} src={SAMPLE_MP3_URL} />)
   .add('Hide Volume', () => <Player showVolumeControl={false} src={SAMPLE_MP3_URL} />)
   .add('Action Logger', () => (
