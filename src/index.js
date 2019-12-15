@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import { Icon } from '@iconify/react'
 import playCircle from '@iconify/icons-mdi/play-circle'
 import pauseCircle from '@iconify/icons-mdi/pause-circle'
-import skipPreviousCircle from '@iconify/icons-mdi/skip-previous-circle'
-import skipNextCircle from '@iconify/icons-mdi/skip-next-circle'
+import skipPrevious from '@iconify/icons-mdi/skip-previous'
+import skipNext from '@iconify/icons-mdi/skip-next'
 import volumeHigh from '@iconify/icons-mdi/volume-high'
 import volumeMute from '@iconify/icons-mdi/volume-mute'
 import repeat from '@iconify/icons-mdi/repeat'
@@ -40,6 +40,7 @@ class H5AudioPlayer extends Component {
     onPlay: PropTypes.func,
     onClickPrevious: PropTypes.func,
     onClickNext: PropTypes.func,
+    onPlayError: PropTypes.func,
     /**
      * HTML5 Audio tag preload property
      */
@@ -75,6 +76,7 @@ class H5AudioPlayer extends Component {
     showSkipControls: false,
     onClickPrevious: null,
     onClickNext: null,
+    onPlayError: null,
   }
 
   static addHeadingZero = num => (num > 9 ? num.toString() : `0${num}`)
@@ -83,13 +85,15 @@ class H5AudioPlayer extends Component {
     duration: 0,
     currentTime: 0,
     currentTimePos: 0,
-    currentVolume: this.props.volume,
-    currentVolumePos: `${this.props.volume * 100}%`,
+    currentVolume: this.props.muted ? 0 : this.props.volume,
+    currentVolumePos: this.props.muted ? '0%' : `${this.props.volume * 100}%`,
     isDraggingProgress: false,
     isDraggingVolume: false,
     isPlaying: false,
     isLoopEnabled: this.props.loop,
   }
+
+  timeOnMouseMove = 0
 
   updateDisplayTime = (currentTime) => {
     const duration = this.audio.duration
@@ -111,7 +115,12 @@ class H5AudioPlayer extends Component {
 
   togglePlay = () => {
     if (this.audio.paused && this.audio.src) {
-      this.audio.play()
+      const audioPromise = this.audio.play()
+      audioPromise.then(null)
+        .catch((err) => {
+          const { onPlayError } = this.props
+          onPlayError && onPlayError(new Error(err))
+        })
     } else if (!this.audio.paused) {
       this.audio.pause()
     }
@@ -152,7 +161,7 @@ class H5AudioPlayer extends Component {
       this.setState({ currentVolume, currentVolumePos })
     } else if (isDraggingProgress) {
       const { currentTime, currentTimePos } = this.getCurrentProgress(event)
-      this.audio.currentTime = currentTime
+      this.timeOnMouseMove = currentTime
       this.setState({ currentTime, currentTimePos })
     }
   }
@@ -160,9 +169,10 @@ class H5AudioPlayer extends Component {
   handleWindowMouseUp = (event) => {
     event.stopPropagation()
     this.setState((prevState) => {
-      if (prevState.isDraggingVolume || prevState.isDraggingProgress) {
-        return { isDraggingVolume: false, isDraggingProgress: false }
+      if (prevState.isDraggingProgress) {
+        this.audio.currentTime = this.timeOnMouseMove
       }
+      return { isDraggingVolume: false, isDraggingProgress: false }
     })
     window.removeEventListener('mousemove', this.handleWindowMouseMove)
     window.removeEventListener('mouseup', this.handleWindowMouseUp)
@@ -192,7 +202,7 @@ class H5AudioPlayer extends Component {
   handleMouseDownProgressBar = (event) => {
     event.stopPropagation()
     const { currentTime, currentTimePos } = this.getCurrentProgress(event)
-    this.audio.currentTime = currentTime
+    this.timeOnMouseMove = currentTime
     this.setState({ isDraggingProgress: true, currentTime, currentTimePos })
     window.addEventListener('mousemove', this.handleWindowMouseMove)
     window.addEventListener('mouseup', this.handleWindowMouseUp)
@@ -204,9 +214,9 @@ class H5AudioPlayer extends Component {
 
   getCurrentProgress = (e) => {
     if (!this.audio.src) {
-      return
+      return { currentTime: 0, currentTimePos: '0%' }
     }
-    
+
     const progressBarRect = this.progressBar.getBoundingClientRect()
     const maxRelativePos = progressBarRect.width
     let relativePos = e.clientX - progressBarRect.left
@@ -219,6 +229,17 @@ class H5AudioPlayer extends Component {
     }
     const currentTime = (this.audio.duration * relativePos) / maxRelativePos
     return { currentTime, currentTimePos: relativePos }
+  }
+
+  getDisplayTimeBySeconds = (seconds) => {
+    if (!isFinite(seconds)) {
+      return '00:00'
+    }
+
+    const addHeadingZero = this.constructor.addHeadingZero
+    const min = addHeadingZero(Math.floor(seconds / 60))
+    const sec = addHeadingZero(Math.floor(seconds % 60))
+    return `${min}:${sec}`
   }
 
   /**
@@ -254,7 +275,7 @@ class H5AudioPlayer extends Component {
         this.updateDisplayTime(this.audio.currentTime)
       }
     }, this.props.progressUpdateInterval)
-    
+
     audio.addEventListener('error', (e) => {
       this.props.onError && this.props.onError(e)
     })
@@ -315,7 +336,7 @@ class H5AudioPlayer extends Component {
       preload,
       autoPlay,
       title = src,
-      mute,
+      muted,
       showLoopControl,
       showVolumeControl,
       showSkipControls,
@@ -330,21 +351,7 @@ class H5AudioPlayer extends Component {
       duration,
       isPlaying,
       isLoopEnabled,
-    } = this.state 
-
-    let currentTimeMin = Math.floor(currentTime / 60)
-    let currentTimeSec = Math.floor(currentTime % 60)
-    let durationMin = Math.floor(duration / 60)
-    let durationSec = Math.floor(duration % 60)
-
-    const addHeadingZero = this.constructor.addHeadingZero
-    currentTimeMin = addHeadingZero(currentTimeMin)
-    currentTimeSec = addHeadingZero(currentTimeSec)
-    durationMin = addHeadingZero(durationMin)
-    durationSec = addHeadingZero(durationSec)
-
-    const currentTimeDisplay = `${currentTimeMin}:${currentTimeSec}`
-    const totalTimeDisplay = `${durationMin}:${durationSec}`
+    } = this.state
 
     return (
       <div className={`rhap_container ${className}`}>
@@ -352,7 +359,7 @@ class H5AudioPlayer extends Component {
           src={src}
           controls={false}
           title={title}
-          mute={mute}
+          muted={muted}
           loop={isLoopEnabled}
           volume={currentVolume}
           autoPlay={autoPlay}
@@ -363,7 +370,7 @@ class H5AudioPlayer extends Component {
         />
         <div className="rhap_progress-section">
           <div className="rhap_time rhap_current-time">
-            {currentTimeDisplay}
+            {this.getDisplayTimeBySeconds(currentTime)}
           </div>
           <div
             className="rhap_progress-container"
@@ -381,7 +388,7 @@ class H5AudioPlayer extends Component {
             </div>
           </div>
           <div className="rhap_time rhap_total-time">
-            {totalTimeDisplay}
+            {this.getDisplayTimeBySeconds(duration)}
           </div>
         </div>
 
@@ -396,7 +403,7 @@ class H5AudioPlayer extends Component {
           <div className="rhap_main-controls">
             {showSkipControls && (
               <button className="rhap_button-clear rhap_main-controls-button rhap_skip-button" onClick={onClickPrevious}>
-                <Icon icon={skipPreviousCircle} />
+                <Icon icon={skipPrevious} />
               </button>
             )}
             <button className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button" onClick={this.togglePlay}>
@@ -408,7 +415,7 @@ class H5AudioPlayer extends Component {
             </button>
             {showSkipControls && (
               <button className="rhap_button-clear rhap_main-controls-button rhap_skip-button" onClick={onClickNext}>
-                <Icon icon={skipNextCircle} />
+                <Icon icon={skipNext} />
               </button>
             )}
           </div>
@@ -433,7 +440,7 @@ class H5AudioPlayer extends Component {
               </div>
             )}
           </div>
-        </div>  
+        </div>
       </div>
     )
   }

@@ -52,6 +52,7 @@ module.exports = {
     'no-useless-constructor': 1,
     'no-constant-condition': [2, { checkLoops: false }],
     'no-duplicate-imports': [2, { includeExports: true }],
+    'no-trailing-spaces': 2,
     'no-useless-computed-key': 2,
     'no-useless-rename': 2,
     'no-var': 2,
