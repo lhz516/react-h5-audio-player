@@ -2,15 +2,11 @@
 
 * Audio player component that provides consistent UI on different browsers.
 
-* Flexbox design with CSS shapes. Mobile friendly. No extra dependencies.
+* Flexbox design with SVG icons. Mobile friendly.
 
 ![screenshot](./screenshot.png)
 
 Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE (≥10)
-
-### Breaking change from 0.x to 1.x
-
-In 1.x, we use `prop-types` package instead of using it directly in React. Thus we dropped support under `react@15.5.0`. The usage will remain the same.
 
 ## Installation
 
@@ -19,7 +15,8 @@ In 1.x, we use `prop-types` package instead of using it directly in React. Thus 
 ## Usage
 
 ```jsx
-import AudioPlayer from "react-h5-audio-player";
+import AudioPlayer from 'react-h5-audio-player';
+import 'react-h5-audio-player/lib/styles.css';
 
 const Player = () => (
   <AudioPlayer
@@ -49,9 +46,29 @@ More native attributes detail: [MDN Audio element](https://developer.mozilla.org
 
 ### Other Props
 
-#### hidePlayer {Bool} [false]
+#### showVolumeControl {Boolean} [true]
 
-Indicates if the audio player is hidden.
+Show volume bar and mute button
+
+#### showLoopControl {Boolean} [true]
+
+Show loop toggle button
+
+#### showSkipControls {Boolean} [false]
+
+Show previous/Next buttons
+
+#### onClickPrevious {Function (event)}
+
+Called when click Previous button
+
+#### onClickNext {Function (event)}
+
+Called when click Next button
+
+#### onPlayError {Function (error)}
+
+Called when there's error clicking play button
 
 #### progressUpdateInterval {Number} [500]
 
@@ -89,62 +106,11 @@ Called when the user pauses playback. Passed the event.
 
 Called when the user taps play.
 
-#### onDragStart {Function (event)}
-
-Called when the user start dragging the time indicator. Passed the event.
-
-#### onDragMove {Function (event)}
-
-Called when the user is dragging the time indicator. Passed the event.
-
-#### onDragEnd {Function (event)}
-
-Called when the user finish dragging the time indicator. Passed the event.
-
 ## UI Overwrites
 
 React H5 Audio Player provides built-in class names for developers to overwrite.
 
-For example:
-
-```sass
-// In a SASS or LESS file
-.react-h5-audio-player {
-  .toggle-play-wrapper {
-    .toggle-play-button {
-      // Remember to use !important to overwrite inline styles.
-      background-color: red !important;
-    }
-  }
-}
-```
-
-You can find more class names by inspecting element on you browser.
-
-To be compatible with some **old browsers**, you can add prefixers to flex container
-
-```sass
-.react-h5-audio-player {
-  .flex {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    .toggle-play-wrapper {
-      flex: 1 0 60px;
-      -webkit-box-flex: 1 0 60px;
-      -moz-box-flex: 1 0 60px;
-      -ms-flex: 1 0 60px;
-    }
-    .progress-bar-wrapper {
-      flex: 10 0 auto;
-      -webkit-box-flex: 10 0 auto;
-      -moz-box-flex: 10 0 auto;
-      -ms-flex: 10 0 auto;
-    }
-  }
-}
-```
+SASS variables - WIP
 
 ## Advanced Usage
 
@@ -159,6 +125,19 @@ You can get direct access to the underlying audio element. First get a ref to Re
 Then you can access the audio element like this:
 
 `this.player.audio`
+
+## Migrations
+
+### Breaking changes from 1.x to 2.x
+
+- Removed inline styles, import `css` or `scss` manually
+- Removed props `hidePlayer` - Use parent logic to hide player
+- Removed props `onDragStart`, `onDragMove`, `onDragEnd` - V2 isn't using drag events anymore
+
+### Breaking changes from 0.x to 1.x
+
+In 1.x, we use `prop-types` package instead of using it directly in React. Thus we dropped support under `react@15.5.0`. The usage will remain the same.
+
 
 ## How to contribute
 
