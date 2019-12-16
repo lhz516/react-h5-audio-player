@@ -8,7 +8,7 @@ import '../src/styles.scss'
 const SAMPLE_MP3_URL = 'https://ia802508.us.archive.org/5/items/testmp3testfile/mpthreetest.mp3'
 
 storiesOf('Player', module)
-  .add('Basic', () => <Player />)
+  .add('Default', () => <Player src={SAMPLE_MP3_URL} />)
   .add('Auto Play', () => <Player autoPlay src={SAMPLE_MP3_URL} />)
   .add('Show Skip Controls', () => <Player showSkipControls src={SAMPLE_MP3_URL} />)
   .add('Hide Volume', () => <Player showVolumeControl={false} src={SAMPLE_MP3_URL} />)
@@ -44,3 +44,4 @@ storiesOf('Player', module)
       />
     </div>
   ))
+  .add('No src', () => <Player />)

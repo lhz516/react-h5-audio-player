@@ -10,7 +10,7 @@ Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE (≥10)
 
 ## Installation
 
-`npm i --save react-h5-audio-player`
+`npm i --save react-h5-audio-player@next`
 
 ## Usage
 
@@ -58,6 +58,10 @@ Show loop toggle button
 
 Show previous/Next buttons
 
+#### showJumpControls {Boolean} [true]
+
+Show Rewind/Forward buttons
+
 #### onClickPrevious {Function (event)}
 
 Called when click Previous button
@@ -69,6 +73,10 @@ Called when click Next button
 #### onPlayError {Function (error)}
 
 Called when there's error clicking play button
+
+#### jumpInterval {Number} [5000]
+
+Indicates the interval jumped when clicking rewind/forward button
 
 #### progressUpdateInterval {Number} [500]
 

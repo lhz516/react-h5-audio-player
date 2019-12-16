@@ -78,15 +78,18 @@
 }
 
 .rhap_main-controls {
-  flex: 0 0 130px;
+  flex: 0 1;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
-  
 }
 
 .rhap_main-controls-button {
+  margin: 0 3px;
   color: grey;
+  font-size: 35px;
+  width: 35px;
+  height: 35px;
 
   :hover {
     color: lightgray;
@@ -98,12 +101,6 @@
   width: 40px;
   height: 40px;
   
-}
-
-.rhap_skip-button {
-  font-size: 35px;
-  width: 35px;
-  height: 35px;
 }
 
 .rhap_volume-controls {
