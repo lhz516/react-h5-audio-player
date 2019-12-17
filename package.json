@@ -6,7 +6,7 @@
   "scripts": {
     "build": "run-p build:js build:css build:less",
     "build:js": "babel src --out-dir lib",
-    "build:css": "sass src/styles.scss lib/styles.css",
+    "build:css": "sass --no-source-map src/styles.scss lib/styles.css",
     "build:less": "sass2less src/styles.scss lib/styles.less",
     "test": "echo \"Error: no test specified\" && exit 1",
     "storybook": "start-storybook -p 9000"

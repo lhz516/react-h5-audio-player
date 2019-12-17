@@ -116,9 +116,14 @@ Called when the user taps play.
 
 ## UI Overwrites
 
-React H5 Audio Player provides built-in class names for developers to overwrite.
+React H5 Audio Player provides built-in class names and SASS variables for developers to overwrite.
 
-SASS variables - WIP
+### SASS variables
+
+- $rhap_theme-color: #868686 !default;
+- $rhap_background-color: #fff !default;
+- $rhap_bar-color: #e4e4e4 !default;
+- $rhap_time-color: #000 !default;
 
 ## Advanced Usage
 

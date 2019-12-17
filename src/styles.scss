@@ -1,3 +1,8 @@
+$rhap_theme-color: #868686 !default;
+$rhap_background-color: #fff !default;
+$rhap_bar-color: #e4e4e4 !default;
+$rhap_time-color: #000 !default;
+
 .rhap_container {
   box-sizing: border-box;
   display: flex;
@@ -6,7 +11,7 @@
   width: 100%;
   min-width: 300px;
   padding: 10px 15px;
-  background-color: white;
+  background-color: $rhap_background-color;
   position: relative;
   z-index: 100;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
@@ -30,7 +35,7 @@
 }
 
 .rhap_time {
-  color: black;
+  color: $rhap_time-color;
   font-size: 16px;
   user-select: none;
   -webkit-user-select: none; 
@@ -41,7 +46,7 @@
   position: relative;
   width: 100%;
   height: 5px;
-  background: #e4e4e4;
+  background: $rhap_bar-color;
   border-radius: 2px;
 }
 
@@ -52,10 +57,10 @@
   height: 20px;
   margin-left: -10px;
   top: -8px;
-  background: grey;
-  opacity: 0.8;
+  background: $rhap_theme-color;
+  opacity: 0.9;
   border-radius: 50px;
-  box-shadow: #fff 0 0 5px;
+  box-shadow: rgba($rhap_theme-color, .5) 0 0 5px;
 }
 
 .rhap_controls-section {
@@ -75,7 +80,7 @@
   font-size: 26px;
   width: 26px;
   height: 26px;
-  color: grey;
+  color: $rhap_theme-color;
   margin-right: 6px;
 }
 
@@ -88,14 +93,10 @@
 
 .rhap_main-controls-button {
   margin: 0 3px;
-  color: grey;
+  color: $rhap_theme-color;
   font-size: 35px;
   width: 35px;
   height: 35px;
-
-  :hover {
-    color: lightgray;
-  }
 }
 
 .rhap_play-pause-button {
@@ -115,7 +116,7 @@
   font-size: 26px;
   width: 26px;
   height: 26px;
-  color: grey;
+  color: $rhap_theme-color;
   margin-right: 6px;
 }
 
@@ -139,7 +140,7 @@
   position: relative;
   width: 100%;
   height: 4px;
-  background: #e4e4e4;
+  background: $rhap_bar-color;
   border-radius: 2px;
 }
 
@@ -151,11 +152,15 @@
   margin-left: -6px;
   left: 0;
   top: -4px;
-  background: grey;
-  opacity: 0.8;
+  background: $rhap_theme-color;
+  opacity: 0.9;
   border-radius: 50px;
-  box-shadow: #fff 0 0 5px;
+  box-shadow: rgba($rhap_theme-color, .5) 0 0 3px;
   cursor: pointer;
+  :hover {
+    opacity: .9;
+    transition-duration: .2s;
+  }
 }
 
 /* Utils */
@@ -165,4 +170,11 @@
   outline: 0;
   padding: 0;
   cursor: pointer;
+  :hover {
+    opacity: .9;
+    transition-duration: .2s;
+  }
+  :active {
+    opacity: .95;
+  }
 }
