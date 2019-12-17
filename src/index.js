@@ -82,6 +82,16 @@ class H5AudioPlayer extends Component {
 
   static addHeadingZero = num => (num > 9 ? num.toString() : `0${num}`)
 
+  static getPosX = (event, isTouch) => {
+    let posX
+    if (isTouch) {
+      posX = event.touches[0].pageX
+    } else {
+      posX = event.pageX || event.clientX
+    }
+    return posX
+  }
+
   state = {
     duration: 0,
     currentTime: 0,
@@ -141,33 +151,40 @@ class H5AudioPlayer extends Component {
 
   handleVolumnControlMouseDown = (event) => {
     event.stopPropagation()
-    const { currentVolume, currentVolumePos } = this.getCurrentVolume(event)
+    const isTouch = event.type.startsWith('touch')
+    const { currentVolume, currentVolumePos } = this.getCurrentVolume(event, isTouch)
     this.audio.volume = currentVolume
     this.setState({ isDraggingVolume: true, currentVolume, currentVolumePos })
-    window.addEventListener('mousemove', this.handleWindowMouseMove)
-    window.addEventListener('mouseup', this.handleWindowMouseUp)
+    if (isTouch) {
+      window.addEventListener('touchmove', this.handleWindowMouseOrTouchMove)
+      window.addEventListener('touchend', this.handleWindowMouseOrTouchUp)
+    } else {
+      window.addEventListener('mousemove', this.handleWindowMouseOrTouchMove)
+      window.addEventListener('mouseup', this.handleWindowMouseOrTouchUp)
+    }
   }
 
-  handleWindowMouseMove = (event) => {
+  handleWindowMouseOrTouchMove = (event) => {
     event.stopPropagation()
     // Prevent Chrome drag selection bug
     const windowSelection = window.getSelection()
     if (windowSelection.type === 'Range') {
       windowSelection.empty()
     }
+    const isTouch = event.type.startsWith('touch')
     const { isDraggingVolume, isDraggingProgress } = this.state
     if (isDraggingVolume) {
-      const { currentVolume, currentVolumePos } = this.getCurrentVolume(event)
+      const { currentVolume, currentVolumePos } = this.getCurrentVolume(event, isTouch)
       this.audio.volume = currentVolume
       this.setState({ currentVolume, currentVolumePos })
     } else if (isDraggingProgress) {
-      const { currentTime, currentTimePos } = this.getCurrentProgress(event)
+      const { currentTime, currentTimePos } = this.getCurrentProgress(event, isTouch)
       this.timeOnMouseMove = currentTime
       this.setState({ currentTime, currentTimePos })
     }
   }
 
-  handleWindowMouseUp = (event) => {
+  handleWindowMouseOrTouchUp = (event) => {
     event.stopPropagation()
     this.setState((prevState) => {
       if (prevState.isDraggingProgress && isFinite(this.timeOnMouseMove)) {
@@ -175,13 +192,19 @@ class H5AudioPlayer extends Component {
       }
       return { isDraggingVolume: false, isDraggingProgress: false }
     })
-    window.removeEventListener('mousemove', this.handleWindowMouseMove)
-    window.removeEventListener('mouseup', this.handleWindowMouseUp)
+    const isTouch = event.type.startsWith('touch')
+    if (isTouch) {
+      window.removeEventListener('touchmove', this.handleWindowMouseOrTouchMove)
+      window.removeEventListener('touchend', this.handleWindowMouseOrTouchUp)
+    } else {
+      window.removeEventListener('mousemove', this.handleWindowMouseOrTouchMove)
+      window.removeEventListener('mouseup', this.handleWindowMouseOrTouchUp)
+    }
   }
 
-  getCurrentVolume = (e) => {
+  getCurrentVolume = (event, isTouch) => {
     const volumeBarRect = this.volumeControl.getBoundingClientRect()
-    const relativePos = e.clientX - volumeBarRect.left
+    const relativePos = this.constructor.getPosX(event, isTouch) - volumeBarRect.left
     let currentVolume
     let currentVolumePos
 
@@ -202,12 +225,19 @@ class H5AudioPlayer extends Component {
   /* Handle mouse click on progress bar event */
   handleMouseDownProgressBar = (event) => {
     event.stopPropagation()
-    const { currentTime, currentTimePos } = this.getCurrentProgress(event)
+    const isTouch = event.type.startsWith('touch')
+    const { currentTime, currentTimePos } = this.getCurrentProgress(event, isTouch)
+
     if (isFinite(currentTime)) {
       this.timeOnMouseMove = currentTime
       this.setState({ isDraggingProgress: true, currentTime, currentTimePos })
-      window.addEventListener('mousemove', this.handleWindowMouseMove)
-      window.addEventListener('mouseup', this.handleWindowMouseUp)
+      if (isTouch) {
+        window.addEventListener('touchmove', this.handleWindowMouseOrTouchMove)
+        window.addEventListener('touchend', this.handleWindowMouseOrTouchUp)
+      } else {
+        window.addEventListener('mousemove', this.handleWindowMouseOrTouchMove)
+        window.addEventListener('mouseup', this.handleWindowMouseOrTouchUp)
+      }
     }
   }
 
@@ -241,15 +271,14 @@ class H5AudioPlayer extends Component {
     })
   }
 
-  getCurrentProgress = (e) => {
+  getCurrentProgress = (event, isTouch) => {
     if (!this.audio.src || !isFinite(this.audio.currentTime)) {
       return { currentTime: 0, currentTimePos: '0%' }
     }
 
     const progressBarRect = this.progressBar.getBoundingClientRect()
     const maxRelativePos = progressBarRect.width
-    let relativePos = e.clientX - progressBarRect.left
-
+    let relativePos = this.constructor.getPosX(event, isTouch) - progressBarRect.left
 
     if (relativePos < 0) {
       relativePos = 0
@@ -408,6 +437,7 @@ class H5AudioPlayer extends Component {
               this.progressBar = ref
             }}
             onMouseDown={this.handleMouseDownProgressBar}
+            onTouchStart={this.handleMouseDownProgressBar}
           >
             <div className="rhap_progress-bar">
               <div
@@ -467,6 +497,7 @@ class H5AudioPlayer extends Component {
                 <div
                   ref={(ref) => { this.volumeControl = ref }}
                   onMouseDown={this.handleVolumnControlMouseDown}
+                  onTouchStart={this.handleVolumnControlMouseDown}
                   className="rhap_volume-bar-area"
                 >
                   <div className="rhap_volume-bar">

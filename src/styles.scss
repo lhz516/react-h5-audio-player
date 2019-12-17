@@ -14,7 +14,7 @@
 
 .rhap_progress-section {
   display: flex;
-  flex: 0 0;
+  flex: 0 0 auto;
   align-items: center;
 }
 
@@ -26,12 +26,14 @@
   align-self: center;
   margin: 0 3%;
   cursor: pointer;
+  -webkit-user-select: none; 
 }
 
 .rhap_time {
   color: black;
   font-size: 16px;
   user-select: none;
+  -webkit-user-select: none; 
 }
 
 .rhap_progress-bar {
@@ -121,6 +123,7 @@
   display: flex;
   align-items: center;
   flex: 0 1 100px;
+  -webkit-user-select: none; 
 }
 
 .rhap_volume-bar-area {
