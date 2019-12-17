@@ -67,7 +67,7 @@ class H5AudioPlayer extends Component {
     loop: false,
     muted: false,
     preload: 'auto',
-    progressUpdateInterval: 200,
+    progressUpdateInterval: 20,
     src: '',
     volume: 1.0,
     className: '',
@@ -93,9 +93,9 @@ class H5AudioPlayer extends Component {
   }
 
   state = {
-    duration: 0,
-    currentTime: 0,
-    currentTimePos: 0,
+    duration: NaN,
+    currentTime: NaN,
+    currentTimePos: '0%',
     currentVolume: this.props.muted ? 0 : this.props.volume,
     currentVolumePos: this.props.muted ? '0%' : `${this.props.volume * 100}%`,
     isDraggingProgress: false,
@@ -340,6 +340,9 @@ class H5AudioPlayer extends Component {
 
     // When enough of the file has downloaded to start playing
     audio.addEventListener('canplay', (e) => {
+      if (isFinite(this.audio.duration)) {
+        this.setState({ duration: this.audio.duration })
+      }
       this.props.onCanPlay && this.props.onCanPlay(e)
     })
 

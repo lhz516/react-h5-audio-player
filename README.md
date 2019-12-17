@@ -78,7 +78,7 @@ Called when there's error clicking play button
 
 Indicates the interval jumped when clicking rewind/forward button
 
-#### progressUpdateInterval {Number} [500]
+#### progressUpdateInterval {Number} [20]
 
 Indicates the interval that the progress bar UI updates.
 
