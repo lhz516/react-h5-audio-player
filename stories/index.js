@@ -5,7 +5,7 @@ import Player from '../src'
 
 import '../src/styles.scss'
 
-const SAMPLE_MP3_URL = 'https://ia802508.us.archive.org/5/items/testmp3testfile/mpthreetest.mp3'
+const SAMPLE_MP3_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
 
 storiesOf('Player', module)
   .add('Default', () => <Player src={SAMPLE_MP3_URL} />)

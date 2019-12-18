@@ -1,6 +1,6 @@
 {
   "name": "react-h5-audio-player",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0",
   "description": "A React audio player with UI. Mobile compatible.",
   "main": "./lib/index.js",
   "scripts": {
@@ -38,7 +38,7 @@
     "prop-types": "^15.5.0 || ^16.0.0"
   },
   "dependencies": {
-    "@iconify/icons-mdi": "^1.0.37",
+    "@iconify/icons-mdi": "^1.0.38",
     "@iconify/react": "^1.1.1"
   },
   "devDependencies": {
@@ -53,8 +53,9 @@
     "@storybook/react": "^5.2.8",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
-    "css-loader": "^3.3.0",
+    "css-loader": "^3.4.0",
     "eslint": "^6.7.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.17.0",
     "less-plugin-sass2less": "^1.2.0",
     "node-sass": "^4.13.0",

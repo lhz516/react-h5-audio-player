@@ -5,7 +5,11 @@ module.exports = {
     browser: true,
     node: true,
   },
-  extends: ['eslint:recommended', 'plugin:react/recommended'],
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:jsx-a11y/recommended',
+  ],
   parserOptions: {
     sourceType: 'module',
   },
@@ -86,6 +90,5 @@ module.exports = {
     'prefer-const': 2,
     'prefer-arrow-callback': 2,
     'template-curly-spacing': [2, 'never'],
-    'react/prop-types': 0,
   },
 }

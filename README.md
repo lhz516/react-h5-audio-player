@@ -74,9 +74,13 @@ Called when click Next button
 
 Called when there's error clicking play button
 
-#### jumpInterval {Number} [5000]
+#### progressJumpStep {Number} [5000]
 
-Indicates the interval jumped when clicking rewind/forward button
+Indicates the jump step when clicking rewind/forward button or left/right arrow key
+
+#### volumeJumpStep {Number} [.1]
+
+Indicates the jump step when pressing up/down arrow key
 
 #### progressUpdateInterval {Number} [20]
 

@@ -26,7 +26,8 @@ class H5AudioPlayer extends Component {
      * The time interval to trigger onListen
      */
     listenInterval: PropTypes.number,
-    jumpInterval: PropTypes.number,
+    progressJumpStep: PropTypes.number,
+    volumeJumpStep: PropTypes.number,
     loop: PropTypes.bool,
     muted: PropTypes.bool,
     onAbort: PropTypes.func,
@@ -58,12 +59,14 @@ class H5AudioPlayer extends Component {
     showVolumeControl: PropTypes.bool,
     showJumpControls: PropTypes.bool,
     showSkipControls: PropTypes.bool,
+    children: PropTypes.node,
   }
 
   static defaultProps = {
     autoPlay: false,
     listenInterval: 1000,
-    jumpInterval: 5000,
+    progressJumpStep: 5000,
+    volumeJumpStep: .1,
     loop: false,
     muted: false,
     preload: 'auto',
@@ -78,6 +81,7 @@ class H5AudioPlayer extends Component {
     onClickPrevious: null,
     onClickNext: null,
     onPlayError: null,
+    children: null,
   }
 
   static addHeadingZero = num => (num > 9 ? num.toString() : `0${num}`)
@@ -108,7 +112,7 @@ class H5AudioPlayer extends Component {
 
   updateDisplayTime = (currentTime) => {
     const duration = this.audio.duration
-    const left = `${currentTime / duration * 100}%` || 0
+    const left = `${(currentTime / duration * 100).toFixed(2)}%` || 0
     this.setState({
       currentTime,
       duration,
@@ -121,10 +125,11 @@ class H5AudioPlayer extends Component {
       return this.setState({ currentVolume: 0, currentVolumePos: '0%' })
     }
 
-    this.setState({ currentVolume: volume, currentVolumePos: `${volume * 100}%` })
+    this.setState({ currentVolume: volume, currentVolumePos: `${(volume * 100).toFixed(0)}%` })
   }
 
-  togglePlay = () => {
+  togglePlay = (e) => {
+    e.stopPropagation()
     if (this.audio.paused && this.audio.src) {
       const audioPromise = this.audio.play()
       audioPromise.then(null)
@@ -246,11 +251,11 @@ class H5AudioPlayer extends Component {
   }
 
   handleClickRewind = () => {
-    this.setJumpTime(-this.props.jumpInterval)
+    this.setJumpTime(-this.props.progressJumpStep)
   }
 
   handleClickForward = () => {
-    this.setJumpTime(this.props.jumpInterval)
+    this.setJumpTime(this.props.progressJumpStep)
   }
 
   setJumpTime = (time) => {
@@ -271,6 +276,14 @@ class H5AudioPlayer extends Component {
     })
   }
 
+  setJumpVolume = (volume) => {
+    let newVolume = this.audio.volume + volume
+    if (newVolume < 0) newVolume = 0
+    else if (newVolume > 1) newVolume = 1
+    this.audio.volume = newVolume
+    this.updateDisplayVolume(newVolume)
+  }
+
   getCurrentProgress = (event, isTouch) => {
     if (!this.audio.src || !isFinite(this.audio.currentTime)) {
       return { currentTime: 0, currentTimePos: '0%' }
@@ -286,7 +299,7 @@ class H5AudioPlayer extends Component {
       relativePos = maxRelativePos
     }
     const currentTime = (this.audio.duration * relativePos) / maxRelativePos
-    return { currentTime, currentTimePos: relativePos }
+    return { currentTime, currentTimePos: `${(relativePos / maxRelativePos * 100).toFixed(2)}%` }
   }
 
   getDisplayTimeBySeconds = (seconds) => {
@@ -322,9 +335,38 @@ class H5AudioPlayer extends Component {
     }
   }
 
+  handleKeyDown = (e) => {
+    switch (e.keyCode) {
+      case 32: // Space
+        if (e.target === this.container || e.target === this.progressBar) {
+          this.togglePlay(e)
+        }
+        break
+      case 37: // Left arrow
+        this.handleClickRewind()
+        break
+      case 39: // Right arrow
+        this.handleClickForward()
+        break
+      case 38: // Up arrow
+        this.setJumpVolume(this.props.volumeJumpStep)
+        break
+      case 40: // Down arrow
+        this.setJumpVolume(-this.props.volumeJumpStep)
+        break
+      case 76: // L = Loop
+        this.handleClickLoopButton()
+        break
+      case 77: // M = Mute
+        this.handleClickVolumeButton()
+        break
+    }
+  }
+
   componentDidMount() {
     // audio player object
     const audio = this.audio
+    if (!audio) return
 
     this.lastVolume = audio.volume
 
@@ -404,6 +446,7 @@ class H5AudioPlayer extends Component {
       showJumpControls,
       onClickPrevious,
       onClickNext,
+      children,
     } = this.props
     const {
       currentTime,
@@ -416,7 +459,19 @@ class H5AudioPlayer extends Component {
     } = this.state
 
     return (
-      <div className={`rhap_container ${className}`}>
+      /* We want the container to catch bubbled events */
+      /* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */
+      <div
+        role="group"
+        /* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */
+        tabIndex={0}
+        aria-label="Audio Player"
+        className={`rhap_container ${className}`}
+        onKeyDown={this.handleKeyDown}
+        ref={(ref) => { this.container = ref }}
+      >
+        {/* User can pass <track> through children */}
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <audio
           src={src}
           controls={false}
@@ -429,9 +484,11 @@ class H5AudioPlayer extends Component {
           ref={(ref) => {
             this.audio = ref
           }}
-        />
+        >
+          {children}
+        </audio>
         <div className="rhap_progress-section">
-          <div className="rhap_time rhap_current-time">
+          <div id="rhap_current-time" className="rhap_time rhap_current-time">
             {this.getDisplayTimeBySeconds(currentTime)}
           </div>
           <div
@@ -439,6 +496,13 @@ class H5AudioPlayer extends Component {
             ref={(ref) => {
               this.progressBar = ref
             }}
+            aria-label="Audio Progress Control"
+            aria-describedby="rhap_current-time"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow={currentTimePos.split('%')[0]}
+            tabIndex={0}
             onMouseDown={this.handleMouseDownProgressBar}
             onTouchStart={this.handleMouseDownProgressBar}
           >
@@ -457,23 +521,23 @@ class H5AudioPlayer extends Component {
         <div className="rhap_controls-section">
           <div className="rhap_additional-controls">
             {showLoopControl && (
-              <button className="rhap_button-clear rhap_repeat-button" onClick={this.handleClickLoopButton}>
+              <button aria-label={isLoopEnabled ? 'Enable Loop' : 'Disable Loop'} className="rhap_button-clear rhap_repeat-button" onClick={this.handleClickLoopButton}>
                 <Icon icon={isLoopEnabled ? repeat : repeatOff} />
               </button>
             )}
           </div>
           <div className="rhap_main-controls">
             {showSkipControls && (
-              <button className="rhap_button-clear rhap_main-controls-button rhap_skip-button" onClick={onClickPrevious}>
+              <button aria-label="Previous" className="rhap_button-clear rhap_main-controls-button rhap_skip-button" onClick={onClickPrevious}>
                 <Icon icon={skipPrevious} />
               </button>
             )}
             {showJumpControls && (
-              <button className="rhap_button-clear rhap_main-controls-button rhap_rewind-button" onClick={this.handleClickRewind}>
+              <button aria-label="Rewind" className="rhap_button-clear rhap_main-controls-button rhap_rewind-button" onClick={this.handleClickRewind}>
                 <Icon icon={rewind} />
               </button>
             )}
-            <button className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button" onClick={this.togglePlay}>
+            <button aria-label={isPlaying ? 'Pause' : 'Play'} className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button" onClick={this.togglePlay}>
               {isPlaying ? (
                 <Icon icon={pauseCircle} />
               ) : (
@@ -481,12 +545,12 @@ class H5AudioPlayer extends Component {
               )}
             </button>
             {showJumpControls && (
-              <button className="rhap_button-clear rhap_main-controls-button rhap_forward-button" onClick={this.handleClickForward}>
+              <button aria-label="Forward" className="rhap_button-clear rhap_main-controls-button rhap_forward-button" onClick={this.handleClickForward}>
                 <Icon icon={fastForward} />
               </button>
             )}
             {showSkipControls && (
-              <button className="rhap_button-clear rhap_main-controls-button rhap_skip-button" onClick={onClickNext}>
+              <button aria-label="Skip" className="rhap_button-clear rhap_main-controls-button rhap_skip-button" onClick={onClickNext}>
                 <Icon icon={skipNext} />
               </button>
             )}
@@ -494,13 +558,19 @@ class H5AudioPlayer extends Component {
           <div className="rhap_volume-controls">
             {showVolumeControl && (
               <div className="rhap_volume-container">
-                <button onClick={this.handleClickVolumeButton} className="rhap_button-clear rhap_volume-button">
+                <button aria-label={currentVolume ? 'Mute' : 'Unmute'} onClick={this.handleClickVolumeButton} className="rhap_button-clear rhap_volume-button">
                   <Icon icon={currentVolume ? volumeHigh : volumeMute} />
                 </button>
                 <div
                   ref={(ref) => { this.volumeControl = ref }}
                   onMouseDown={this.handleVolumnControlMouseDown}
                   onTouchStart={this.handleVolumnControlMouseDown}
+                  role="progressbar"
+                  aria-label="volume Control"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow={(currentVolume * 100).toFixed(0)}
+                  tabIndex={0}
                   className="rhap_volume-bar-area"
                 >
                   <div className="rhap_volume-bar">

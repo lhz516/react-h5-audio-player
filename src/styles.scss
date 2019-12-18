@@ -12,8 +12,6 @@ $rhap_time-color: #000 !default;
   min-width: 300px;
   padding: 10px 15px;
   background-color: $rhap_background-color;
-  position: relative;
-  z-index: 100;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
 }
 
@@ -26,7 +24,7 @@ $rhap_time-color: #000 !default;
 .rhap_progress-container {
   display: flex;
   align-items: center;
-  height: 18px;
+  height: 20px;
   flex: 1 0 auto;
   align-self: center;
   margin: 0 3%;
@@ -113,6 +111,7 @@ $rhap_time-color: #000 !default;
 }
 
 .rhap_volume-button {
+  flex: 0 0 26px;
   font-size: 26px;
   width: 26px;
   height: 26px;
@@ -122,6 +121,7 @@ $rhap_time-color: #000 !default;
 
 .rhap_volume-container {
   display: flex;
+  flex: 1 1 auto;
   align-items: center;
   flex: 0 1 100px;
   -webkit-user-select: none; 
@@ -167,8 +167,8 @@ $rhap_time-color: #000 !default;
 .rhap_button-clear {
   background-color: transparent;
   border: none;
-  outline: 0;
   padding: 0;
+  overflow: hidden;
   cursor: pointer;
   :hover {
     opacity: .9;
