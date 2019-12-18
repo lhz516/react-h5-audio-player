@@ -2,3 +2,4 @@ node_modules/
 screenshot.png
 .storybook/
 stories/
+react-h5-audio-player-storybook/

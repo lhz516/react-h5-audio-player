@@ -1,6 +1,6 @@
 {
   "name": "react-h5-audio-player",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A React audio player with UI. Mobile compatible.",
   "main": "./lib/index.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "build:css": "sass --no-source-map src/styles.scss lib/styles.css",
     "build:less": "sass2less src/styles.scss lib/styles.less",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "storybook": "start-storybook -p 9000"
+    "storybook": "start-storybook -p 9000",
+    "build:storybook": "build-storybook -c .storybook -o story-static"
   },
   "repository": {
     "type": "git",

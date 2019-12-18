@@ -1,10 +1,12 @@
 # React H5 Audio Player
 
 * Audio player component that provides consistent UI on different browsers.
-
-* Flexbox design with SVG icons. Mobile friendly.
+* Flexbox layout with SVG icons. Mobile friendly.
+* Accessibility supported, keyboards friendly.
 
 ![screenshot](./screenshot.png)
+
+Live Demo: [Storybook](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html)
 
 Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE (≥10)
 
@@ -162,4 +164,6 @@ Issues and PR's are welcome.
 
 ## Credits
 
-This project is inspired by [React Audio Player](https://github.com/justinmc/react-audio-player).
+- Inspired by [React Audio Player](https://github.com/justinmc/react-audio-player).
+- Icon wrapper [iconify](https://iconify.design/)
+- Icons [Material Design Icons](https://github.com/Templarian/MaterialDesign)
