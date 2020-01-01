@@ -27,8 +27,10 @@ module.exports = {
       printWidth: 120,
       singleQuote: true,
       semi: false,
+      arrowParens: 'always',
+      trailingComma: 'es5'
     }],
-    'arrow-parens': [2, 'as-needed', { requireForBlockBody: true }],
+    'arrow-parens': [2, 'always'],
     camelcase: [2, { properties: 'never' }],
     curly: [2, 'multi-line'],
     indent: [2, 2, { SwitchCase: 1 }],

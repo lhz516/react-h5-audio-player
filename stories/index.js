@@ -1,7 +1,7 @@
 import React from 'react'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
-import Player from '../src'
+import Player from '../src/index.tsx'
 
 import '../src/styles.scss'
 

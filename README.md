@@ -3,6 +3,7 @@
 * Audio player component that provides consistent UI on different browsers.
 * Flexbox layout with SVG icons. Mobile friendly.
 * Accessibility supported, keyboards friendly.
+* Written in TypeScript.
 
 ![screenshot](./screenshot.png)
 

@@ -1,11 +1,13 @@
 {
   "name": "react-h5-audio-player",
-  "version": "2.0.1",
-  "description": "A React audio player with UI. Mobile compatible.",
+  "version": "2.0.2",
+  "description": "A React audio player with UI. Written in TypeScript. Mobile compatible.",
   "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "scripts": {
-    "build": "run-p build:js build:css build:less",
+    "build": "run-p build:js build:d.ts build:css build:less",
     "build:js": "babel src --out-dir lib --extensions .tsx",
+    "build:d.ts": "tsc --rootDir src --outDir lib -d",
     "build:css": "sass --no-source-map src/styles.scss lib/styles.css",
     "build:less": "sass2less src/styles.scss lib/styles.less",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -22,7 +24,8 @@
     "music",
     "audio",
     "player",
-    "mobile"
+    "mobile",
+    "typescript"
   ],
   "author": "Hanz Luo",
   "license": "MIT",
@@ -39,14 +42,14 @@
     "prop-types": "^15.5.0 || ^16.0.0"
   },
   "dependencies": {
-    "@iconify/icons-mdi": "^1.0.38",
+    "@iconify/icons-mdi": "^1.0.42",
     "@iconify/react": "^1.1.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.5",
-    "@babel/core": "^7.7.5",
+    "@babel/cli": "^7.7.7",
+    "@babel/core": "^7.7.7",
     "@babel/plugin-proposal-class-properties": "^7.7.4",
-    "@babel/preset-env": "^7.7.6",
+    "@babel/preset-env": "^7.7.7",
     "@babel/preset-react": "^7.7.4",
     "@babel/preset-typescript": "^7.7.7",
     "@storybook/addon-actions": "^5.2.8",
@@ -58,7 +61,7 @@
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
     "css-loader": "^3.4.0",
-    "eslint": "^6.7.2",
+    "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-prettier": "^3.1.2",
@@ -69,7 +72,7 @@
     "prettier": "^1.19.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "sass": "^1.23.7",
+    "sass": "^1.24.0",
     "sass-loader": "^8.0.0",
     "typescript": "^3.7.4"
   }
