@@ -12,7 +12,11 @@ Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE (≥10)
 
 ## Installation
 
-`npm i --save react-h5-audio-player@next`
+`$ npm i react-h5-audio-player`
+
+Or
+
+`$ yarn add react-h5-audio-player`
 
 ## Usage
 

@@ -1,14 +1,18 @@
 module.exports = {
-  parser: 'babel-eslint',
+  parser: '@typescript-eslint/parser',
   env: {
     es6: true,
     browser: true,
     node: true,
+    jest: true,
   },
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:jsx-a11y/recommended',
+    'plugin:@typescript-eslint/recommended',  // Uses the recommended rules from the @typescript-eslint/eslint-plugin
+    'prettier/@typescript-eslint',  // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
+    'plugin:prettier/recommended',  // Enables eslint-plugin-prettier and displays prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
   ],
   parserOptions: {
     sourceType: 'module',
@@ -19,6 +23,11 @@ module.exports = {
     },
   },
   rules: {
+    'prettier/prettier': [2, {
+      printWidth: 120,
+      singleQuote: true,
+      semi: false,
+    }],
     'arrow-parens': [2, 'as-needed', { requireForBlockBody: true }],
     camelcase: [2, { properties: 'never' }],
     curly: [2, 'multi-line'],
