@@ -1,0 +1,33 @@
+import { Meta, Story, Preview } from '@storybook/addon-docs/blocks'
+import { action } from '@storybook/addon-actions'
+import { SAMPLE_MP3_URL } from './utils'
+import AudioPlayer from '../src/index.tsx'
+
+<Meta title="Actions" component={AudioPlayer} />
+
+# Actions
+
+Different event listeners of the player
+
+Go to `Canvas` tab to see `Actions` logger
+
+<Preview>
+  <Story name="Actions">
+    <AudioPlayer
+      onAbort={action('onAbort')}
+      onCanPlay={action('onCanPlay')}
+      onCanPlayThrough={action('onCanPlayThrough')}
+      onEnded={action('onEnded')}
+      onError={action('onError')}
+      onListen={action('onListen')}
+      onPause={action('onPause')}
+      onPlay={action('onPlay')}
+      onClickPrevious={action('onClickPrevious')}
+      onClickNext={action('onClickNext')}
+      volume={1}
+      showSkipControls
+      progressUpdateInterval={100}
+      src={SAMPLE_MP3_URL}
+    />
+  </Story>
+</Preview>

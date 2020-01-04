@@ -1,0 +1,27 @@
+import { Meta, Story, Preview, Description } from '@storybook/addon-docs/blocks';
+import { SAMPLE_MP3_URL } from './utils'
+import AudioPlayer from '../src/index.tsx'
+
+<Meta title="Edge Cases" component={AudioPlayer} />
+
+<Props of={AudioPlayer} />
+
+# Edge Cases
+
+Edge Cases of the player
+
+#### Empty src
+
+<Preview>
+  <Story name="Empty src">
+    <AudioPlayer />
+  </Story>
+</Preview>
+
+#### Invalid src
+
+<Preview>
+  <Story name="Invalid src">
+    <AudioPlayer src="https://invalidsrc.com/nothing.mp3" />
+  </Story>
+</Preview>

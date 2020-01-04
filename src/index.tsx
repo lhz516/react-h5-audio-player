@@ -28,6 +28,8 @@ interface PlayerProps {
   volumeJumpStep: number
   loop: boolean
   muted: boolean
+  crossOrigin?: string
+  mediaGroup?: string
   onAbort?: (e: Event) => void
   onCanPlay?: (e: Event) => void
   onCanPlayThrough?: (e: Event) => void
@@ -57,6 +59,7 @@ interface PlayerProps {
   showJumpControls: boolean
   showSkipControls: boolean
   children?: React.ReactNode
+  style?: React.CSSProperties
 }
 
 interface PlayerState {
@@ -81,13 +84,6 @@ interface VolumePosInfo {
   currentVolumePos: string
 }
 
-// React AudioHTMLAttributes doesn't have volume attribute somehow, adding it manually
-declare module 'react' {
-  interface AudioHTMLAttributes<T> {
-    volume?: number
-  }
-}
-
 class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   static defaultProps = {
     autoPlay: false,
@@ -104,9 +100,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     showVolumeControl: true,
     showJumpControls: true,
     showSkipControls: false,
-    onClickPrevious: null,
-    onClickNext: null,
-    onPlayError: null,
     children: null,
   }
 
@@ -127,26 +120,26 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
   audio: HTMLAudioElement
 
-  volumeControl: HTMLElement | undefined
+  volumeControl?: HTMLElement
 
-  progressBar: HTMLElement | undefined
+  progressBar?: HTMLElement
 
-  container: HTMLElement | undefined
+  container?: HTMLElement
 
-  lastVolume: number
+  lastVolume: number // To store the volume before clicking mute button
 
-  timeOnMouseMove: number
+  timeOnMouseMove: number // Audio's current time while mouse is down and moving over the progress bar
 
-  listenTracker: number | undefined | null
+  listenTracker?: number // Determine whether onListen event should be called continuously
 
-  intervalId: number | undefined
+  intervalId?: number // For progress bar and display time update interval
 
   constructor(props: PlayerProps) {
     super(props)
     const { volume, muted } = props
     this.state = {
       duration: NaN,
-      currentTime: NaN,
+      currentTime: 0,
       currentTimePos: '0%',
       currentVolume: muted ? 0 : volume,
       currentVolumePos: muted ? '0%' : `${volume * 100}%`,
@@ -314,8 +307,8 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   }
 
   setJumpTime = (time: number): void => {
-    const { duration } = this.audio
-    if (!isFinite(duration)) return
+    const { duration, currentTime } = this.audio
+    if (!isFinite(duration) || !isFinite(currentTime)) return
     this.setState((prevState) => {
       let currentTime = prevState.currentTime + time / 1000
       if (currentTime < 0) {
@@ -386,7 +379,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   clearListenTrack = (): void => {
     if (this.listenTracker) {
       clearInterval(this.listenTracker)
-      this.listenTracker = null
+      delete this.listenTracker
     }
   }
 
@@ -423,7 +416,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     const audio = this.audio
     if (!audio) return
 
-    this.lastVolume = audio.volume
+    audio.volume = this.lastVolume
 
     this.intervalId = setInterval(() => {
       if (!this.audio.paused && !this.state.isDraggingProgress && !!this.audio.duration) {
@@ -456,7 +449,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     })
 
     // When unloading the audio player (switching to another src)
-    audio.addEventListener('abort', (e: Event) => {
+    audio.addEventListener('abort', (e) => {
       this.clearListenTrack()
       this.props.onAbort && this.props.onAbort(e)
     })
@@ -494,6 +487,8 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       preload,
       autoPlay,
       muted,
+      crossOrigin,
+      mediaGroup,
       showLoopControl,
       showVolumeControl,
       showSkipControls,
@@ -501,6 +496,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       onClickPrevious,
       onClickNext,
       children,
+      style,
     } = this.props
     const {
       currentTime,
@@ -525,6 +521,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
         ref={(ref: HTMLDivElement): void => {
           this.container = ref
         }}
+        style={style}
       >
         {/* User can pass <track> through children */}
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
@@ -533,9 +530,10 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
           controls={false}
           muted={muted}
           loop={isLoopEnabled}
-          volume={currentVolume}
           autoPlay={autoPlay}
           preload={preload}
+          crossOrigin={crossOrigin}
+          mediaGroup={mediaGroup}
           ref={(ref: HTMLAudioElement): void => {
             this.audio = ref
           }}

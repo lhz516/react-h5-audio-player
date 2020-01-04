@@ -1,14 +1,16 @@
-import { configure, addDecorator } from '@storybook/react'
-import { configureActions } from '@storybook/addon-actions';
-import { withInfo } from '@storybook/addon-info'
+import { configure, addParameters } from '@storybook/react'
+import { DocsPage, DocsContainer } from '@storybook/addon-docs/blocks'
 
-// Docs: https://github.com/storybooks/storybook/tree/master/addons/info
-addDecorator(
-  withInfo({
-    header: true,
-  }),
-)
+function requireAll(requireContext) {
+  console.log(requireContext)
+  return requireContext.keys().map(requireContext);
+}
 
-configure(() => {
-  require('../stories/index')
-}, module)
+configure(require.context('../stories', true, /\.stories\.(js|mdx)$/), module)
+
+addParameters({
+  docs: {
+    container: DocsContainer,
+    page: DocsPage,
+  },
+})

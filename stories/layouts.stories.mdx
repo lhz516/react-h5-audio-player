@@ -1,0 +1,58 @@
+import { Meta, Story, Preview } from '@storybook/addon-docs/blocks';
+import { SAMPLE_MP3_URL } from './utils'
+import AudioPlayer from '../src/index.tsx'
+
+<Meta title="Layouts" component={AudioPlayer} />
+
+# Layouts
+
+Different layouts of the player
+
+#### Default
+
+<Preview>
+  <Story name="Default">
+    <AudioPlayer src={SAMPLE_MP3_URL} />
+  </Story>
+</Preview>
+
+#### Width
+
+Default width is `100%`, you can always overwrite it to any value that greater than `300px`.
+
+<Preview>
+  <Story name="Width">
+    <div>
+      <p>300px</p>
+      <AudioPlayer style={{ width: '300px' }} src={SAMPLE_MP3_URL} />
+      <p>400px</p>
+      <AudioPlayer style={{ width: '400px' }} src={SAMPLE_MP3_URL} />
+      <p>500px</p>
+      <AudioPlayer style={{ width: '500px' }} src={SAMPLE_MP3_URL} />
+      <p>600px</p>
+      <AudioPlayer style={{ width: '600px' }} src={SAMPLE_MP3_URL} />
+      <p>100%</p>
+      <AudioPlayer src={SAMPLE_MP3_URL} />
+    </div>
+  </Story>
+</Preview>
+
+#### Show Skip Controls
+
+`onClickPrevious` and `onClickNext` are provided for callback.
+
+<Preview>
+  <Story name="Show Skip Controls">
+    <AudioPlayer src={SAMPLE_MP3_URL} showSkipControls={true} />
+  </Story>
+</Preview>
+
+#### Hide Volume
+
+Useful for most mobile browsers because they don't support volume control
+
+<Preview>
+  <Story name="Hide Volume">
+    <AudioPlayer src={SAMPLE_MP3_URL} showVolumeControl={false} />
+  </Story>
+</Preview>

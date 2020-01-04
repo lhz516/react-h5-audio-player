@@ -7,7 +7,7 @@
 
 ![screenshot](./screenshot.png)
 
-Live Demo: [Storybook](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html)
+Live Demo: [Storybook](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts--default-story)
 
 Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE (≥10)
 
@@ -24,6 +24,8 @@ Or
 ```jsx
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
+// import 'react-h5-audio-player/lib/styles.less' Use LESS
+// import 'react-h5-audio-player/src/styles.scss' Use SASS
 
 const Player = () => (
   <AudioPlayer
@@ -39,17 +41,22 @@ const Player = () => (
 
 ### HTML Audio Tag Native Attributes
 
-| Props    |  Type   | Default |
-| -------- | :-----: | :-----: |
-| src      | String  |   ''    |
-| preload  | String  | 'auto'  |
-| autoPlay | Boolean |  false  |
-| loop     | Boolean |  false  |
-| muted    | Boolean |  false  |
-| loop     | Boolean |  false  |
-| volume   | Number  |   1.0   |
+| Props       |  Type   |  Default  | Note                 |
+| ----------- | :-----: | :-------: | :-------------------:|
+| src         | String  | ''        |                      |
+| preload     | String  | 'auto'    |                      |
+| autoPlay    | Boolean | false     | Won't work on mobile |
+| loop        | Boolean | false     |                      |
+| muted       | Boolean | false     |                      |
+| loop        | Boolean | false     |                      |
+| volume      | Number  | 1.0       | Won't work on mobile |
+| crossOrigin | String  | undefined |                      |
+| mediaGroup  | String  | undefined |                      |
+
 
 More native attributes detail: [MDN Audio element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio)
+
+The `controls` attribute defaults to `false` and should never be changed to `true` because this library is already providing UI.
 
 ### Other Props
 
@@ -127,14 +134,17 @@ Called when the user taps play.
 
 ## UI Overwrites
 
-React H5 Audio Player provides built-in class names and SASS variables for developers to overwrite.
+React H5 Audio Player provides built-in class names and SASS/LESS variables for developers to overwrite.
 
 ### SASS variables
 
 - $rhap_theme-color: #868686 !default;
 - $rhap_background-color: #fff !default;
 - $rhap_bar-color: #e4e4e4 !default;
-- $rhap_time-color: #000 !default;
+- $rhap_time-color: #333 !default;
+- $rhap_font-family: inherit !default;
+
+For LESS variables, just replace `$` with `@`.
 
 ## Advanced Usage
 
@@ -143,7 +153,7 @@ React H5 Audio Player provides built-in class names and SASS variables for devel
 You can get direct access to the underlying audio element. First get a ref to ReactAudioPlayer:
 
 ```jsx
-<ReactAudioPlayer ref={c => (this.player = c)} />
+<ReactAudioPlayer ref={c => (this.player = c)} /> // Use `createRef` also works
 ```
 
 Then you can access the audio element like this:

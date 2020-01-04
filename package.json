@@ -1,6 +1,6 @@
 {
   "name": "react-h5-audio-player",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "A React audio player with UI. Written in TypeScript. Mobile compatible.",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -12,7 +12,7 @@
     "build:less": "sass2less src/styles.scss lib/styles.less",
     "test": "echo \"Error: no test specified\" && exit 1",
     "storybook": "start-storybook -p 9000",
-    "build:storybook": "build-storybook -c .storybook -o story-static"
+    "build:storybook": "build-storybook -c .storybook -o react-h5-audio-player-storybook"
   },
   "repository": {
     "type": "git",
@@ -30,7 +30,8 @@
   "author": "Hanz Luo",
   "license": "MIT",
   "eslintIgnore": [
-    "lib"
+    "lib",
+    "react-h5-audio-player-storybook"
   ],
   "bugs": {
     "url": "https://github.com/lhz516/react-h5-audio-player/issues"
@@ -53,7 +54,7 @@
     "@babel/preset-react": "^7.7.4",
     "@babel/preset-typescript": "^7.7.7",
     "@storybook/addon-actions": "^5.2.8",
-    "@storybook/addon-info": "^5.2.8",
+    "@storybook/addon-docs": "^5.2.8",
     "@storybook/addon-options": "^5.2.8",
     "@storybook/react": "^5.2.8",
     "@typescript-eslint/eslint-plugin": "^2.14.0",
