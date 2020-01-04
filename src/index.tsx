@@ -100,7 +100,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     showVolumeControl: true,
     showJumpControls: true,
     showSkipControls: false,
-    children: null,
   }
 
   static addHeadingZero = (num: number): string => (num > 9 ? num.toString() : `0${num}`)
@@ -118,7 +117,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
   state: PlayerState
 
-  audio: HTMLAudioElement
+  audio?: HTMLAudioElement
 
   volumeControl?: HTMLElement
 
@@ -149,7 +148,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       isLoopEnabled: this.props.loop,
     }
     this.lastVolume = volume
-    this.audio = document.createElement('audio')
     this.timeOnMouseMove = 0
   }
 
@@ -413,8 +411,8 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
   componentDidMount(): void {
     // audio player object
+    this.audio = this.audio || document.createElement('audio')
     const audio = this.audio
-    if (!audio) return
 
     audio.volume = this.lastVolume
 
