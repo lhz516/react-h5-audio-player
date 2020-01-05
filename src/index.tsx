@@ -17,6 +17,10 @@ interface PlayerProps {
    */
   autoPlay: boolean
   /**
+   * Whether to play music after src prop is changed
+   */
+  autoPlayAfterSrcChange: boolean
+  /**
    * custom classNames
    */
   className?: string
@@ -87,6 +91,7 @@ interface VolumePosInfo {
 class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   static defaultProps = {
     autoPlay: false,
+    autoPlayAfterSrcChange: true,
     listenInterval: 1000,
     progressJumpStep: 5000,
     volumeJumpStep: 0.1,
@@ -153,19 +158,14 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
   updateDisplayTime = (currentTime: number): void => {
     const duration: number = this.audio.duration
-    const left: string = `${((currentTime / duration) * 100).toFixed(2)}%` || '0%'
     this.setState({
       currentTime,
-      duration,
-      currentTimePos: left,
+      duration: this.audio.duration,
+      currentTimePos: `${((currentTime / duration) * 100 || 0).toFixed(2)}%`,
     })
   }
 
   updateDisplayVolume = (volume: number): void => {
-    if (volume === 0) {
-      return this.setState({ currentVolume: 0, currentVolumePos: '0%' })
-    }
-
     this.setState({ currentVolume: volume, currentVolumePos: `${(volume * 100).toFixed(0)}%` })
   }
 
@@ -449,6 +449,16 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     // When unloading the audio player (switching to another src)
     audio.addEventListener('abort', (e) => {
       this.clearListenTrack()
+      const { autoPlayAfterSrcChange } = this.props
+      if (autoPlayAfterSrcChange) {
+        this.audio.play()
+      } else {
+        this.setState({
+          isPlaying: false,
+          currentTime: 0,
+          currentTimePos: '0%',
+        })
+      }
       this.props.onAbort && this.props.onAbort(e)
     })
 
@@ -465,13 +475,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       this.setState({ isPlaying: false })
       this.props.onPause && this.props.onPause(e)
     })
-  }
-
-  componentDidUpdate(prevProps: PlayerProps): void {
-    const { src, autoPlay } = this.props
-    if (src !== prevProps.src && autoPlay) {
-      this.audio.play()
-    }
   }
 
   componentWillUnmount(): void {
