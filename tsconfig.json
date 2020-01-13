@@ -60,6 +60,7 @@
     // "declarationDir": "lib"                /* Output directory for generated declaration files. */
   },
   "exclude": [
-    "stories"
+    "./lib",
+    "./stories"
   ]
 }

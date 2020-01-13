@@ -9,6 +9,8 @@
 
 Live Demo: [Storybook](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts--default-story)
 
+Website example: [hanzluo.com](https://hanzluo.com/#music) | [Code](https://github.com/lhz516/hanzluo/blob/3a1de210bb8de72ef2def5a6216b58108088e131/src/components/home/home.js#L281)
+
 Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE (≥10)
 
 ## Installation
@@ -43,15 +45,15 @@ const Player = () => (
 
 | Props       |  Type   |  Default  | Note                 |
 | ----------- | :-----: | :-------: | :-------------------:|
-| src         | String  | ''        |                      |
-| preload     | String  | 'auto'    |                      |
-| autoPlay    | Boolean | false     | Won't work on mobile |
-| loop        | Boolean | false     |                      |
-| muted       | Boolean | false     |                      |
-| loop        | Boolean | false     |                      |
-| volume      | Number  | 1.0       | Won't work on mobile |
-| crossOrigin | String  | undefined |                      |
-| mediaGroup  | String  | undefined |                      |
+| src         | string  | ''        |                      |
+| preload     | string  | 'auto'    |                      |
+| autoPlay    | boolean | false     | Won't work on mobile |
+| loop        | boolean | false     |                      |
+| muted       | boolean | false     |                      |
+| loop        | boolean | false     |                      |
+| volume      | number  | 1.0       | Won't work on mobile |
+| crossOrigin | string  | undefined |                      |
+| mediaGroup  | string  | undefined |                      |
 
 
 More native attributes detail: [MDN Audio element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio)
@@ -60,77 +62,27 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 
 ### Other Props
 
-#### showVolumeControl {Boolean} [true]
-
-Show volume bar and mute button
-
-#### showLoopControl {Boolean} [true]
-
-Show loop toggle button
-
-#### showSkipControls {Boolean} [false]
-
-Show previous/Next buttons
-
-#### showJumpControls {Boolean} [true]
-
-Show Rewind/Forward buttons
-
-#### onClickPrevious {Function (event)}
-
-Called when click Previous button
-
-#### onClickNext {Function (event)}
-
-Called when click Next button
-
-#### onPlayError {Function (error)}
-
-Called when there's error clicking play button
-
-#### progressJumpStep {Number} [5000]
-
-Indicates the jump step when clicking rewind/forward button or left/right arrow key
-
-#### volumeJumpStep {Number} [.1]
-
-Indicates the jump step when pressing up/down arrow key
-
-#### progressUpdateInterval {Number} [20]
-
-Indicates the interval that the progress bar UI updates.
-
-#### listenInterval {Number} [1000]
-
-Indicates how often to call the `onListened` prop during playback, in milliseconds.
-
-#### onAbort {Function (event)}
-
-Called when unloading the audio player, like when switching to a different src file. Passed the event.
-
-#### onCanPlay {Function (event)}
-
-Called when enough of the file has been downloaded to be able to start playing.
-
-#### onEnded {Function (event)}
-
-Called when playback has finished to the end of the file. Passed the event.
-
-#### onError {Function (event)}
-
-Called when the audio tag encounters an error. Passed the event.
-
-#### onListen {Function (currentTime)}
-
-Called every `listenInterval` milliseconds during playback.
-
-#### onPause {Function (event)}
-
-Called when the user pauses playback. Passed the event.
-
-#### onPlay {Function (event)}
-
-Called when the user taps play.
+| Props                  | Type              | Default | Note |
+| ---------------------- | ----------------- | ------- | ---- |
+| showVolumeControl      | boolean           | true    | Show volume bar and mute button |
+| showLoopControl        | boolean           | true    | Show loop toggle button | 
+| showSkipControls       | boolean           | false   | Show Previous/Next buttons |
+| showJumpControls       | boolean           | true    | Show Rewind/Forward buttons |
+| onClickPrevious        | Function (Event)  | null    | Called when click Previous button |
+| onClickNext            | Function (Event)  | null    | Called when click Next button |
+| onPlayError            | Function (Error)  | null    | Called when there's error invoking `audio.play()`, it captures error that `onError` won't catch |
+| volumeJumpStep         | number            | 0.1     | Indicates the volume jump step when pressing up/down arrow key, volume range is `0` to `1` |
+| progressJumpStep       | number            | 5000    | Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key|
+| progressUpdateInterval | number            | 20      | Indicates the interval (ms) that the progress bar UI updates,  |
+| listenInterval         | number            | 1000    | Indicates the interval (ms) to call the `onListened` prop during playback |
+| onListen               | Function (number) | null    | Called every `listenInterval` milliseconds during playback |
+| onPlay                 | Function (Event)  | null    | Called when user plays the audio |
+| onPause                | Function (Event)  | null    | Called when user pauses the audio |
+| onAbort                | Function (Event)  | null    | Called when unloading the audio player, like when switching to a different src file |
+| onCanPlay              | Function (Event)  | null    | Called when enough of the file has been downloaded to be able to start playing |
+| onCanPlayThrough       | Function (Event)  | null    | Called when enough of the file has been downloaded to play through the entire file |
+| onEnded                | Function (Event)  | null    | Called when playback has finished to the end of the file |
+| onError                | Function (Event)  | null    | Called when the audio tag encounters an error |
 
 ## UI Overwrites
 
@@ -138,11 +90,13 @@ React H5 Audio Player provides built-in class names and SASS/LESS variables for 
 
 ### SASS variables
 
-- $rhap_theme-color: #868686 !default;
-- $rhap_background-color: #fff !default;
-- $rhap_bar-color: #e4e4e4 !default;
-- $rhap_time-color: #333 !default;
-- $rhap_font-family: inherit !default;
+```scss
+$rhap_theme-color: #868686 !default;
+$rhap_background-color: #fff !default;
+$rhap_bar-color: #e4e4e4 !default;
+$rhap_time-color: #333 !default;
+$rhap_font-family: inherit !default;
+```
 
 For LESS variables, just replace `$` with `@`.
 
@@ -153,7 +107,7 @@ For LESS variables, just replace `$` with `@`.
 You can get direct access to the underlying audio element. First get a ref to ReactAudioPlayer:
 
 ```jsx
-<ReactAudioPlayer ref={c => (this.player = c)} /> // Use `createRef` also works
+<ReactAudioPlayer ref={c => (this.player = c)} /> // Using `createRef` also works
 ```
 
 Then you can access the audio element like this:
