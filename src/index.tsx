@@ -62,6 +62,7 @@ interface PlayerProps {
   showVolumeControl: boolean
   showJumpControls: boolean
   showSkipControls: boolean
+  showDownloadProgress: boolean
   children?: React.ReactNode
   style?: React.CSSProperties
 }
@@ -76,6 +77,12 @@ interface PlayerState {
   isDraggingVolume: boolean
   isPlaying: boolean
   isLoopEnabled: boolean
+  downloadProgressArr: DownloadProgress[]
+}
+
+interface DownloadProgress {
+  left: string
+  width: string
 }
 
 interface TimePosInfo {
@@ -105,6 +112,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     showVolumeControl: true,
     showJumpControls: true,
     showSkipControls: false,
+    showDownloadProgress: true,
   }
 
   static addHeadingZero = (num: number): string => (num > 9 ? num.toString() : `0${num}`)
@@ -151,6 +159,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       isDraggingVolume: false,
       isPlaying: false,
       isLoopEnabled: this.props.loop,
+      downloadProgressArr: [],
     }
     this.lastVolume = volume
     this.timeOnMouseMove = 0
@@ -475,6 +484,21 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       this.setState({ isPlaying: false })
       this.props.onPause && this.props.onPause(e)
     })
+
+    audio.addEventListener('progress', () => {
+      const audio = this.audio
+      const downloadProgressArr: DownloadProgress[] = []
+      for (let i = 0; i < audio.buffered.length; i++) {
+        const bufferedStart: number = audio.buffered.start(i)
+        const bufferedEnd: number = audio.buffered.end(i)
+        downloadProgressArr.push({
+          left: `${Math.round((100 / audio.duration) * bufferedStart) || 0}%`,
+          width: `${Math.round((100 / audio.duration) * (bufferedEnd - bufferedStart)) || 0}%`,
+        })
+      }
+
+      this.setState({ downloadProgressArr })
+    })
   }
 
   componentWillUnmount(): void {
@@ -496,6 +520,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       showJumpControls,
       onClickPrevious,
       onClickNext,
+      showDownloadProgress,
       children,
       style,
     } = this.props
@@ -507,6 +532,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       duration,
       isPlaying,
       isLoopEnabled,
+      downloadProgressArr,
     } = this.state
 
     return (
@@ -560,8 +586,12 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
             onMouseDown={this.handleMouseDownProgressBar}
             onTouchStart={this.handleMouseDownProgressBar}
           >
-            <div className="rhap_progress-bar">
+            <div className={`rhap_progress-bar ${showDownloadProgress ? 'rhap_progress-bar-show-download' : ''}`}>
               <div className="rhap_progress-indicator" style={{ left: currentTimePos }} />
+              {showDownloadProgress &&
+                downloadProgressArr.map(({ left, width }, i) => (
+                  <div key={i} className="rhap_download-progress" style={{ left, width }} />
+                ))}
             </div>
           </div>
           <div className="rhap_time rhap_total-time">{this.getDisplayTimeBySeconds(duration)}</div>

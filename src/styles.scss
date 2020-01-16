@@ -1,6 +1,6 @@
 $rhap_theme-color: #868686 !default;
 $rhap_background-color: #fff !default;
-$rhap_bar-color: #e4e4e4 !default;
+$rhap_bar-color: #dddddd !default;
 $rhap_time-color: #333 !default;
 $rhap_font-family: inherit !default;
 
@@ -53,15 +53,29 @@ $rhap_font-family: inherit !default;
 .rhap_progress-bar {
   box-sizing: border-box;
   position: relative;
+  z-index: 0;
   width: 100%;
   height: 5px;
-  background: $rhap_bar-color;
+  background-color: $rhap_bar-color;
+  border-radius: 2px;
+}
+
+.rhap_progress-bar-show-download {
+  background-color: rgba($rhap_bar-color, 0.5);
+}
+
+.rhap_download-progress {
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+  background-color: $rhap_bar-color;
   border-radius: 2px;
 }
 
 .rhap_progress-indicator {
   box-sizing: border-box;
   position: absolute;
+  z-index: 2;
   width: 20px;
   height: 20px;
   margin-left: -10px;

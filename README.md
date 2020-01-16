@@ -1,8 +1,8 @@
 # React H5 Audio Player
 
-* Audio player component that provides consistent UI on different browsers.
+* Audio player component that provides consistent UI/UX on different browsers.
 * Flexbox layout with SVG icons. Mobile friendly.
-* Accessibility supported, keyboards friendly.
+* Accessibility supported, keyboards events supported.
 * Written in TypeScript.
 
 ![screenshot](./screenshot.png)
@@ -39,12 +39,23 @@ const Player = () => (
 );
 ```
 
+#### Keyboard shortcuts (Player focused)
+| Key binding | Action |
+| ----------- | ------ |
+| Space       | Play/Pause |
+| ←           | Rewind |
+| →           | Forward |
+| ↑           | Volume up |
+| ↓           | Volume down |
+| L           | Toggle loop |
+| M           | Toggle mute |
+
 ## Props
 
 ### HTML Audio Tag Native Attributes
 
 | Props       |  Type   |  Default  | Note                 |
-| ----------- | :-----: | :-------: | :-------------------:|
+| ----------- | ------- | --------- | ---------------------|
 | src         | string  | ''        |                      |
 | preload     | string  | 'auto'    |                      |
 | autoPlay    | boolean | false     | Won't work on mobile |
@@ -68,6 +79,7 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | showLoopControl        | boolean           | true    | Show loop toggle button | 
 | showSkipControls       | boolean           | false   | Show Previous/Next buttons |
 | showJumpControls       | boolean           | true    | Show Rewind/Forward buttons |
+| showDownloadProgress   | boolean           | true    | Show download progress over progress bar |
 | onClickPrevious        | Function (Event)  | null    | Called when click Previous button |
 | onClickNext            | Function (Event)  | null    | Called when click Next button |
 | onPlayError            | Function (Error)  | null    | Called when there's error invoking `audio.play()`, it captures error that `onError` won't catch |
@@ -114,11 +126,13 @@ Then you can access the audio element like this:
 
 `this.player.audio`
 
-## Migrations
+## Release Notes
+
+https://github.com/lhz516/react-h5-audio-player/releases
 
 ### Breaking changes from 1.x to 2.x
 
-- Removed inline styles, import `css` or `scss` manually
+- Removed inline styles, import `css`, `scss` or `less` manually
 - Removed props `hidePlayer` - Use parent logic to hide player
 - Removed props `onDragStart`, `onDragMove`, `onDragEnd` - V2 isn't using drag events anymore
 
