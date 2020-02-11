@@ -75,6 +75,7 @@ interface PlayerState {
   isPlaying: boolean
   isLoopEnabled: boolean
   downloadProgressArr: DownloadProgress[]
+  hasVolumeAnimation: boolean
 }
 
 interface DownloadProgress {
@@ -152,6 +153,8 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
   listenTracker?: number // Determine whether onListen event should be called continuously
 
+  volumeAnimationTimer?: number
+
   constructor(props: PlayerProps) {
     super(props)
     const { volume, muted } = props
@@ -163,6 +166,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       isPlaying: false,
       isLoopEnabled: this.props.loop,
       downloadProgressArr: [],
+      hasVolumeAnimation: false,
     }
     this.audio = new Audio()
     this.lastVolume = volume
@@ -189,7 +193,13 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     } else {
       this.audio.volume = this.lastVolume
     }
-    this.setState({ currentVolumePos: `${(this.audio.volume * 100).toFixed(0)}%` })
+    this.setState({
+      currentVolumePos: `${(this.audio.volume * 100).toFixed(0)}%`,
+      hasVolumeAnimation: true,
+    })
+    this.volumeAnimationTimer = setTimeout(() => {
+      this.setState({ hasVolumeAnimation: false })
+    }, 100)
   }
 
   handleVolumnControlMouseDown = (event: React.MouseEvent | React.TouchEvent): void => {
@@ -498,6 +508,10 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     )
   }
 
+  componentWillUnmount(): void {
+    clearTimeout(this.volumeAnimationTimer)
+  }
+
   render(): React.ReactNode {
     const {
       className,
@@ -516,7 +530,14 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       children,
       style,
     } = this.props
-    const { currentTimePos, currentVolumePos, isPlaying, isLoopEnabled, downloadProgressArr } = this.state
+    const {
+      currentTimePos,
+      currentVolumePos,
+      isPlaying,
+      isLoopEnabled,
+      downloadProgressArr,
+      hasVolumeAnimation,
+    } = this.state
     const { currentTime, duration, volume } = this.audio
 
     return (
@@ -662,7 +683,10 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
                   className="rhap_volume-bar-area"
                 >
                   <div className="rhap_volume-bar">
-                    <div className="rhap_volume-indicator" style={{ left: currentVolumePos }} />
+                    <div
+                      className="rhap_volume-indicator"
+                      style={{ left: currentVolumePos, transitionDuration: hasVolumeAnimation ? '.1s' : '0s' }}
+                    />
                   </div>
                 </div>
               </div>
