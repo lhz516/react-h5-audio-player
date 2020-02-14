@@ -165,7 +165,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       downloadProgressArr: [],
       hasVolumeAnimation: false,
     }
-    this.audio = new Audio()
+
     this.lastVolume = volume
     this.timeOnMouseMove = 0
   }
@@ -524,6 +524,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       onClickPrevious,
       onClickNext,
       showDownloadProgress,
+      volume: volumeProp,
       children,
       style,
     } = this.props
@@ -535,7 +536,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       downloadProgressArr,
       hasVolumeAnimation,
     } = this.state
-    const { currentTime, duration, volume } = this.audio
+    const { currentTime = 0, duration = 0, volume = volumeProp } = this.audio || {}
 
     return (
       /* We want the container to catch bubbled events */
