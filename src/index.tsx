@@ -116,14 +116,11 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   private static addHeadingZero = (num: number): string => (num > 9 ? num.toString() : `0${num}`)
 
   private static getPosX = (event: TouchEvent | MouseEvent): number => {
-    let posX = 0
-    if (event instanceof TouchEvent) {
-      posX = event.touches[0].pageX
-    } else if (event instanceof MouseEvent) {
-      posX = event.pageX || event.clientX
+    if (event instanceof MouseEvent) {
+      return event.pageX || event.clientX
+    } else {
+      return event.touches[0].pageX
     }
-
-    return posX
   }
 
   private static throttle: Function = (func: Function, limit: number) => {
@@ -208,12 +205,12 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     this.audio.volume = currentVolume
     this.setState({ isDraggingVolume: true, currentVolumePos })
 
-    if (event.nativeEvent instanceof TouchEvent) {
-      window.addEventListener('touchmove', this.handleWindowMouseOrTouchMove)
-      window.addEventListener('touchend', this.handleWindowMouseOrTouchUp)
-    } else if (event.nativeEvent instanceof MouseEvent) {
+    if (event.nativeEvent instanceof MouseEvent) {
       window.addEventListener('mousemove', this.handleWindowMouseOrTouchMove)
       window.addEventListener('mouseup', this.handleWindowMouseOrTouchUp)
+    } else {
+      window.addEventListener('touchmove', this.handleWindowMouseOrTouchMove)
+      window.addEventListener('touchend', this.handleWindowMouseOrTouchUp)
     }
   }
 
@@ -247,12 +244,12 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       return { isDraggingVolume: false, isDraggingProgress: false }
     })
 
-    if (event instanceof TouchEvent) {
-      window.removeEventListener('touchmove', this.handleWindowMouseOrTouchMove)
-      window.removeEventListener('touchend', this.handleWindowMouseOrTouchUp)
-    } else {
+    if (event instanceof MouseEvent) {
       window.removeEventListener('mousemove', this.handleWindowMouseOrTouchMove)
       window.removeEventListener('mouseup', this.handleWindowMouseOrTouchUp)
+    } else {
+      window.removeEventListener('touchmove', this.handleWindowMouseOrTouchMove)
+      window.removeEventListener('touchend', this.handleWindowMouseOrTouchUp)
     }
   }
 
