@@ -1,4 +1,20 @@
-# React H5 Audio Player
+<p align="center">
+  <img alt="logo" src="./logo.png" width="100" max-width="100%">
+</p>
+
+<h1 align="center">React H5 Audio Player </h1>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/react-h5-audio-player" title="MIT License">
+    <img src="https://img.shields.io/npm/l/react-h5-audio-player.svg?color=brightgreen" alt="MIT License">
+  </a>
+  <a href="https://www.npmjs.com/package/react-h5-audio-player" title="Monthly download">
+    <img src="https://img.shields.io/npm/dm/react-h5-audio-player.svg?color=green" alt="Monthly download">
+  </a>
+  <a href="https://www.npmjs.com/package/react-h5-audio-player" title="Latest version">
+    <img src="https://img.shields.io/npm/v/react-h5-audio-player.svg" alt="Latest version">
+  </a>
+</p>
 
 * Audio player component that provides consistent UI/UX on different browsers.
 * Flexbox layout with SVG icons. Mobile friendly.
@@ -39,7 +55,7 @@ const Player = () => (
 );
 ```
 
-#### Keyboard shortcuts (Player focused)
+#### Keyboard shortcuts (When audio player focused)
 | Key binding | Action |
 | ----------- | ------ |
 | Space       | Play/Pause |
@@ -54,17 +70,17 @@ const Player = () => (
 
 ### HTML Audio Tag Native Attributes
 
-| Props       |  Type   |  Default  | Note                 |
-| ----------- | ------- | --------- | ---------------------|
-| src         | string  | ''        |                      |
-| preload     | string  | 'auto'    |                      |
-| autoPlay    | boolean | false     | Won't work on mobile |
-| loop        | boolean | false     |                      |
-| muted       | boolean | false     |                      |
-| loop        | boolean | false     |                      |
-| volume      | number  | 1.0       | Won't work on mobile |
-| crossOrigin | string  | undefined |                      |
-| mediaGroup  | string  | undefined |                      |
+| Props       |  Type   |  Default  | Note |
+| ----------- | ------- | --------- | ---- |
+| src         | string  | ''        | |
+| preload     | string  | 'auto'    | |
+| autoPlay    | boolean | false     | Won't work on most mobile |
+| loop        | boolean | false     | |
+| muted       | boolean | false     | |
+| loop        | boolean | false     | |
+| volume      | number  | 1.0       | Won't work on most mobile |
+| crossOrigin | string  | undefined | |
+| mediaGroup  | string  | undefined | |
 
 
 More native attributes detail: [MDN Audio element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio)
@@ -103,11 +119,11 @@ React H5 Audio Player provides built-in class names and SASS/LESS variables for 
 ### SASS variables
 
 ```scss
-$rhap_theme-color: #868686 !default;
-$rhap_background-color: #fff !default;
-$rhap_bar-color: #e4e4e4 !default;
-$rhap_time-color: #333 !default;
-$rhap_font-family: inherit !default;
+$rhap_theme-color: #868686 !default;   // Color of all buttons and volume/progress indicators
+$rhap_background-color: #fff !default; // Color of the player background
+$rhap_bar-color: #e4e4e4 !default;     // Color of volume and progress bar
+$rhap_time-color: #333 !default;       // Font color of current time and duration
+$rhap_font-family: inherit !default;   // Font family of current time and duration
 ```
 
 For LESS variables, just replace `$` with `@`.

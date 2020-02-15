@@ -283,18 +283,17 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   /* Handle mouse click on progress bar event */
   handleMouseDownProgressBar = (event: React.MouseEvent | React.TouchEvent): void => {
     event.stopPropagation()
-    const isTouch = event.type.startsWith('touch')
     const { currentTime, currentTimePos } = this.getCurrentProgress(event.nativeEvent)
 
     if (isFinite(currentTime)) {
       this.timeOnMouseMove = currentTime
       this.setState({ isDraggingProgress: true, currentTimePos })
-      if (isTouch) {
-        window.addEventListener('touchmove', this.handleWindowMouseOrTouchMove)
-        window.addEventListener('touchend', this.handleWindowMouseOrTouchUp)
-      } else {
+      if (event.nativeEvent instanceof MouseEvent) {
         window.addEventListener('mousemove', this.handleWindowMouseOrTouchMove)
         window.addEventListener('mouseup', this.handleWindowMouseOrTouchUp)
+      } else {
+        window.addEventListener('touchmove', this.handleWindowMouseOrTouchMove)
+        window.addEventListener('touchend', this.handleWindowMouseOrTouchUp)
       }
     }
   }

@@ -1,22 +1,19 @@
 module.exports = (api) => {
   const env = api.env()
-  let envOptions
+  const conditionalOptions = {}
 
   if (env === 'cjs') {
-    envOptions = {
-      targets: '> 0.5%',
-      modules: 'cjs',
-    }
+    conditionalOptions.modules = 'cjs'
   } else if (env === 'es') {
-    envOptions = {
-      targets: { esmodules: true },
-      modules: false,
-    }
+    conditionalOptions.modules = false
   }
 
   return {
     presets: [
-      ['@babel/preset-env', envOptions],
+      ['@babel/preset-env', {
+        targets: 'defaults', // > 0.5%, last 2 versions, Firefox ESR, not dead
+        ...conditionalOptions,
+      }],
       [
         '@babel/preset-typescript',
         {
