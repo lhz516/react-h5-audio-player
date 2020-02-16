@@ -93,6 +93,8 @@ interface VolumePosInfo {
   currentVolumePos: string
 }
 
+type throttleFunction<T> = (arg: T) => void
+
 class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   static defaultProps = {
     autoPlay: false,
@@ -113,9 +115,11 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     showDownloadProgress: true,
   }
 
-  private static addHeadingZero = (num: number): string => (num > 9 ? num.toString() : `0${num}`)
+  private static addHeadingZero(num: number): string {
+    return num > 9 ? num.toString() : `0${num}`
+  }
 
-  private static getPosX = (event: TouchEvent | MouseEvent): number => {
+  private static getPosX(event: TouchEvent | MouseEvent): number {
     if (event instanceof MouseEvent) {
       return event.pageX || event.clientX
     } else {
@@ -123,15 +127,26 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     }
   }
 
-  private static throttle: Function = (func: Function, limit: number) => {
+  private static throttle<K>(func: throttleFunction<K>, limit: number): throttleFunction<K> {
     let inThrottle = false
-    return function<T>(arg: T): void {
+    return function(arg): void {
       if (!inThrottle) {
         func(arg)
         inThrottle = true
         setTimeout(() => (inThrottle = false), limit)
       }
     }
+  }
+
+  private static getDisplayTimeBySeconds(seconds: number): string {
+    if (!isFinite(seconds)) {
+      return '00:00'
+    }
+
+    const addHeadingZero = H5AudioPlayer.addHeadingZero
+    const min = addHeadingZero(Math.floor(seconds / 60))
+    const sec = addHeadingZero(Math.floor(seconds % 60))
+    return `${min}:${sec}`
   }
 
   state: PlayerState
@@ -353,17 +368,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     return { currentTime, currentTimePos: `${((relativePos / maxRelativePos) * 100).toFixed(2)}%` }
   }
 
-  getDisplayTimeBySeconds = (seconds: number): string => {
-    if (!isFinite(seconds)) {
-      return '00:00'
-    }
-
-    const addHeadingZero = H5AudioPlayer.addHeadingZero
-    const min = addHeadingZero(Math.floor(seconds / 60))
-    const sec = addHeadingZero(Math.floor(seconds % 60))
-    return `${min}:${sec}`
-  }
-
   /**
    * Set an interval to call props.onListen every props.listenInterval time period
    */
@@ -491,7 +495,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
     audio.addEventListener(
       'timeupdate',
-      H5AudioPlayer.throttle((e: Event) => {
+      H5AudioPlayer.throttle((e: Event): void => {
         const { isDraggingProgress } = this.state
         const audio = e.target as HTMLAudioElement
         if (isDraggingProgress) return
@@ -570,7 +574,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
         </audio>
         <div className="rhap_progress-section">
           <div id="rhap_current-time" className="rhap_time rhap_current-time">
-            {this.getDisplayTimeBySeconds(currentTime)}
+            {H5AudioPlayer.getDisplayTimeBySeconds(currentTime)}
           </div>
           <div
             className="rhap_progress-container"
@@ -595,7 +599,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
                 ))}
             </div>
           </div>
-          <div className="rhap_time rhap_total-time">{this.getDisplayTimeBySeconds(duration)}</div>
+          <div className="rhap_time rhap_total-time">{H5AudioPlayer.getDisplayTimeBySeconds(duration)}</div>
         </div>
 
         <div className="rhap_controls-section">
