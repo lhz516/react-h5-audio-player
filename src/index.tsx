@@ -76,6 +76,7 @@ interface PlayerState {
   isLoopEnabled: boolean
   downloadProgressArr: DownloadProgress[]
   hasVolumeAnimation: boolean
+  hasDownloadProgressAnimation: boolean
 }
 
 interface DownloadProgress {
@@ -167,6 +168,8 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
   volumeAnimationTimer?: number
 
+  downloadProgressAnimationTimer?: number
+
   constructor(props: PlayerProps) {
     super(props)
     const { volume, muted } = props
@@ -179,6 +182,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       isLoopEnabled: this.props.loop,
       downloadProgressArr: [],
       hasVolumeAnimation: false,
+      hasDownloadProgressAnimation: false,
     }
 
     this.lastVolume = volume
@@ -209,6 +213,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       currentVolumePos: `${(this.audio.volume * 100).toFixed(0)}%`,
       hasVolumeAnimation: true,
     })
+    clearTimeout(this.volumeAnimationTimer)
     this.volumeAnimationTimer = setTimeout(() => {
       this.setState({ hasVolumeAnimation: false })
     }, 100)
@@ -490,7 +495,11 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
         })
       }
 
-      this.setState({ downloadProgressArr })
+      clearTimeout(this.downloadProgressAnimationTimer)
+      this.setState({ downloadProgressArr, hasDownloadProgressAnimation: true })
+      this.downloadProgressAnimationTimer = setTimeout(() => {
+        this.setState({ hasDownloadProgressAnimation: false })
+      }, 200)
     })
 
     audio.addEventListener(
@@ -510,6 +519,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
   componentWillUnmount(): void {
     clearTimeout(this.volumeAnimationTimer)
+    clearTimeout(this.downloadProgressAnimationTimer)
   }
 
   render(): React.ReactNode {
@@ -538,6 +548,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       isLoopEnabled,
       downloadProgressArr,
       hasVolumeAnimation,
+      hasDownloadProgressAnimation,
     } = this.state
     const { currentTime = 0, duration = 0, volume = volumeProp } = this.audio || {}
 
@@ -595,7 +606,11 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
               <div className="rhap_progress-indicator" style={{ left: currentTimePos }} />
               {showDownloadProgress &&
                 downloadProgressArr.map(({ left, width }, i) => (
-                  <div key={i} className="rhap_download-progress" style={{ left, width }} />
+                  <div
+                    key={i}
+                    className="rhap_download-progress"
+                    style={{ left, width, transitionDuration: hasDownloadProgressAnimation ? '.2s' : '0s' }}
+                  />
                 ))}
             </div>
           </div>
