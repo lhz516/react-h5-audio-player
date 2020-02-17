@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="logo" src="./logo.png" width="100" max-width="100%">
+  <img alt="logo" src="./assets/logo.png" width="100" max-width="100%">
 </p>
 
 <h1 align="center">React H5 Audio Player </h1>
@@ -21,7 +21,7 @@
 * Accessibility supported, keyboards events supported.
 * Written in TypeScript.
 
-![screenshot](./screenshot.png)
+![screenshot](./assets/screenshot.png)
 
 Live Demo: [Storybook](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts--default-story)
 
@@ -87,7 +87,7 @@ More native attributes detail: [MDN Audio element](https://developer.mozilla.org
 
 The `controls` attribute defaults to `false` and should never be changed to `true` because this library is already providing UI.
 
-### Other Props
+### UI Props
 
 | Props                  | Type              | Default | Note |
 | ---------------------- | ----------------- | ------- | ---- |
@@ -96,13 +96,18 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | showSkipControls       | boolean           | false   | Show Previous/Next buttons |
 | showJumpControls       | boolean           | true    | Show Rewind/Forward buttons |
 | showDownloadProgress   | boolean           | true    | Show download progress over progress bar |
-| onClickPrevious        | Function (Event)  | null    | Called when click Previous button |
-| onClickNext            | Function (Event)  | null    | Called when click Next button |
-| onPlayError            | Function (Error)  | null    | Called when there's error invoking `audio.play()`, it captures error that `onError` won't catch |
 | volumeJumpStep         | number            | 0.1     | Indicates the volume jump step when pressing up/down arrow key, volume range is `0` to `1` |
 | progressJumpStep       | number            | 5000    | Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key|
 | progressUpdateInterval | number            | 20      | Indicates the interval (ms) that the progress bar UI updates,  |
 | listenInterval         | number            | 1000    | Indicates the interval (ms) to call the `onListened` prop during playback |
+
+### Event Props
+
+| Props                  | Type              | Default | Note |
+| ---------------------- | ----------------- | ------- | ---- |
+| onClickPrevious        | Function (Event)  | null    | Called when click Previous button |
+| onClickNext            | Function (Event)  | null    | Called when click Next button |
+| onPlayError            | Function (Error)  | null    | Called when there's error invoking `audio.play()`, it captures error that `onError` won't catch |
 | onListen               | Function (number) | null    | Called every `listenInterval` milliseconds during playback |
 | onPlay                 | Function (Event)  | null    | Called when user plays the audio |
 | onPause                | Function (Event)  | null    | Called when user pauses the audio |
