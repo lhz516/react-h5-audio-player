@@ -10,6 +10,10 @@ import volumeHigh from '@iconify/icons-mdi/volume-high'
 import volumeMute from '@iconify/icons-mdi/volume-mute'
 import repeat from '@iconify/icons-mdi/repeat'
 import repeatOff from '@iconify/icons-mdi/repeat-off'
+import ProgressBar from './ProgressBar'
+import CurrentTime from './CurrentTime'
+import Duration from './Duration'
+import VolumeBar from './VolumeBar'
 
 interface PlayerProps {
   /**
@@ -68,33 +72,14 @@ interface PlayerProps {
 }
 
 interface PlayerState {
-  currentTimePos: string
-  currentVolumePos: string
-  isDraggingProgress: boolean
-  isDraggingVolume: boolean
   isPlaying: boolean
   isLoopEnabled: boolean
-  downloadProgressArr: DownloadProgress[]
-  hasVolumeAnimation: boolean
-  hasDownloadProgressAnimation: boolean
 }
 
 interface DownloadProgress {
   left: string
   width: string
 }
-
-interface TimePosInfo {
-  currentTime: number
-  currentTimePos: string
-}
-
-interface VolumePosInfo {
-  currentVolume: number
-  currentVolumePos: string
-}
-
-type throttleFunction<T> = (arg: T) => void
 
 class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   static defaultProps = {
@@ -107,7 +92,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     muted: false,
     preload: 'auto',
     progressUpdateInterval: 20,
-    volume: 1.0,
+    volume: 1,
     className: '',
     showLoopControl: true,
     showVolumeControl: true,
@@ -116,49 +101,15 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     showDownloadProgress: true,
   }
 
-  private static addHeadingZero(num: number): string {
-    return num > 9 ? num.toString() : `0${num}`
-  }
-
-  private static getPosX(event: TouchEvent | MouseEvent): number {
-    if (event instanceof MouseEvent) {
-      return event.pageX || event.clientX
-    } else {
-      return event.touches[0].pageX
-    }
-  }
-
-  private static throttle<K>(func: throttleFunction<K>, limit: number): throttleFunction<K> {
-    let inThrottle = false
-    return function(arg): void {
-      if (!inThrottle) {
-        func(arg)
-        inThrottle = true
-        setTimeout(() => (inThrottle = false), limit)
-      }
-    }
-  }
-
-  private static getDisplayTimeBySeconds(seconds: number): string {
-    if (!isFinite(seconds)) {
-      return '00:00'
-    }
-
-    const addHeadingZero = H5AudioPlayer.addHeadingZero
-    const min = addHeadingZero(Math.floor(seconds / 60))
-    const sec = addHeadingZero(Math.floor(seconds % 60))
-    return `${min}:${sec}`
-  }
-
   state: PlayerState
 
   audio: HTMLAudioElement
 
-  volumeControl?: HTMLElement
+  volumeControl?: HTMLDivElement
 
-  progressBar?: HTMLElement
+  progressBarInstance?: ProgressBar
 
-  container?: HTMLElement
+  container?: HTMLDivElement
 
   lastVolume: number // To store the volume before clicking mute button
 
@@ -172,17 +123,10 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
   constructor(props: PlayerProps) {
     super(props)
-    const { volume, muted } = props
+    const { volume } = props
     this.state = {
-      currentTimePos: '0%',
-      currentVolumePos: muted ? '0%' : `${volume * 100}%`,
-      isDraggingProgress: false,
-      isDraggingVolume: false,
       isPlaying: false,
       isLoopEnabled: this.props.loop,
-      downloadProgressArr: [],
-      hasVolumeAnimation: false,
-      hasDownloadProgressAnimation: false,
     }
 
     this.lastVolume = volume
@@ -209,113 +153,10 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     } else {
       this.audio.volume = this.lastVolume
     }
-    this.setState({
-      currentVolumePos: `${(this.audio.volume * 100).toFixed(0)}%`,
-      hasVolumeAnimation: true,
-    })
-    clearTimeout(this.volumeAnimationTimer)
-    this.volumeAnimationTimer = setTimeout(() => {
-      this.setState({ hasVolumeAnimation: false })
-    }, 100)
   }
 
-  handleVolumnControlMouseDown = (event: React.MouseEvent | React.TouchEvent): void => {
-    event.stopPropagation()
-    const { currentVolume, currentVolumePos } = this.getCurrentVolume(event.nativeEvent)
-    this.audio.volume = currentVolume
-    this.setState({ isDraggingVolume: true, currentVolumePos })
-
-    if (event.nativeEvent instanceof MouseEvent) {
-      window.addEventListener('mousemove', this.handleWindowMouseOrTouchMove)
-      window.addEventListener('mouseup', this.handleWindowMouseOrTouchUp)
-    } else {
-      window.addEventListener('touchmove', this.handleWindowMouseOrTouchMove)
-      window.addEventListener('touchend', this.handleWindowMouseOrTouchUp)
-    }
-  }
-
-  handleWindowMouseOrTouchMove = (event: TouchEvent | MouseEvent): void => {
-    event.preventDefault()
-    event.stopPropagation()
-    // Prevent Chrome drag selection bug
-    const windowSelection: Selection | null = window.getSelection()
-    if (windowSelection && windowSelection.type === 'Range') {
-      windowSelection.empty()
-    }
-
-    const { isDraggingVolume, isDraggingProgress } = this.state
-    if (isDraggingVolume) {
-      const { currentVolume, currentVolumePos } = this.getCurrentVolume(event)
-      this.audio.volume = currentVolume
-      this.setState({ currentVolumePos })
-    } else if (isDraggingProgress) {
-      const { currentTime, currentTimePos } = this.getCurrentProgress(event)
-      this.timeOnMouseMove = currentTime
-      this.setState({ currentTimePos })
-    }
-  }
-
-  handleWindowMouseOrTouchUp = (event: MouseEvent | TouchEvent): void => {
-    event.stopPropagation()
-    this.setState((prevState) => {
-      if (prevState.isDraggingProgress && isFinite(this.timeOnMouseMove)) {
-        this.audio.currentTime = this.timeOnMouseMove
-      }
-      return { isDraggingVolume: false, isDraggingProgress: false }
-    })
-
-    if (event instanceof MouseEvent) {
-      window.removeEventListener('mousemove', this.handleWindowMouseOrTouchMove)
-      window.removeEventListener('mouseup', this.handleWindowMouseOrTouchUp)
-    } else {
-      window.removeEventListener('touchmove', this.handleWindowMouseOrTouchMove)
-      window.removeEventListener('touchend', this.handleWindowMouseOrTouchUp)
-    }
-  }
-
-  getCurrentVolume = (event: TouchEvent | MouseEvent): VolumePosInfo => {
-    if (!this.volumeControl) {
-      return {
-        currentVolume: this.audio.volume,
-        currentVolumePos: this.state.currentVolumePos,
-      }
-    }
-    const volumeBarRect = this.volumeControl.getBoundingClientRect()
-    const maxRelativePos = volumeBarRect.width
-    const relativePos = H5AudioPlayer.getPosX(event) - volumeBarRect.left
-    let currentVolume
-    let currentVolumePos
-
-    if (relativePos < 0) {
-      currentVolume = 0
-      currentVolumePos = '0%'
-    } else if (relativePos > volumeBarRect.width) {
-      currentVolume = 1
-      currentVolumePos = '100%'
-    } else {
-      currentVolume = relativePos / maxRelativePos
-      currentVolumePos = `${(relativePos / maxRelativePos) * 100}%`
-    }
-
-    return { currentVolume, currentVolumePos }
-  }
-
-  /* Handle mouse click on progress bar event */
-  handleMouseDownProgressBar = (event: React.MouseEvent | React.TouchEvent): void => {
-    event.stopPropagation()
-    const { currentTime, currentTimePos } = this.getCurrentProgress(event.nativeEvent)
-
-    if (isFinite(currentTime)) {
-      this.timeOnMouseMove = currentTime
-      this.setState({ isDraggingProgress: true, currentTimePos })
-      if (event.nativeEvent instanceof MouseEvent) {
-        window.addEventListener('mousemove', this.handleWindowMouseOrTouchMove)
-        window.addEventListener('mouseup', this.handleWindowMouseOrTouchUp)
-      } else {
-        window.addEventListener('touchmove', this.handleWindowMouseOrTouchMove)
-        window.addEventListener('touchend', this.handleWindowMouseOrTouchUp)
-      }
-    }
+  handleMuteChange = (): void => {
+    this.forceUpdate()
   }
 
   handleClickLoopButton = (): void => {
@@ -343,8 +184,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     } else {
       this.audio.currentTime = currentTime
     }
-
-    this.setState({ currentTimePos: `${(currentTime / duration) * 100}%` })
   }
 
   setJumpVolume = (volume: number): void => {
@@ -352,25 +191,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     if (newVolume < 0) newVolume = 0
     else if (newVolume > 1) newVolume = 1
     this.audio.volume = newVolume
-    this.setState({ currentVolumePos: `${(newVolume * 100).toFixed(0)}%` })
-  }
-
-  getCurrentProgress = (event: MouseEvent | TouchEvent): TimePosInfo => {
-    if (!this.audio.src || !isFinite(this.audio.currentTime) || !this.progressBar) {
-      return { currentTime: 0, currentTimePos: '0%' }
-    }
-
-    const progressBarRect = this.progressBar.getBoundingClientRect()
-    const maxRelativePos = progressBarRect.width
-    let relativePos = H5AudioPlayer.getPosX(event) - progressBarRect.left
-
-    if (relativePos < 0) {
-      relativePos = 0
-    } else if (relativePos > maxRelativePos) {
-      relativePos = maxRelativePos
-    }
-    const currentTime = (this.audio.duration * relativePos) / maxRelativePos
-    return { currentTime, currentTimePos: `${((relativePos / maxRelativePos) * 100).toFixed(2)}%` }
   }
 
   /**
@@ -398,7 +218,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   handleKeyDown = (e: React.KeyboardEvent): void => {
     switch (e.keyCode) {
       case 32: // Space
-        if (e.target === this.container || e.target === this.progressBar) {
+        if (e.target === this.container || e.target === this.progressBarInstance.progressBarEl) {
           this.togglePlay(e)
         }
         break
@@ -424,6 +244,8 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   }
 
   componentDidMount(): void {
+    // force update to pass this.audio to child components
+    this.forceUpdate()
     // audio player object
     const audio = this.audio
 
@@ -463,7 +285,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       } else {
         this.setState({
           isPlaying: false,
-          currentTimePos: '0%',
         })
       }
       this.props.onAbort && this.props.onAbort(e)
@@ -482,44 +303,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       this.setState({ isPlaying: false })
       this.props.onPause && this.props.onPause(e)
     })
-
-    audio.addEventListener('progress', (e) => {
-      const audio = e.target as HTMLAudioElement
-      const downloadProgressArr: DownloadProgress[] = []
-      for (let i = 0; i < audio.buffered.length; i++) {
-        const bufferedStart: number = audio.buffered.start(i)
-        const bufferedEnd: number = audio.buffered.end(i)
-        downloadProgressArr.push({
-          left: `${Math.round((100 / audio.duration) * bufferedStart) || 0}%`,
-          width: `${Math.round((100 / audio.duration) * (bufferedEnd - bufferedStart)) || 0}%`,
-        })
-      }
-
-      clearTimeout(this.downloadProgressAnimationTimer)
-      this.setState({ downloadProgressArr, hasDownloadProgressAnimation: true })
-      this.downloadProgressAnimationTimer = setTimeout(() => {
-        this.setState({ hasDownloadProgressAnimation: false })
-      }, 200)
-    })
-
-    audio.addEventListener(
-      'timeupdate',
-      H5AudioPlayer.throttle((e: Event): void => {
-        const { isDraggingProgress } = this.state
-        const audio = e.target as HTMLAudioElement
-        if (isDraggingProgress) return
-
-        const { duration, currentTime } = audio
-        this.setState({
-          currentTimePos: `${((currentTime / duration) * 100 || 0).toFixed(2)}%`,
-        })
-      }, this.props.progressUpdateInterval)
-    )
-  }
-
-  componentWillUnmount(): void {
-    clearTimeout(this.volumeAnimationTimer)
-    clearTimeout(this.downloadProgressAnimationTimer)
   }
 
   render(): React.ReactNode {
@@ -531,26 +314,20 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       crossOrigin,
       mediaGroup,
       showLoopControl,
-      showVolumeControl,
       showSkipControls,
       showJumpControls,
+      showVolumeControl,
       onClickPrevious,
       onClickNext,
       showDownloadProgress,
       volume: volumeProp,
+      muted,
+      progressUpdateInterval,
       children,
       style,
     } = this.props
-    const {
-      currentTimePos,
-      currentVolumePos,
-      isPlaying,
-      isLoopEnabled,
-      downloadProgressArr,
-      hasVolumeAnimation,
-      hasDownloadProgressAnimation,
-    } = this.state
-    const { currentTime = 0, duration = 0, volume = volumeProp } = this.audio || {}
+    const { isPlaying, isLoopEnabled } = this.state
+    const { volume = muted ? 0 : volumeProp } = this.audio || {}
 
     return (
       /* We want the container to catch bubbled events */
@@ -585,36 +362,19 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
         </audio>
         <div className="rhap_progress-section">
           <div id="rhap_current-time" className="rhap_time rhap_current-time">
-            {H5AudioPlayer.getDisplayTimeBySeconds(currentTime)}
+            <CurrentTime audio={this.audio} />
           </div>
-          <div
-            className="rhap_progress-container"
-            ref={(ref: HTMLDivElement): void => {
-              this.progressBar = ref
+          <ProgressBar
+            ref={(node: React.ReactInstance): void => {
+              this.progressBarInstance = node as ProgressBar
             }}
-            aria-label="Audio Progress Control"
-            aria-describedby="rhap_current-time"
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={Number(currentTimePos.split('%')[0])}
-            tabIndex={0}
-            onMouseDown={this.handleMouseDownProgressBar}
-            onTouchStart={this.handleMouseDownProgressBar}
-          >
-            <div className={`rhap_progress-bar ${showDownloadProgress ? 'rhap_progress-bar-show-download' : ''}`}>
-              <div className="rhap_progress-indicator" style={{ left: currentTimePos }} />
-              {showDownloadProgress &&
-                downloadProgressArr.map(({ left, width }, i) => (
-                  <div
-                    key={i}
-                    className="rhap_download-progress"
-                    style={{ left, width, transitionDuration: hasDownloadProgressAnimation ? '.2s' : '0s' }}
-                  />
-                ))}
-            </div>
+            audio={this.audio}
+            progressUpdateInterval={progressUpdateInterval}
+            showDownloadProgress={showDownloadProgress}
+          />
+          <div className="rhap_time rhap_total-time">
+            <Duration audio={this.audio} />
           </div>
-          <div className="rhap_time rhap_total-time">{H5AudioPlayer.getDisplayTimeBySeconds(duration)}</div>
         </div>
 
         <div className="rhap_controls-section">
@@ -684,27 +444,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
                 >
                   <Icon icon={volume ? volumeHigh : volumeMute} />
                 </button>
-                <div
-                  ref={(ref: HTMLDivElement): void => {
-                    this.volumeControl = ref
-                  }}
-                  onMouseDown={this.handleVolumnControlMouseDown}
-                  onTouchStart={this.handleVolumnControlMouseDown}
-                  role="progressbar"
-                  aria-label="volume Control"
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={Number((volume * 100).toFixed(0))}
-                  tabIndex={0}
-                  className="rhap_volume-bar-area"
-                >
-                  <div className="rhap_volume-bar">
-                    <div
-                      className="rhap_volume-indicator"
-                      style={{ left: currentVolumePos, transitionDuration: hasVolumeAnimation ? '.1s' : '0s' }}
-                    />
-                  </div>
-                </div>
+                <VolumeBar audio={this.audio} volume={volume} onMuteChange={this.handleMuteChange} />
               </div>
             )}
           </div>

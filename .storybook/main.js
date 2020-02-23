@@ -14,7 +14,7 @@ module.exports = {
     })
   
     config.module.rules.push({
-      test: /\.tsx$/,
+      test: /\.tsx?$/,
       use: {
         loader: 'babel-loader',
         options: {
@@ -47,13 +47,14 @@ module.exports = {
     });
   
     config.module.rules.push({
-        test: /\.[tj]sx?$/,
+        test: /\.[tj]sx$/,
         loader: require.resolve('@storybook/source-loader'),
         exclude: [/node_modules/],
         enforce: 'pre',
     })
 
     config.resolve.extensions.push('.tsx')
+    config.resolve.extensions.push('.ts')
   
     return config
   },

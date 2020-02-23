@@ -8,8 +8,8 @@
   "scripts": {
     "build": "run-p build:js build:d.ts build:css build:less",
     "build:js": "run-s build:es build:cjs",
-    "build:cjs": "cross-env NODE_ENV=cjs babel src --out-dir lib --extensions .tsx",
-    "build:es": "cross-env NODE_ENV=es babel src --out-dir es --extensions .tsx",
+    "build:cjs": "cross-env NODE_ENV=cjs babel src --out-dir lib --extensions .tsx,.ts",
+    "build:es": "cross-env NODE_ENV=es babel src --out-dir es --extensions .tsx,.ts",
     "build:d.ts": "tsc --rootDir src --outDir lib -d",
     "build:css": "sass --no-source-map src/styles.scss lib/styles.css",
     "build:less": "sass2less src/styles.scss lib/styles.less",

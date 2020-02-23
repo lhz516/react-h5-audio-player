@@ -10,15 +10,29 @@ import AudioPlayer from '../src/index.tsx'
 
 Edge Cases of the player
 
-#### Empty src
+#### No src
+
+No error is fired, and no console error
 
 <Preview>
-  <Story name="Empty src">
+  <Story name="No src">
     <AudioPlayer />
   </Story>
 </Preview>
 
-#### Invalid src
+#### Empty string src
+
+`onError` will be fired, no browser console error
+
+<Preview>
+  <Story name="Empty string src">
+    <AudioPlayer src='' />
+  </Story>
+</Preview>
+
+#### Invalid url src
+
+`onError` will be fired with browser console error
 
 <Preview>
   <Story name="Invalid src">

@@ -2,7 +2,7 @@
   <img alt="logo" src="./assets/logo.png" width="100" max-width="100%">
 </p>
 
-<h1 align="center">React H5 Audio Player </h1>
+<h1 align="center" style="text-align: center;">React H5 Audio Player </h1>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/react-h5-audio-player" title="MIT License">
