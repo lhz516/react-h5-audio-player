@@ -25,7 +25,7 @@ interface TimePosInfo {
 }
 
 class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
-  timeOnMouseMove = 0
+  timeOnMouseMove = 0 // Audio's current time while mouse is down and moving over the progress bar
 
   hasAddedAudioEventListener = false
 

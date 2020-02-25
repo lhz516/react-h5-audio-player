@@ -47,6 +47,22 @@ Default width is `100%`, you can always overwrite it to any value that greater t
   </Story>
 </Preview>
 
+#### Hide jump Controls and Show Skip Controls
+
+<Preview>
+  <Story name="Show Jump Controls and Show Skip Controls">
+    <AudioPlayer src={SAMPLE_MP3_URL} showSkipControls={true} showJumpControls={false} />
+  </Story>
+</Preview>
+
+#### Hide all Controls
+
+<Preview>
+  <Story name="Hide all Controls">
+    <AudioPlayer src={SAMPLE_MP3_URL} showJumpControls={false} />
+  </Story>
+</Preview>
+
 #### Hide Volume
 
 Useful for most mobile browsers because they don't support volume control
@@ -57,10 +73,28 @@ Useful for most mobile browsers because they don't support volume control
   </Story>
 </Preview>
 
+#### Hide Loop Button
+
+Useful for most mobile browsers because they don't support volume control
+
+<Preview>
+  <Story name="Hide Loop Button">
+    <AudioPlayer src={SAMPLE_MP3_URL} showLoopControl={false} />
+  </Story>
+</Preview>
+
 #### Hide Download Progress
 
 <Preview>
   <Story name="Hide Download Progress">
     <AudioPlayer src={SAMPLE_MP3_URL} showDownloadProgress={false} />
+  </Story>
+</Preview>
+
+#### Custom default current time and duration
+
+<Preview>
+  <Story name="Custom default current time and duration">
+    <AudioPlayer src={SAMPLE_MP3_URL} defaultCurrentTime="Loading" defaultDuration="Loading" />
   </Story>
 </Preview>

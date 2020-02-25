@@ -1,28 +1,25 @@
-import React, { Component } from 'react'
+import React, { PureComponent, ReactNode } from 'react'
 import { getDisplayTimeBySeconds } from './utils'
 
 interface CurrentTimeProps {
   audio?: HTMLAudioElement
+  defaultCurrentTime: ReactNode
 }
 
 interface CurrentTimeState {
-  currentTimeString: string
+  currentTime: ReactNode
 }
 
-class CurrentTime extends Component<CurrentTimeProps, CurrentTimeState> {
+class CurrentTime extends PureComponent<CurrentTimeProps, CurrentTimeState> {
   hasAddedAudioEventListener = false
 
   state: CurrentTimeState = {
-    currentTimeString: '--:--',
+    currentTime: this.props.defaultCurrentTime,
   }
 
   handleAudioCurrentTimeChange = (e: Event): void => {
     const audio = e.target as HTMLAudioElement
-    this.setState({ currentTimeString: getDisplayTimeBySeconds(audio.currentTime) })
-  }
-
-  shouldComponentUpdate(nextProps: CurrentTimeProps, nextState: CurrentTimeState): boolean {
-    return nextState.currentTimeString !== this.state.currentTimeString || nextProps.audio !== this.props.audio
+    this.setState({ currentTime: getDisplayTimeBySeconds(audio.currentTime) })
   }
 
   componentDidUpdate(): void {
@@ -41,7 +38,7 @@ class CurrentTime extends Component<CurrentTimeProps, CurrentTimeState> {
   }
 
   render(): React.ReactNode {
-    return this.state.currentTimeString
+    return this.state.currentTime
   }
 }
 

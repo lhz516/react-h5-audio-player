@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, ReactNode, ReactInstance } from 'react'
 import { Icon } from '@iconify/react'
 import playCircle from '@iconify/icons-mdi/play-circle'
 import pauseCircle from '@iconify/icons-mdi/pause-circle'
@@ -19,11 +19,11 @@ interface PlayerProps {
   /**
    * HTML5 Audio tag autoPlay property
    */
-  autoPlay: boolean
+  autoPlay?: boolean
   /**
    * Whether to play music after src prop is changed
    */
-  autoPlayAfterSrcChange: boolean
+  autoPlayAfterSrcChange?: boolean
   /**
    * custom classNames
    */
@@ -31,11 +31,11 @@ interface PlayerProps {
   /**
    * The time interval to trigger onListen
    */
-  listenInterval: number
-  progressJumpStep: number
-  volumeJumpStep: number
-  loop: boolean
-  muted: boolean
+  listenInterval?: number
+  progressJumpStep?: number
+  volumeJumpStep?: number
+  loop?: boolean
+  muted?: boolean
   crossOrigin?: string
   mediaGroup?: string
   onAbort?: (e: Event) => void
@@ -52,22 +52,24 @@ interface PlayerProps {
   /**
    * HTML5 Audio tag preload property
    */
-  preload: 'auto' | 'metadata' | 'none'
+  preload?: 'auto' | 'metadata' | 'none'
   /**
    * Pregress indicator refresh interval
    */
-  progressUpdateInterval: number
+  progressUpdateInterval?: number
   /**
    * HTML5 Audio tag src property
    */
   src?: string
-  volume: number
-  showLoopControl: boolean
-  showVolumeControl: boolean
-  showJumpControls: boolean
-  showSkipControls: boolean
-  showDownloadProgress: boolean
-  children?: React.ReactNode
+  defaultCurrentTime?: ReactNode
+  defaultDuration?: ReactNode
+  volume?: number
+  showLoopControl?: boolean
+  showVolumeControl?: boolean
+  showJumpControls?: boolean
+  showSkipControls?: boolean
+  showDownloadProgress?: boolean
+  children?: ReactNode
   style?: React.CSSProperties
 }
 
@@ -76,13 +78,8 @@ interface PlayerState {
   isLoopEnabled: boolean
 }
 
-interface DownloadProgress {
-  left: string
-  width: string
-}
-
 class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
-  static defaultProps = {
+  static defaultProps: PlayerProps = {
     autoPlay: false,
     autoPlayAfterSrcChange: true,
     listenInterval: 1000,
@@ -92,6 +89,8 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     muted: false,
     preload: 'auto',
     progressUpdateInterval: 20,
+    defaultCurrentTime: '--:--',
+    defaultDuration: '--:--',
     volume: 1,
     className: '',
     showLoopControl: true,
@@ -113,8 +112,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
   lastVolume: number // To store the volume before clicking mute button
 
-  timeOnMouseMove: number // Audio's current time while mouse is down and moving over the progress bar
-
   listenTracker?: number // Determine whether onListen event should be called continuously
 
   volumeAnimationTimer?: number
@@ -130,7 +127,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     }
 
     this.lastVolume = volume
-    this.timeOnMouseMove = 0
   }
 
   togglePlay = (e: React.SyntheticEvent): void => {
@@ -305,7 +301,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     })
   }
 
-  render(): React.ReactNode {
+  render(): ReactNode {
     const {
       className,
       src,
@@ -321,6 +317,8 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       onClickNext,
       showDownloadProgress,
       volume: volumeProp,
+      defaultCurrentTime,
+      defaultDuration,
       muted,
       progressUpdateInterval,
       children,
@@ -362,10 +360,10 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
         </audio>
         <div className="rhap_progress-section">
           <div id="rhap_current-time" className="rhap_time rhap_current-time">
-            <CurrentTime audio={this.audio} />
+            <CurrentTime audio={this.audio} defaultCurrentTime={defaultCurrentTime} />
           </div>
           <ProgressBar
-            ref={(node: React.ReactInstance): void => {
+            ref={(node: ReactInstance): void => {
               this.progressBarInstance = node as ProgressBar
             }}
             audio={this.audio}
@@ -373,7 +371,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
             showDownloadProgress={showDownloadProgress}
           />
           <div className="rhap_time rhap_total-time">
-            <Duration audio={this.audio} />
+            <Duration audio={this.audio} defaultDuration={defaultDuration} />
           </div>
         </div>
 

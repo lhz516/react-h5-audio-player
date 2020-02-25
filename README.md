@@ -100,6 +100,8 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | progressJumpStep       | number            | 5000    | Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key|
 | progressUpdateInterval | number            | 20      | Indicates the interval (ms) that the progress bar UI updates,  |
 | listenInterval         | number            | 1000    | Indicates the interval (ms) to call the `onListened` prop during playback |
+| defaultCurrentTime     | ReactNode         | '--:--' | Default display for audio's current time before src's meta data is loaded |
+| defaultDuration        | ReactNode         | '--:--' | Default display for audio's duration before src's meta data is loaded |
 
 ### Event Props
 

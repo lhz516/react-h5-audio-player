@@ -1,24 +1,25 @@
-import React, { Component } from 'react'
+import React, { PureComponent, ReactNode } from 'react'
 import { getDisplayTimeBySeconds } from './utils'
 
 interface DurationProps {
   audio?: HTMLAudioElement
+  defaultDuration: ReactNode
 }
 
 interface DurationState {
-  DurationString: string
+  duration: ReactNode
 }
 
-class Duration extends Component<DurationProps, DurationState> {
+class Duration extends PureComponent<DurationProps, DurationState> {
   hasAddedAudioEventListener = false
 
   state: DurationState = {
-    DurationString: '--:--',
+    duration: this.props.defaultDuration,
   }
 
   handleAudioDurationChange = (e: Event): void => {
     const audio = e.target as HTMLAudioElement
-    this.setState({ DurationString: getDisplayTimeBySeconds(audio.duration) })
+    this.setState({ duration: getDisplayTimeBySeconds(audio.duration) })
   }
 
   componentDidUpdate(): void {
@@ -35,7 +36,7 @@ class Duration extends Component<DurationProps, DurationState> {
   }
 
   render(): React.ReactNode {
-    return this.state.DurationString
+    return this.state.duration
   }
 }
 
