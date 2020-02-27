@@ -2,7 +2,7 @@
   <img alt="logo" src="./assets/logo.png" width="100" max-width="100%">
 </p>
 
-<h1 align="center" style="text-align: center;">React H5 Audio Player </h1>
+<div align="center"><h1>React H5 Audio Player</h1></div>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/react-h5-audio-player" title="MIT License">
@@ -74,11 +74,11 @@ const Player = () => (
 | ----------- | ------- | --------- | ---- |
 | src         | string  | ''        | |
 | preload     | string  | 'auto'    | |
-| autoPlay    | boolean | false     | Won't work on most mobile |
+| autoPlay    | boolean | false     | Won't work on most mobile devices |
 | loop        | boolean | false     | |
 | muted       | boolean | false     | |
 | loop        | boolean | false     | |
-| volume      | number  | 1.0       | Won't work on most mobile |
+| volume      | number  | 1.0       | Won't work on most mobile devices |
 | crossOrigin | string  | undefined | |
 | mediaGroup  | string  | undefined | |
 
@@ -102,6 +102,9 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | listenInterval         | number            | 1000    | Indicates the interval (ms) to call the `onListened` prop during playback |
 | defaultCurrentTime     | ReactNode         | '--:--' | Default display for audio's current time before src's meta data is loaded |
 | defaultDuration        | ReactNode         | '--:--' | Default display for audio's duration before src's meta data is loaded |
+| header                 | ReactNode         | null    | Header of the audio player |
+| footer                 | ReactNode         | null    | Footer of the audio player |
+| customIcons            | [CustomIcons](https://github.com/lhz516/react-h5-audio-player/blob/6571f9e503695f25867bafb370640b2f9b331497/src/index.tsx#L85) | {}      | Customized icons to replace the default ones |
 
 ### Event Props
 
