@@ -98,3 +98,19 @@ Useful for most mobile browsers because they don't support volume control
     <AudioPlayer src={SAMPLE_MP3_URL} defaultCurrentTime="Loading" defaultDuration="Loading" />
   </Story>
 </Preview>
+
+#### Hide filled progress
+
+<Preview>
+  <Story name="Hide filled progress">
+    <AudioPlayer src={SAMPLE_MP3_URL} ShowFilledProgress={false} />
+  </Story>
+</Preview>
+
+#### Show header and footer
+
+<Preview>
+  <Story name="Show header and footer">
+    <AudioPlayer src={SAMPLE_MP3_URL} header="Now playing: Let it go!" footer="This is a footer" />
+  </Story>
+</Preview>

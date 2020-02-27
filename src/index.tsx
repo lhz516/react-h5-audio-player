@@ -69,6 +69,9 @@ interface PlayerProps {
   showJumpControls?: boolean
   showSkipControls?: boolean
   showDownloadProgress?: boolean
+  ShowFilledProgress?: boolean
+  header?: ReactNode
+  footer?: ReactNode
   children?: ReactNode
   style?: React.CSSProperties
 }
@@ -98,6 +101,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     showJumpControls: true,
     showSkipControls: false,
     showDownloadProgress: true,
+    ShowFilledProgress: true,
   }
 
   state: PlayerState
@@ -316,11 +320,14 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       onClickPrevious,
       onClickNext,
       showDownloadProgress,
+      ShowFilledProgress,
       volume: volumeProp,
       defaultCurrentTime,
       defaultDuration,
       muted,
       progressUpdateInterval,
+      header,
+      footer,
       children,
       style,
     } = this.props
@@ -358,6 +365,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
         >
           {children}
         </audio>
+        {header && <div className="rhap_header">{header}</div>}
         <div className="rhap_progress-section">
           <div id="rhap_current-time" className="rhap_time rhap_current-time">
             <CurrentTime audio={this.audio} defaultCurrentTime={defaultCurrentTime} />
@@ -369,6 +377,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
             audio={this.audio}
             progressUpdateInterval={progressUpdateInterval}
             showDownloadProgress={showDownloadProgress}
+            ShowFilledProgress={ShowFilledProgress}
           />
           <div className="rhap_time rhap_total-time">
             <Duration audio={this.audio} defaultDuration={defaultDuration} />
@@ -447,6 +456,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
             )}
           </div>
         </div>
+        {footer && <div className="rhap_footer">{footer}</div>}
       </div>
     )
   }

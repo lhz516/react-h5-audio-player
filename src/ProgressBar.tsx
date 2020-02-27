@@ -5,6 +5,7 @@ interface ProgressBarProps {
   audio: HTMLAudioElement
   progressUpdateInterval: number
   showDownloadProgress: boolean
+  ShowFilledProgress: boolean
 }
 
 interface ProgressBarState {
@@ -160,7 +161,7 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   }
 
   render(): React.ReactNode {
-    const { showDownloadProgress } = this.props
+    const { showDownloadProgress, ShowFilledProgress } = this.props
     const { currentTimePos, downloadProgressArr, hasDownloadProgressAnimation } = this.state
 
     return (
@@ -181,6 +182,7 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
       >
         <div className={`rhap_progress-bar ${showDownloadProgress ? 'rhap_progress-bar-show-download' : ''}`}>
           <div className="rhap_progress-indicator" style={{ left: currentTimePos }} />
+          {ShowFilledProgress && <div className="rhap_progress-filled" style={{ width: currentTimePos }} />}
           {showDownloadProgress &&
             downloadProgressArr.map(({ left, width }, i) => (
               <div

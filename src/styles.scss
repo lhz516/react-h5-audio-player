@@ -10,7 +10,7 @@ $rhap_font-family: inherit !default;
   flex-direction: column;
   line-height: 1;
   font-family: $rhap_font-family;
-  height: 90px;
+  min-height: 90px;
   width: 100%;
   min-width: 300px;
   padding: 10px 15px;
@@ -20,6 +20,14 @@ $rhap_font-family: inherit !default;
   &:focus:not(:focus-visible) {
     outline: 0;
   }
+}
+
+.rhap_header {
+  margin-bottom: 10px;
+}
+
+.rhap_footer {
+  margin-top: 5px;
 }
 
 .rhap_progress-section {
@@ -60,6 +68,14 @@ $rhap_font-family: inherit !default;
   border-radius: 2px;
 }
 
+.rhap_progress-filled {
+  height: 100%;
+  position: absolute;
+  z-index: 2;
+  background-color: $rhap_theme-color;
+  border-radius: 2px;
+}
+
 .rhap_progress-bar-show-download {
   background-color: rgba($rhap_bar-color, 0.5);
 }
@@ -75,13 +91,12 @@ $rhap_font-family: inherit !default;
 .rhap_progress-indicator {
   box-sizing: border-box;
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   width: 20px;
   height: 20px;
   margin-left: -10px;
   top: -8px;
   background: $rhap_theme-color;
-  opacity: 0.9;
   border-radius: 50px;
   box-shadow: rgba($rhap_theme-color, .5) 0 0 5px;
 }
