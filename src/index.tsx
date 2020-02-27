@@ -1,4 +1,4 @@
-import React, { Component, ReactNode, ReactInstance } from 'react'
+import React, { Component, ReactNode, ReactInstance, CSSProperties } from 'react'
 import { Icon } from '@iconify/react'
 import playCircle from '@iconify/icons-mdi/play-circle'
 import pauseCircle from '@iconify/icons-mdi/pause-circle'
@@ -72,13 +72,27 @@ interface PlayerProps {
   ShowFilledProgress?: boolean
   header?: ReactNode
   footer?: ReactNode
+  customIcons: CustomIcons
   children?: ReactNode
-  style?: React.CSSProperties
+  style?: CSSProperties
 }
 
 interface PlayerState {
   isPlaying: boolean
   isLoopEnabled: boolean
+}
+
+interface CustomIcons {
+  play?: ReactNode
+  pause?: ReactNode
+  rewind?: ReactNode
+  forward?: ReactNode
+  previous?: ReactNode
+  next?: ReactNode
+  loop?: ReactNode
+  loopOff?: ReactNode
+  volume?: ReactNode
+  volumeMute?: ReactNode
 }
 
 class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
@@ -102,6 +116,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     showSkipControls: false,
     showDownloadProgress: true,
     ShowFilledProgress: true,
+    customIcons: {},
   }
 
   state: PlayerState
@@ -328,11 +343,33 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       progressUpdateInterval,
       header,
       footer,
+      customIcons,
       children,
       style,
     } = this.props
     const { isPlaying, isLoopEnabled } = this.state
     const { volume = muted ? 0 : volumeProp } = this.audio || {}
+
+    let loopIcon: ReactNode
+    if (isLoopEnabled) {
+      loopIcon = customIcons.loop ? customIcons.loop : <Icon icon={repeat} />
+    } else {
+      loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon={repeatOff} />
+    }
+
+    let actionIcon: ReactNode
+    if (isPlaying) {
+      actionIcon = customIcons.pause ? customIcons.pause : <Icon icon={pauseCircle} />
+    } else {
+      actionIcon = customIcons.play ? customIcons.play : <Icon icon={playCircle} />
+    }
+
+    let volumeIcon: ReactNode
+    if (volume) {
+      volumeIcon = customIcons.volume ? customIcons.volume : <Icon icon={volumeHigh} />
+    } else {
+      volumeIcon = customIcons.volume ? customIcons.volumeMute : <Icon icon={volumeMute} />
+    }
 
     return (
       /* We want the container to catch bubbled events */
@@ -392,7 +429,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
                 className="rhap_button-clear rhap_repeat-button"
                 onClick={this.handleClickLoopButton}
               >
-                <Icon icon={isLoopEnabled ? repeat : repeatOff} />
+                {loopIcon}
               </button>
             )}
           </div>
@@ -403,7 +440,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
                 className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
                 onClick={onClickPrevious}
               >
-                <Icon icon={skipPrevious} />
+                {customIcons.previous ? customIcons.previous : <Icon icon={skipPrevious} />}
               </button>
             )}
             {showJumpControls && (
@@ -412,7 +449,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
                 className="rhap_button-clear rhap_main-controls-button rhap_rewind-button"
                 onClick={this.handleClickRewind}
               >
-                <Icon icon={rewind} />
+                {customIcons.rewind ? customIcons.rewind : <Icon icon={rewind} />}
               </button>
             )}
             <button
@@ -420,7 +457,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
               className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button"
               onClick={this.togglePlay}
             >
-              {isPlaying ? <Icon icon={pauseCircle} /> : <Icon icon={playCircle} />}
+              {actionIcon}
             </button>
             {showJumpControls && (
               <button
@@ -428,7 +465,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
                 className="rhap_button-clear rhap_main-controls-button rhap_forward-button"
                 onClick={this.handleClickForward}
               >
-                <Icon icon={fastForward} />
+                {customIcons.forward ? customIcons.forward : <Icon icon={fastForward} />}
               </button>
             )}
             {showSkipControls && (
@@ -437,7 +474,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
                 className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
                 onClick={onClickNext}
               >
-                <Icon icon={skipNext} />
+                {customIcons.next ? customIcons.next : <Icon icon={skipNext} />}
               </button>
             )}
           </div>
@@ -449,7 +486,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
                   onClick={this.handleClickVolumeButton}
                   className="rhap_button-clear rhap_volume-button"
                 >
-                  <Icon icon={volume ? volumeHigh : volumeMute} />
+                  {volumeIcon}
                 </button>
                 <VolumeBar audio={this.audio} volume={volume} onMuteChange={this.handleMuteChange} />
               </div>
