@@ -114,3 +114,30 @@ Useful for most mobile browsers because they don't support volume control
     <AudioPlayer src={SAMPLE_MP3_URL} header="Now playing: Let it go!" footer="This is a footer" />
   </Story>
 </Preview>
+
+#### Custom icons
+
+Pass custom icons as needed to the props `customIcons`. Below is an example to use custom play icon for the audio player.
+
+```
+CustomIcons {
+  play?: ReactNode
+  pause?: ReactNode
+  rewind?: ReactNode
+  forward?: ReactNode
+  previous?: ReactNode
+  next?: ReactNode
+  loop?: ReactNode
+  loopOff?: ReactNode
+  volume?: ReactNode
+  volumeMute?: ReactNode
+}
+```
+
+export const sampleIcon = (<svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>asciinema icon</title><path d="M1.61 0V24L22.39 12L1.61 0M5.76 7.2L10.06 9.68L5.76 12.16V7.2M12.55 11.12L14.08 12L5.76 16.8V15.04L12.55 11.12Z"></path></svg>)
+
+<Preview>
+  <Story name="Custom icons">
+    <AudioPlayer src={SAMPLE_MP3_URL} defaultCurrentTime="Loading" defaultDuration="Loading" customIcons={{ play: sampleIcon }} />
+  </Story>
+</Preview>
