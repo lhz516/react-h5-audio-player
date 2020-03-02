@@ -2,9 +2,9 @@
   <img alt="logo" src="./assets/logo.png" width="100" max-width="100%">
 </p>
 
-<div align="center"><h1>React H5 Audio Player</h1></div>
+<h1 align="center">React H5 Audio Player</h1>
 
-<p align="center">
+<div align="center">
   <a href="https://www.npmjs.com/package/react-h5-audio-player" title="MIT License">
     <img src="https://img.shields.io/npm/l/react-h5-audio-player.svg?color=brightgreen" alt="MIT License">
   </a>
@@ -14,7 +14,7 @@
   <a href="https://www.npmjs.com/package/react-h5-audio-player" title="Latest version">
     <img src="https://img.shields.io/npm/v/react-h5-audio-player.svg" alt="Latest version">
   </a>
-</p>
+</div>
 
 * Audio player component that provides consistent UI/UX on different browsers.
 * Flexbox layout with SVG icons. Mobile friendly.

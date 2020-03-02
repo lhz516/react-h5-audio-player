@@ -12,6 +12,7 @@ module.exports = (api) => {
     presets: [
       ['@babel/preset-env', {
         targets: 'defaults', // > 0.5%, last 2 versions, Firefox ESR, not dead
+        loose: true,
         ...conditionalOptions,
       }],
       [
@@ -23,7 +24,10 @@ module.exports = (api) => {
       ],
       '@babel/preset-react',
     ],
-    plugins: ['@babel/plugin-proposal-class-properties'],
+    plugins: [
+      '@babel/plugin-proposal-class-properties',
+      '@babel/plugin-transform-runtime'
+    ],
     comments: false,
   }
 }

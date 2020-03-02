@@ -1,16 +1,15 @@
 {
   "name": "react-h5-audio-player",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "A React audio player with UI. Written in TypeScript. Mobile compatible. Keyboard friendly",
   "main": "./lib/index.js",
   "module": "./es/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
-    "build": "run-p build:js build:d.ts build:css build:less",
-    "build:js": "run-s build:es build:cjs",
+    "build": "run-p build:cjs build:d.ts build:es build:css build:less",
     "build:cjs": "cross-env NODE_ENV=cjs babel src --out-dir lib --extensions .tsx,.ts",
     "build:es": "cross-env NODE_ENV=es babel src --out-dir es --extensions .tsx,.ts",
-    "build:d.ts": "tsc --rootDir src --outDir lib -d",
+    "build:d.ts": "tsc",
     "build:css": "sass --no-source-map src/styles.scss lib/styles.css",
     "build:less": "sass2less src/styles.scss lib/styles.less",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -42,6 +41,7 @@
     "prop-types": "^15.5.0 || ^16.0.0"
   },
   "dependencies": {
+    "@babel/runtime": "^7.8.4",
     "@iconify/icons-mdi": "^1.0.46",
     "@iconify/react": "^1.1.1"
   },
@@ -49,6 +49,7 @@
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.4",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-react": "^7.8.3",
     "@babel/preset-typescript": "^7.8.3",
