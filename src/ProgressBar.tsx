@@ -157,8 +157,10 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   }
 
   componentWillUnmount(): void {
-    this.audio.removeEventListener('timeupdate', this.handleAudioTimeUpdate)
-    this.audio.removeEventListener('progress', this.handleAudioDownloadProgressUpdate)
+    if (this.audio && this.hasAddedAudioEventListener) {
+      this.audio.removeEventListener('timeupdate', this.handleAudioTimeUpdate)
+      this.audio.removeEventListener('progress', this.handleAudioDownloadProgressUpdate)
+    }
     clearTimeout(this.downloadProgressAnimationTimer)
   }
 

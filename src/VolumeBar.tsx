@@ -149,7 +149,10 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
   }
 
   componentWillUnmount(): void {
-    this.audio.removeEventListener('volumechange', this.handleAudioVolumeChange)
+    if (this.audio && this.hasAddedAudioEventListener) {
+      this.audio.removeEventListener('volumechange', this.handleAudioVolumeChange)
+    }
+
     clearTimeout(this.volumeAnimationTimer)
   }
 

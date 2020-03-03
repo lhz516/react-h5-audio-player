@@ -35,8 +35,10 @@ class CurrentTime extends PureComponent<CurrentTimeProps, CurrentTimeState> {
   }
 
   componentWillUnmount(): void {
-    this.audio.removeEventListener('timeupdate', this.handleAudioCurrentTimeChange)
-    this.audio.removeEventListener('loadedmetadata', this.handleAudioCurrentTimeChange)
+    if (this.audio && this.hasAddedAudioEventListener) {
+      this.audio.removeEventListener('timeupdate', this.handleAudioCurrentTimeChange)
+      this.audio.removeEventListener('loadedmetadata', this.handleAudioCurrentTimeChange)
+    }
   }
 
   render(): React.ReactNode {
