@@ -11,6 +11,8 @@ interface CurrentTimeState {
 }
 
 class CurrentTime extends PureComponent<CurrentTimeProps, CurrentTimeState> {
+  audio?: HTMLAudioElement
+
   hasAddedAudioEventListener = false
 
   state: CurrentTimeState = {
@@ -25,6 +27,7 @@ class CurrentTime extends PureComponent<CurrentTimeProps, CurrentTimeState> {
   componentDidUpdate(): void {
     const { audio } = this.props
     if (audio && !this.hasAddedAudioEventListener) {
+      this.audio = audio
       this.hasAddedAudioEventListener = true
       audio.addEventListener('timeupdate', this.handleAudioCurrentTimeChange)
       audio.addEventListener('loadedmetadata', this.handleAudioCurrentTimeChange)
@@ -32,9 +35,8 @@ class CurrentTime extends PureComponent<CurrentTimeProps, CurrentTimeState> {
   }
 
   componentWillUnmount(): void {
-    const { audio } = this.props
-    audio.removeEventListener('timeupdate', this.handleAudioCurrentTimeChange)
-    audio.removeEventListener('loadedmetadata', this.handleAudioCurrentTimeChange)
+    this.audio.removeEventListener('timeupdate', this.handleAudioCurrentTimeChange)
+    this.audio.removeEventListener('loadedmetadata', this.handleAudioCurrentTimeChange)
   }
 
   render(): React.ReactNode {

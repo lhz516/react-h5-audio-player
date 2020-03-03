@@ -11,6 +11,8 @@ interface DurationState {
 }
 
 class Duration extends PureComponent<DurationProps, DurationState> {
+  audio?: HTMLAudioElement
+
   hasAddedAudioEventListener = false
 
   state: DurationState = {
@@ -25,14 +27,14 @@ class Duration extends PureComponent<DurationProps, DurationState> {
   componentDidUpdate(): void {
     const { audio } = this.props
     if (audio && !this.hasAddedAudioEventListener) {
+      this.audio = audio
       this.hasAddedAudioEventListener = true
       audio.addEventListener('durationchange', this.handleAudioDurationChange)
     }
   }
 
   componentWillUnmount(): void {
-    const { audio } = this.props
-    audio.removeEventListener('durationchange', this.handleAudioDurationChange)
+    this.audio.removeEventListener('durationchange', this.handleAudioDurationChange)
   }
 
   render(): React.ReactNode {

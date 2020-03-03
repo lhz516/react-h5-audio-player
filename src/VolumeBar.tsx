@@ -19,6 +19,8 @@ interface VolumePosInfo {
 }
 
 class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState> {
+  audio?: HTMLAudioElement
+
   hasAddedAudioEventListener = false
 
   volumeBarEl?: HTMLDivElement
@@ -140,14 +142,14 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
   componentDidUpdate(): void {
     const { audio } = this.props
     if (audio && !this.hasAddedAudioEventListener) {
+      this.audio = audio
       this.hasAddedAudioEventListener = true
       audio.addEventListener('volumechange', this.handleAudioVolumeChange)
     }
   }
 
   componentWillUnmount(): void {
-    const { audio } = this.props
-    audio.removeEventListener('volumechange', this.handleAudioVolumeChange)
+    this.audio.removeEventListener('volumechange', this.handleAudioVolumeChange)
     clearTimeout(this.volumeAnimationTimer)
   }
 

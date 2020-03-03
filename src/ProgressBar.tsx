@@ -26,6 +26,8 @@ interface TimePosInfo {
 }
 
 class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
+  audio?: HTMLAudioElement
+
   timeOnMouseMove = 0 // Audio's current time while mouse is down and moving over the progress bar
 
   hasAddedAudioEventListener = false
@@ -147,6 +149,7 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   componentDidUpdate(): void {
     const { audio } = this.props
     if (audio && !this.hasAddedAudioEventListener) {
+      this.audio = audio
       this.hasAddedAudioEventListener = true
       audio.addEventListener('timeupdate', this.handleAudioTimeUpdate)
       audio.addEventListener('progress', this.handleAudioDownloadProgressUpdate)
@@ -154,9 +157,8 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   }
 
   componentWillUnmount(): void {
-    const { audio } = this.props
-    audio.removeEventListener('timeupdate', this.handleAudioTimeUpdate)
-    audio.removeEventListener('progress', this.handleAudioDownloadProgressUpdate)
+    this.audio.removeEventListener('timeupdate', this.handleAudioTimeUpdate)
+    this.audio.removeEventListener('progress', this.handleAudioDownloadProgressUpdate)
     clearTimeout(this.downloadProgressAnimationTimer)
   }
 
