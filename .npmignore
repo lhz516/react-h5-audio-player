@@ -2,6 +2,7 @@ node_modules/
 screenshot.png
 .storybook/
 .cache/
+.github/
 stories/
 react-h5-audio-player-storybook/
 assets/
