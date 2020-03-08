@@ -1,0 +1,153 @@
+import { Meta, Story, Preview } from '@storybook/addon-docs/blocks';
+import { SAMPLE_MP3_URL } from './utils'
+import VolumePercentage from './volume-percentage.tsx'
+import AudioPlayer, { RHAP_UI } from '../src/index.tsx'
+
+<Meta title="Layouts - Advanced" component={AudioPlayer} />
+
+# Layouts - Advanced
+
+Advanced layout settings
+
+Please import `RHAP_UI` along with the audio player
+
+```js
+import AudioPlayer, { RHAP_UI } from 'react-h5-audio-player'
+```
+
+#### Stacked (Default)
+
+<Preview>
+  <Story name="Stacked">
+    <AudioPlayer src={SAMPLE_MP3_URL} />
+  </Story>
+</Preview>
+
+#### Horizontal
+
+<Preview>
+  <Story name="Horizontal">
+    <AudioPlayer src={SAMPLE_MP3_URL} layout="horizontal" />
+  </Story>
+</Preview>
+
+#### Custom progress bar section
+
+<Story name="Custom progress bar section">
+  <AudioPlayer
+    src={SAMPLE_MP3_URL}
+    customProgressBarSection={
+      [
+        RHAP_UI.PROGRESS_BAR,
+        RHAP_UI.CURRENT_TIME,
+        <div>/</div>,
+        RHAP_UI.DURATION
+      ]
+    }
+  />
+</Story>
+
+```jsx
+<AudioPlayer
+  src={SAMPLE_MP3_URL}
+  customProgressBarSection={
+    [
+      RHAP_UI.PROGRESS_BAR,
+      RHAP_UI.CURRENT_TIME,
+      <div>/</div>,
+      RHAP_UI.DURATION
+    ]
+  }
+/>
+```
+
+#### Custom controls section
+
+<Story name="Custom controls section">
+  <AudioPlayer
+    src={SAMPLE_MP3_URL}
+    customControlsSection={
+      [
+        <div>This is an additional module in controls section&nbsp;&nbsp;&nbsp;&nbsp;</div>,
+        RHAP_UI.ADDITIONAL_CONTROLS,
+        RHAP_UI.MAIN_CONTROLS,
+        RHAP_UI.VOLUME_CONTROLS,
+      ]
+    }
+  />
+</Story>
+
+```jsx
+<AudioPlayer
+  src={SAMPLE_MP3_URL}
+  customControlsSection={
+    [
+      <div>This is an additional module in controls section </div>,
+      RHAP_UI.ADDITIONAL_CONTROLS,
+      RHAP_UI.MAIN_CONTROLS,
+      RHAP_UI.VOLUME_CONTROLS,
+    ]
+  }
+/>
+```
+
+#### Custom additional controls
+
+<Story name="Custom additional controls">
+  <AudioPlayer
+    src={SAMPLE_MP3_URL}
+    customAdditionalControls={
+      [
+        RHAP_UI.LOOP,
+        <button>button 2 </button>,
+        <button>button 3 </button>,
+        <button>button 4 </button>,
+      ]
+    }
+  />
+</Story>
+
+```jsx
+<AudioPlayer
+  src={SAMPLE_MP3_URL}
+  customAdditionalControls={
+    [
+      RHAP_UI.LOOP,
+      <button>button 2 </button>,
+      <button>button 3 </button>,
+      <button>button 4 </button>,
+    ]
+  }
+/>
+```
+
+#### Custom volume controls
+
+<Story name="Custom volume controls">
+  <VolumePercentage />
+</Story>
+
+```jsx
+class VolumePercentage extends PureComponent<{}, { volumeText: string }> {
+  player = createRef<AudioPlayer>()
+
+  state = { volumeText: '100%' }
+
+  componentDidMount(): void {
+    this.player.current.audio.current.addEventListener('volumechange', (e) => {
+      this.setState({ volumeText: `${((e.target as HTMLAudioElement).volume * 100).toFixed(0)}%` })
+    })
+  }
+
+  render(): React.ReactNode {
+    const { volumeText } = this.state
+    return (
+      <AudioPlayer
+        ref={this.player}
+        src={SAMPLE_MP3_URL}
+        customVolumeControls={[RHAP_UI.VOLUME, <div key={2}>&nbsp;&nbsp;{volumeText}</div>]}
+      />
+    )
+  }
+}
+```

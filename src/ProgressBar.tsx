@@ -1,11 +1,14 @@
-import React, { Component } from 'react'
+import React, { Component, forwardRef } from 'react'
 import { getPosX, throttle } from './utils'
 
-interface ProgressBarProps {
+interface ProgressBarForwardRefProps {
   audio: HTMLAudioElement
   progressUpdateInterval: number
   showDownloadProgress: boolean
   ShowFilledProgress: boolean
+}
+interface ProgressBarProps extends ProgressBarForwardRefProps {
+  progressBar: React.RefObject<HTMLDivElement>
 }
 
 interface ProgressBarState {
@@ -34,8 +37,6 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
 
   downloadProgressAnimationTimer?: number
 
-  progressBarEl?: HTMLDivElement
-
   state: ProgressBarState = {
     isDraggingProgress: false,
     currentTimePos: '0%',
@@ -45,12 +46,12 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
 
   // Get time info while dragging indicator by mouse or touch
   getCurrentProgress = (event: MouseEvent | TouchEvent): TimePosInfo => {
-    const { audio } = this.props
-    if (!audio.src || !isFinite(audio.currentTime) || !this.progressBarEl) {
+    const { audio, progressBar } = this.props
+    if (!audio.src || !isFinite(audio.currentTime) || !progressBar.current) {
       return { currentTime: 0, currentTimePos: '0%' }
     }
 
-    const progressBarRect = this.progressBarEl.getBoundingClientRect()
+    const progressBarRect = progressBar.current.getBoundingClientRect()
     const maxRelativePos = progressBarRect.width
     let relativePos = getPosX(event) - progressBarRect.left
 
@@ -165,15 +166,13 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   }
 
   render(): React.ReactNode {
-    const { showDownloadProgress, ShowFilledProgress } = this.props
+    const { showDownloadProgress, ShowFilledProgress, progressBar } = this.props
     const { currentTimePos, downloadProgressArr, hasDownloadProgressAnimation } = this.state
 
     return (
       <div
         className="rhap_progress-container"
-        ref={(el: HTMLDivElement): void => {
-          this.progressBarEl = el
-        }}
+        ref={progressBar}
         aria-label="Audio Progress Control"
         aria-describedby="rhap_current-time"
         role="progressbar"
@@ -201,4 +200,9 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   }
 }
 
-export default ProgressBar
+const ProgressBarForwardRef = (
+  props: ProgressBarForwardRefProps,
+  ref: React.Ref<HTMLDivElement>
+): React.ReactElement => <ProgressBar {...props} progressBar={ref as React.RefObject<HTMLDivElement>} />
+
+export default forwardRef(ProgressBarForwardRef)

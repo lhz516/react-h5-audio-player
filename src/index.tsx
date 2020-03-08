@@ -1,4 +1,12 @@
-import React, { Component, ReactNode, ReactInstance, CSSProperties } from 'react'
+import React, {
+  Component,
+  cloneElement,
+  isValidElement,
+  createRef,
+  ReactNode,
+  CSSProperties,
+  ReactElement,
+} from 'react'
 import { Icon } from '@iconify/react'
 import playCircle from '@iconify/icons-mdi/play-circle'
 import pauseCircle from '@iconify/icons-mdi/pause-circle'
@@ -14,6 +22,13 @@ import ProgressBar from './ProgressBar'
 import CurrentTime from './CurrentTime'
 import Duration from './Duration'
 import VolumeBar from './VolumeBar'
+import {
+  RHAP_UI,
+  PROGRESS_BAR_SECTION_UI,
+  CONTROLS_SECTION_UI,
+  ADDITIONAL_CONTROLS_UI,
+  VOLUME_CONTROLS_UI,
+} from './constants'
 
 interface PlayerProps {
   /**
@@ -72,7 +87,12 @@ interface PlayerProps {
   ShowFilledProgress?: boolean
   header?: ReactNode
   footer?: ReactNode
-  customIcons: CustomIcons
+  customIcons?: CustomIcons
+  layout?: 'stacked' | 'horizontal'
+  customProgressBarSection?: Array<PROGRESS_BAR_SECTION_UI | ReactElement>
+  customControlsSection?: Array<CONTROLS_SECTION_UI | ReactElement>
+  customAdditionalControls?: Array<ADDITIONAL_CONTROLS_UI | ReactElement>
+  customVolumeControls?: Array<VOLUME_CONTROLS_UI | ReactElement>
   children?: ReactNode
   style?: CSSProperties
 }
@@ -117,19 +137,25 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     showDownloadProgress: true,
     ShowFilledProgress: true,
     customIcons: {},
+    customProgressBarSection: [RHAP_UI.CURRENT_TIME, RHAP_UI.PROGRESS_BAR, RHAP_UI.DURATION],
+    customControlsSection: [RHAP_UI.ADDITIONAL_CONTROLS, RHAP_UI.MAIN_CONTROLS, RHAP_UI.VOLUME_CONTROLS],
+    customAdditionalControls: [RHAP_UI.LOOP],
+    customVolumeControls: [RHAP_UI.VOLUME],
+    layout: 'stacked',
   }
 
-  state: PlayerState
+  state: PlayerState = {
+    isPlaying: false,
+    isLoopEnabled: this.props.loop,
+  }
 
-  audio: HTMLAudioElement
+  audio = createRef<HTMLAudioElement>()
 
-  volumeControl?: HTMLDivElement
+  progressBar = createRef<HTMLDivElement>()
 
-  progressBarInstance?: ProgressBar
+  container = createRef<HTMLDivElement>()
 
-  container?: HTMLDivElement
-
-  lastVolume: number // To store the volume before clicking mute button
+  lastVolume: number = this.props.volume // To store the volume before clicking mute button
 
   listenTracker?: number // Determine whether onListen event should be called continuously
 
@@ -137,36 +163,27 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
   downloadProgressAnimationTimer?: number
 
-  constructor(props: PlayerProps) {
-    super(props)
-    const { volume } = props
-    this.state = {
-      isPlaying: false,
-      isLoopEnabled: this.props.loop,
-    }
-
-    this.lastVolume = volume
-  }
-
   togglePlay = (e: React.SyntheticEvent): void => {
     e.stopPropagation()
-    if (this.audio.paused && this.audio.src) {
-      const audioPromise = this.audio.play()
+    const audio = this.audio.current
+    if (audio.paused && audio.src) {
+      const audioPromise = audio.play()
       audioPromise.then(null).catch((err) => {
         const { onPlayError } = this.props
         onPlayError && onPlayError(new Error(err))
       })
-    } else if (!this.audio.paused) {
-      this.audio.pause()
+    } else if (!audio.paused) {
+      audio.pause()
     }
   }
 
   handleClickVolumeButton = (): void => {
-    if (this.audio.volume > 0) {
-      this.lastVolume = this.audio.volume
-      this.audio.volume = 0
+    const audio = this.audio.current
+    if (audio.volume > 0) {
+      this.lastVolume = audio.volume
+      audio.volume = 0
     } else {
-      this.audio.volume = this.lastVolume
+      audio.volume = this.lastVolume
     }
   }
 
@@ -187,25 +204,26 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   }
 
   setJumpTime = (time: number): void => {
-    const { duration, currentTime: prevTime } = this.audio
+    const audio = this.audio.current
+    const { duration, currentTime: prevTime } = audio
     if (!isFinite(duration) || !isFinite(prevTime)) return
     let currentTime = prevTime + time / 1000
     if (currentTime < 0) {
-      this.audio.currentTime = 0
+      audio.currentTime = 0
       currentTime = 0
     } else if (currentTime > duration) {
-      this.audio.currentTime = duration
+      audio.currentTime = duration
       currentTime = duration
     } else {
-      this.audio.currentTime = currentTime
+      audio.currentTime = currentTime
     }
   }
 
   setJumpVolume = (volume: number): void => {
-    let newVolume = this.audio.volume + volume
+    let newVolume = this.audio.current.volume + volume
     if (newVolume < 0) newVolume = 0
     else if (newVolume > 1) newVolume = 1
-    this.audio.volume = newVolume
+    this.audio.current.volume = newVolume
   }
 
   /**
@@ -215,7 +233,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     if (!this.listenTracker) {
       const listenInterval = this.props.listenInterval
       this.listenTracker = setInterval(() => {
-        this.props.onListen && this.props.onListen(this.audio.currentTime)
+        this.props.onListen && this.props.onListen(this.audio.current.currentTime)
       }, listenInterval)
     }
   }
@@ -233,7 +251,8 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   handleKeyDown = (e: React.KeyboardEvent): void => {
     switch (e.keyCode) {
       case 32: // Space
-        if (e.target === this.container || e.target === this.progressBarInstance.progressBarEl) {
+        e.preventDefault() // Prevent scrolling page by pressing Space key
+        if (e.target === this.container.current || e.target === this.progressBar.current) {
           this.togglePlay(e)
         }
         break
@@ -262,7 +281,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     // force update to pass this.audio to child components
     this.forceUpdate()
     // audio player object
-    const audio = this.audio
+    const audio = this.audio.current
 
     if (this.props.muted) {
       audio.volume = 0
@@ -296,7 +315,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       this.clearListenTrack()
       const { autoPlayAfterSrcChange } = this.props
       if (autoPlayAfterSrcChange) {
-        this.audio.play()
+        audio.play()
       } else {
         this.setState({
           isPlaying: false,
@@ -320,42 +339,59 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     })
   }
 
-  render(): ReactNode {
+  renderProgressBarSection = (): Array<ReactElement> => {
     const {
-      className,
-      src,
-      preload,
-      autoPlay,
-      crossOrigin,
-      mediaGroup,
-      showLoopControl,
-      showSkipControls,
-      showJumpControls,
-      showVolumeControl,
-      onClickPrevious,
-      onClickNext,
+      customProgressBarSection,
+      defaultCurrentTime,
+      progressUpdateInterval,
       showDownloadProgress,
       ShowFilledProgress,
-      volume: volumeProp,
-      defaultCurrentTime,
       defaultDuration,
-      muted,
-      progressUpdateInterval,
-      header,
-      footer,
-      customIcons,
-      children,
-      style,
     } = this.props
-    const { isPlaying, isLoopEnabled } = this.state
-    const { volume = muted ? 0 : volumeProp } = this.audio || {}
+    return customProgressBarSection.map((comp, i) => {
+      switch (comp) {
+        case RHAP_UI.CURRENT_TIME:
+          return (
+            <div key={i} id="rhap_current-time" className="rhap_time rhap_current-time">
+              <CurrentTime audio={this.audio.current} defaultCurrentTime={defaultCurrentTime} />
+            </div>
+          )
+        case RHAP_UI.PROGRESS_BAR:
+          return (
+            <ProgressBar
+              key={i}
+              ref={this.progressBar}
+              audio={this.audio.current}
+              progressUpdateInterval={progressUpdateInterval}
+              showDownloadProgress={showDownloadProgress}
+              ShowFilledProgress={ShowFilledProgress}
+            />
+          )
+        case RHAP_UI.DURATION:
+          return (
+            <div key={i} className="rhap_time rhap_total-time">
+              <Duration audio={this.audio.current} defaultDuration={defaultDuration} />
+            </div>
+          )
+        default:
+          if (!isValidElement(comp)) {
+            throw new Error('Invalid element in customProgressBarSection. It requires ReactElement, not ReactNode')
+          }
+          return comp.key ? comp : cloneElement(comp as ReactElement, { key: i })
+      }
+    })
+  }
 
-    let loopIcon: ReactNode
-    if (isLoopEnabled) {
-      loopIcon = customIcons.loop ? customIcons.loop : <Icon icon={repeat} />
-    } else {
-      loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon={repeatOff} />
-    }
+  renderControlsSection = (): Array<ReactElement> => {
+    const {
+      customIcons,
+      customControlsSection,
+      showSkipControls,
+      onClickPrevious,
+      onClickNext,
+      showJumpControls,
+    } = this.props
+    const { isPlaying } = this.state
 
     let actionIcon: ReactNode
     if (isPlaying) {
@@ -364,12 +400,165 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       actionIcon = customIcons.play ? customIcons.play : <Icon icon={playCircle} />
     }
 
+    return customControlsSection.map((comp, i) => {
+      switch (comp) {
+        case RHAP_UI.ADDITIONAL_CONTROLS:
+          return (
+            <div key={i} className="rhap_additional-controls">
+              {this.renderAdditionalControls()}
+            </div>
+          )
+        case RHAP_UI.MAIN_CONTROLS:
+          return (
+            <div key={i} className="rhap_main-controls">
+              {showSkipControls && (
+                <button
+                  aria-label="Previous"
+                  className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
+                  onClick={onClickPrevious}
+                >
+                  {customIcons.previous ? customIcons.previous : <Icon icon={skipPrevious} />}
+                </button>
+              )}
+              {showJumpControls && (
+                <button
+                  aria-label="Rewind"
+                  className="rhap_button-clear rhap_main-controls-button rhap_rewind-button"
+                  onClick={this.handleClickRewind}
+                >
+                  {customIcons.rewind ? customIcons.rewind : <Icon icon={rewind} />}
+                </button>
+              )}
+              <button
+                aria-label={isPlaying ? 'Pause' : 'Play'}
+                className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button"
+                onClick={this.togglePlay}
+              >
+                {actionIcon}
+              </button>
+              {showJumpControls && (
+                <button
+                  aria-label="Forward"
+                  className="rhap_button-clear rhap_main-controls-button rhap_forward-button"
+                  onClick={this.handleClickForward}
+                >
+                  {customIcons.forward ? customIcons.forward : <Icon icon={fastForward} />}
+                </button>
+              )}
+              {showSkipControls && (
+                <button
+                  aria-label="Skip"
+                  className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
+                  onClick={onClickNext}
+                >
+                  {customIcons.next ? customIcons.next : <Icon icon={skipNext} />}
+                </button>
+              )}
+            </div>
+          )
+        case RHAP_UI.VOLUME_CONTROLS:
+          return (
+            <div key={i} className="rhap_volume-controls">
+              {this.renderVolumeControls()}
+            </div>
+          )
+        default:
+          if (!isValidElement(comp)) {
+            throw new Error('Invalid element in customControlsSection. It requires ReactElement, not ReactNode')
+          }
+          return comp.key ? comp : cloneElement(comp as ReactElement, { key: i })
+      }
+    })
+  }
+
+  renderAdditionalControls = (): Array<ReactElement> => {
+    const { customAdditionalControls, showLoopControl, customIcons } = this.props
+    const { isLoopEnabled } = this.state
+
+    let loopIcon: ReactNode
+    if (isLoopEnabled) {
+      loopIcon = customIcons.loop ? customIcons.loop : <Icon icon={repeat} />
+    } else {
+      loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon={repeatOff} />
+    }
+
+    return customAdditionalControls.map((comp, i) => {
+      switch (comp) {
+        case RHAP_UI.LOOP:
+          return (
+            showLoopControl && (
+              <button
+                key={i}
+                aria-label={isLoopEnabled ? 'Enable Loop' : 'Disable Loop'}
+                className="rhap_button-clear rhap_repeat-button"
+                onClick={this.handleClickLoopButton}
+              >
+                {loopIcon}
+              </button>
+            )
+          )
+        default:
+          if (!isValidElement(comp)) {
+            throw new Error('Invalid element in customAdditionalControls. It requires ReactElement, not ReactNode')
+          }
+          return comp.key ? comp : cloneElement(comp as ReactElement, { key: i })
+      }
+    })
+  }
+
+  renderVolumeControls = (): Array<ReactElement> => {
+    const { customVolumeControls, showVolumeControl, customIcons, muted, volume: volumeProp } = this.props
+
+    const { volume = muted ? 0 : volumeProp } = this.audio.current || {}
+
     let volumeIcon: ReactNode
     if (volume) {
       volumeIcon = customIcons.volume ? customIcons.volume : <Icon icon={volumeHigh} />
     } else {
       volumeIcon = customIcons.volume ? customIcons.volumeMute : <Icon icon={volumeMute} />
     }
+
+    return customVolumeControls.map((comp, i) => {
+      switch (comp) {
+        case RHAP_UI.VOLUME:
+          return (
+            showVolumeControl && (
+              <div key={i} className="rhap_volume-container">
+                <button
+                  aria-label={volume ? 'Mute' : 'Unmute'}
+                  onClick={this.handleClickVolumeButton}
+                  className="rhap_button-clear rhap_volume-button"
+                >
+                  {volumeIcon}
+                </button>
+                <VolumeBar audio={this.audio.current} volume={volume} onMuteChange={this.handleMuteChange} />
+              </div>
+            )
+          )
+        default:
+          if (!isValidElement(comp)) {
+            throw new Error('Invalid element in customVolumeControls. It requires ReactElement, not ReactNode')
+          }
+          return comp.key ? comp : cloneElement(comp as ReactElement, { key: i })
+      }
+    })
+  }
+
+  render(): ReactNode {
+    const {
+      className,
+      src,
+      preload,
+      autoPlay,
+      crossOrigin,
+      mediaGroup,
+      header,
+      footer,
+      layout,
+      children,
+      style,
+    } = this.props
+    const { isLoopEnabled } = this.state
 
     return (
       /* We want the container to catch bubbled events */
@@ -381,9 +570,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
         aria-label="Audio Player"
         className={`rhap_container ${className}`}
         onKeyDown={this.handleKeyDown}
-        ref={(ref: HTMLDivElement): void => {
-          this.container = ref
-        }}
+        ref={this.container}
         style={style}
       >
         {/* User can pass <track> through children */}
@@ -396,102 +583,14 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
           preload={preload}
           crossOrigin={crossOrigin}
           mediaGroup={mediaGroup}
-          ref={(ref: HTMLAudioElement): void => {
-            this.audio = ref
-          }}
+          ref={this.audio}
         >
           {children}
         </audio>
         {header && <div className="rhap_header">{header}</div>}
-        <div className="rhap_progress-section">
-          <div id="rhap_current-time" className="rhap_time rhap_current-time">
-            <CurrentTime audio={this.audio} defaultCurrentTime={defaultCurrentTime} />
-          </div>
-          <ProgressBar
-            ref={(node: ReactInstance): void => {
-              this.progressBarInstance = node as ProgressBar
-            }}
-            audio={this.audio}
-            progressUpdateInterval={progressUpdateInterval}
-            showDownloadProgress={showDownloadProgress}
-            ShowFilledProgress={ShowFilledProgress}
-          />
-          <div className="rhap_time rhap_total-time">
-            <Duration audio={this.audio} defaultDuration={defaultDuration} />
-          </div>
-        </div>
-
-        <div className="rhap_controls-section">
-          <div className="rhap_additional-controls">
-            {showLoopControl && (
-              <button
-                aria-label={isLoopEnabled ? 'Enable Loop' : 'Disable Loop'}
-                className="rhap_button-clear rhap_repeat-button"
-                onClick={this.handleClickLoopButton}
-              >
-                {loopIcon}
-              </button>
-            )}
-          </div>
-          <div className="rhap_main-controls">
-            {showSkipControls && (
-              <button
-                aria-label="Previous"
-                className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
-                onClick={onClickPrevious}
-              >
-                {customIcons.previous ? customIcons.previous : <Icon icon={skipPrevious} />}
-              </button>
-            )}
-            {showJumpControls && (
-              <button
-                aria-label="Rewind"
-                className="rhap_button-clear rhap_main-controls-button rhap_rewind-button"
-                onClick={this.handleClickRewind}
-              >
-                {customIcons.rewind ? customIcons.rewind : <Icon icon={rewind} />}
-              </button>
-            )}
-            <button
-              aria-label={isPlaying ? 'Pause' : 'Play'}
-              className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button"
-              onClick={this.togglePlay}
-            >
-              {actionIcon}
-            </button>
-            {showJumpControls && (
-              <button
-                aria-label="Forward"
-                className="rhap_button-clear rhap_main-controls-button rhap_forward-button"
-                onClick={this.handleClickForward}
-              >
-                {customIcons.forward ? customIcons.forward : <Icon icon={fastForward} />}
-              </button>
-            )}
-            {showSkipControls && (
-              <button
-                aria-label="Skip"
-                className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
-                onClick={onClickNext}
-              >
-                {customIcons.next ? customIcons.next : <Icon icon={skipNext} />}
-              </button>
-            )}
-          </div>
-          <div className="rhap_volume-controls">
-            {showVolumeControl && (
-              <div className="rhap_volume-container">
-                <button
-                  aria-label={volume ? 'Mute' : 'Unmute'}
-                  onClick={this.handleClickVolumeButton}
-                  className="rhap_button-clear rhap_volume-button"
-                >
-                  {volumeIcon}
-                </button>
-                <VolumeBar audio={this.audio} volume={volume} onMuteChange={this.handleMuteChange} />
-              </div>
-            )}
-          </div>
+        <div className={`rhap_main  ${layout === 'horizontal' ? 'rhap_horizontal' : ''}`}>
+          <div className="rhap_progress-section">{this.renderProgressBarSection()}</div>
+          <div className="rhap_controls-section">{this.renderControlsSection()}</div>
         </div>
         {footer && <div className="rhap_footer">{footer}</div>}
       </div>
@@ -500,3 +599,4 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 }
 
 export default H5AudioPlayer
+export { RHAP_UI }

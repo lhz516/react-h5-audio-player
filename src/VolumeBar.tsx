@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, createRef } from 'react'
 import { getPosX } from './utils'
 
 interface VolumeControlsProps {
@@ -23,7 +23,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
 
   hasAddedAudioEventListener = false
 
-  volumeBarEl?: HTMLDivElement
+  volumeBar = createRef<HTMLDivElement>()
 
   volumeAnimationTimer = 0
 
@@ -38,13 +38,13 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
   // get volume info while dragging by indicator mouse or touch
   getCurrentVolume = (event: TouchEvent | MouseEvent): VolumePosInfo => {
     const { audio } = this.props
-    if (!this.volumeBarEl) {
+    if (!this.volumeBar.current) {
       return {
         currentVolume: audio.volume,
         currentVolumePos: this.state.currentVolumePos,
       }
     }
-    const volumeBarRect = this.volumeBarEl.getBoundingClientRect()
+    const volumeBarRect = this.volumeBar.current.getBoundingClientRect()
     const maxRelativePos = volumeBarRect.width
     const relativePos = getPosX(event) - volumeBarRect.left
     let currentVolume
@@ -163,9 +163,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
     const { volume } = audio || {}
     return (
       <div
-        ref={(el: HTMLDivElement): void => {
-          this.volumeBarEl = el
-        }}
+        ref={this.volumeBar}
         onMouseDown={this.handleVolumnControlMouseDown}
         onTouchStart={this.handleVolumnControlMouseDown}
         role="progressbar"

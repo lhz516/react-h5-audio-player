@@ -17,7 +17,8 @@
 </div>
 
 * Audio player component that provides consistent UI/UX on different browsers.
-* Flexbox layout with SVG icons. Mobile friendly.
+* Super customizable layout
+* Flexbox css with SVG icons. Mobile friendly.
 * Accessibility supported, keyboards events supported.
 * Written in TypeScript.
 
@@ -27,7 +28,9 @@ Live Demo: [Storybook](https://static.hanzluo.com/react-h5-audio-player-storyboo
 
 Website example: [hanzluo.com](https://hanzluo.com/#music) | [Code](https://github.com/lhz516/hanzluo/blob/3a1de210bb8de72ef2def5a6216b58108088e131/src/components/home/home.js#L281)
 
-Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE (≥10)
+Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE 11
+
+## [Migrate from v2.x to v3](https://github.com/lhz516/react-h5-audio-player/releases/tag/v3.0.0)
 
 ## Installation
 
@@ -70,17 +73,17 @@ const Player = () => (
 
 ### HTML Audio Tag Native Attributes
 
-| Props       |  Type   |  Default  | Note |
-| ----------- | ------- | --------- | ---- |
-| src         | string  | ''        | |
-| preload     | string  | 'auto'    | |
-| autoPlay    | boolean | false     | Won't work on most mobile devices |
-| loop        | boolean | false     | |
-| muted       | boolean | false     | |
-| loop        | boolean | false     | |
-| volume      | number  | 1.0       | Won't work on most mobile devices |
-| crossOrigin | string  | undefined | |
-| mediaGroup  | string  | undefined | |
+| Props       |  Type                          |  Default  | Note |
+| ----------- | ------------------------------ | --------- | ---- |
+| src         | string                         | ''        | |
+| preload     | 'auto' \| 'metadata' \| 'none' | 'auto'    | |
+| autoPlay    | boolean                        | false     | Won't work on most mobile devices |
+| loop        | boolean                        | false     | |
+| muted       | boolean                        | false     | |
+| loop        | boolean                        | false     | |
+| volume      | number                         | 1.0       | Won't work on most mobile devices |
+| crossOrigin | string                         | undefined | |
+| mediaGroup  | string                         | undefined | |
 
 
 More native attributes detail: [MDN Audio element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio)
@@ -89,22 +92,27 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 
 ### UI Props
 
-| Props                  | Type              | Default | Note |
-| ---------------------- | ----------------- | ------- | ---- |
-| showVolumeControl      | boolean           | true    | Show volume bar and mute button |
-| showLoopControl        | boolean           | true    | Show loop toggle button | 
-| showSkipControls       | boolean           | false   | Show Previous/Next buttons |
-| showJumpControls       | boolean           | true    | Show Rewind/Forward buttons |
-| showDownloadProgress   | boolean           | true    | Show download progress over progress bar |
-| volumeJumpStep         | number            | 0.1     | Indicates the volume jump step when pressing up/down arrow key, volume range is `0` to `1` |
-| progressJumpStep       | number            | 5000    | Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key|
-| progressUpdateInterval | number            | 20      | Indicates the interval (ms) that the progress bar UI updates,  |
-| listenInterval         | number            | 1000    | Indicates the interval (ms) to call the `onListened` prop during playback |
-| defaultCurrentTime     | ReactNode         | '--:--' | Default display for audio's current time before src's meta data is loaded |
-| defaultDuration        | ReactNode         | '--:--' | Default display for audio's duration before src's meta data is loaded |
-| header                 | ReactNode         | null    | Header of the audio player |
-| footer                 | ReactNode         | null    | Footer of the audio player |
-| customIcons            | [CustomIcons](https://github.com/lhz516/react-h5-audio-player/blob/6571f9e503695f25867bafb370640b2f9b331497/src/index.tsx#L85) | {}      | Customized icons to replace the default ones |
+| Props                    | Type              | Default | Note |
+| ------------------------ | ----------------- | ------- | ---- |
+| showVolumeControl        | boolean           | true    | Show volume bar and mute button |
+| showLoopControl          | boolean           | true    | Show loop toggle button | 
+| showSkipControls         | boolean           | false   | Show Previous/Next buttons |
+| showJumpControls         | boolean           | true    | Show Rewind/Forward buttons |
+| showDownloadProgress     | boolean           | true    | Show download progress over progress bar |
+| volumeJumpStep           | number            | 0.1     | Indicates the volume jump step when pressing up/down arrow key, volume range is `0` to `1` |
+| progressJumpStep         | number            | 5000    | Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key|
+| progressUpdateInterval   | number            | 20      | Indicates the interval (ms) that the progress bar UI updates,  |
+| listenInterval           | number            | 1000    | Indicates the interval (ms) to call the `onListened` prop during playback |
+| defaultCurrentTime       | ReactNode         | '--:--' | Default display for audio's current time before src's meta data is loaded |
+| defaultDuration          | ReactNode         | '--:--' | Default display for audio's duration before src's meta data is loaded |
+| header                   | ReactNode         | null    | Header of the audio player |
+| footer                   | ReactNode         | null    | Footer of the audio player |
+| customIcons              | [CustomIcons](https://github.com/lhz516/react-h5-audio-player/blob/6571f9e503695f25867bafb370640b2f9b331497/src/index.tsx#L85) | {}      | Customized icons to replace the default ones |
+| layout                   | 'stacked' \| 'horizontal' | 'stacked' | Header of the audio player |
+| customProgressBarSection | Array\<[PROGRESS_BAR_SECTION_UI](https://github.com/lhz516/react-h5-audio-player/blob/master/src/constants.ts) \| ReactElement\> | [RHAP_UI.CURRENT_TIME, RHAP_UI.PROGRESS_BAR, RHAP_UI.DURATION] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of progress bar section |
+| customControlsSection    | Array\<[CONTROLS_SECTION_UI](https://github.com/lhz516/react-h5-audio-player/blob/master/src/constants.ts) \| ReactElement\> | [RHAP_UI.ADDITIONAL_CONTROLS, RHAP_UI.MAIN_CONTROLS, RHAP_UI.VOLUME_CONTROLS] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of controls section |
+| customAdditionalControls | Array\<[ADDITIONAL_CONTROLS_UI](https://github.com/lhz516/react-h5-audio-player/blob/master/src/constants.ts) \| ReactElement\> | [RHAP_UI.LOOP] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of additional controls |
+| customVolumeControls     | Array\<[VOLUME_CONTROLS_UI](https://github.com/lhz516/react-h5-audio-player/blob/master/src/constants.ts) \| ReactElement\> | [RHAP_UI.VOLUME] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of volume controls |
 
 ### Event Props
 
@@ -145,27 +153,18 @@ For LESS variables, just replace `$` with `@`.
 You can get direct access to the underlying audio element. First get a ref to ReactAudioPlayer:
 
 ```jsx
-<ReactAudioPlayer ref={c => (this.player = c)} /> // Using `createRef` also works
+this.player = createRef()
+
+<ReactAudioPlayer ref={this.player} />
 ```
 
 Then you can access the audio element like this:
 
-`this.player.audio`
+`this.player.current.audio.current`
 
 ## Release Notes
 
 https://github.com/lhz516/react-h5-audio-player/releases
-
-### Breaking changes from 1.x to 2.x
-
-- Removed inline styles, import `css`, `scss` or `less` manually
-- Removed props `hidePlayer` - Use parent logic to hide player
-- Removed props `onDragStart`, `onDragMove`, `onDragEnd` - V2 isn't using drag events anymore
-
-### Breaking changes from 0.x to 1.x
-
-In 1.x, we use `prop-types` package instead of using it directly in React. Thus we dropped support under `react@15.5.0`. The usage will remain the same.
-
 
 ## How to contribute
 
