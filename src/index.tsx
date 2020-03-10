@@ -98,11 +98,6 @@ interface PlayerProps {
   style?: CSSProperties
 }
 
-interface PlayerState {
-  isPlaying: boolean
-  isLoopEnabled: boolean
-}
-
 interface CustomIcons {
   play?: ReactNode
   pause?: ReactNode
@@ -116,7 +111,7 @@ interface CustomIcons {
   volumeMute?: ReactNode
 }
 
-class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
+class H5AudioPlayer extends Component<PlayerProps> {
   static defaultProps: PlayerProps = {
     autoPlay: false,
     autoPlayAfterSrcChange: true,
@@ -143,11 +138,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     customAdditionalControls: [RHAP_UI.LOOP],
     customVolumeControls: [RHAP_UI.VOLUME],
     layout: 'stacked',
-  }
-
-  state: PlayerState = {
-    isPlaying: false,
-    isLoopEnabled: this.props.loop,
   }
 
   audio = createRef<HTMLAudioElement>()
@@ -178,6 +168,13 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     }
   }
 
+  isPlaying = (): boolean => {
+    const audio = this.audio.current
+    if (!audio) return false
+
+    return !audio.paused && !audio.ended && audio.readyState > 2
+  }
+
   handleClickVolumeButton = (): void => {
     const audio = this.audio.current
     if (audio.volume > 0) {
@@ -193,7 +190,8 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   }
 
   handleClickLoopButton = (): void => {
-    this.setState((prevState) => ({ isLoopEnabled: !prevState.isLoopEnabled }))
+    this.audio.current.loop = !this.audio.current.loop
+    this.forceUpdate()
   }
 
   handleClickRewind = (): void => {
@@ -230,8 +228,8 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   handleKeyDown = (e: React.KeyboardEvent): void => {
     switch (e.keyCode) {
       case 32: // Space
-        e.preventDefault() // Prevent scrolling page by pressing Space key
         if (e.target === this.container.current || e.target === this.progressBar.current) {
+          e.preventDefault() // Prevent scrolling page by pressing Space key
           this.togglePlay(e)
         }
         break
@@ -242,9 +240,11 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
         this.handleClickForward()
         break
       case 38: // Up arrow
+        e.preventDefault() // Prevent scrolling page by pressing arrow key
         this.setJumpVolume(this.props.volumeJumpStep)
         break
       case 40: // Down arrow
+        e.preventDefault() // Prevent scrolling page by pressing arrow key
         this.setJumpVolume(-this.props.volumeJumpStep)
         break
       case 76: // L = Loop
@@ -284,7 +284,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
     // When audio play starts
     audio.addEventListener('play', (e) => {
-      this.setState({ isPlaying: true })
+      this.forceUpdate()
       this.props.onPlay && this.props.onPlay(e)
     })
 
@@ -294,9 +294,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       if (autoPlayAfterSrcChange) {
         audio.play()
       } else {
-        this.setState({
-          isPlaying: false,
-        })
+        this.forceUpdate()
       }
       this.props.onAbort && this.props.onAbort(e)
     })
@@ -309,7 +307,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     // When the user pauses playback
     audio.addEventListener('pause', (e) => {
       if (!this.audio) return
-      this.setState({ isPlaying: false })
+      this.forceUpdate()
       this.props.onPause && this.props.onPause(e)
     })
 
@@ -373,7 +371,8 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       onClickNext,
       showJumpControls,
     } = this.props
-    const { isPlaying } = this.state
+
+    const isPlaying = this.isPlaying()
 
     let actionIcon: ReactNode
     if (isPlaying) {
@@ -454,11 +453,11 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
   }
 
   renderAdditionalControls = (): Array<ReactElement> => {
-    const { customAdditionalControls, showLoopControl, customIcons } = this.props
-    const { isLoopEnabled } = this.state
+    const { customAdditionalControls, showLoopControl, customIcons, loop: loopProp } = this.props
+    const loop = this.audio.current ? this.audio.current.loop : loopProp
 
     let loopIcon: ReactNode
-    if (isLoopEnabled) {
+    if (loop) {
       loopIcon = customIcons.loop ? customIcons.loop : <Icon icon={repeat} />
     } else {
       loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon={repeatOff} />
@@ -471,7 +470,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
             showLoopControl && (
               <button
                 key={i}
-                aria-label={isLoopEnabled ? 'Enable Loop' : 'Disable Loop'}
+                aria-label={loop ? 'Enable Loop' : 'Disable Loop'}
                 className="rhap_button-clear rhap_repeat-button"
                 onClick={this.handleClickLoopButton}
               >
@@ -530,6 +529,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     const {
       className,
       src,
+      loop: loopProp,
       preload,
       autoPlay,
       crossOrigin,
@@ -540,7 +540,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
       children,
       style,
     } = this.props
-    const { isLoopEnabled } = this.state
+    const loop = this.audio.current ? this.audio.current.loop : loopProp
 
     return (
       /* We want the container to catch bubbled events */
@@ -560,7 +560,7 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
         <audio
           src={src}
           controls={false}
-          loop={isLoopEnabled}
+          loop={loop}
           autoPlay={autoPlay}
           preload={preload}
           crossOrigin={crossOrigin}
