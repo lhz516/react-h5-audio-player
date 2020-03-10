@@ -29,6 +29,7 @@ import {
   ADDITIONAL_CONTROLS_UI,
   VOLUME_CONTROLS_UI,
 } from './constants'
+import { throttle } from './utils'
 
 interface PlayerProps {
   /**
@@ -58,7 +59,7 @@ interface PlayerProps {
   onCanPlayThrough?: (e: Event) => void
   onEnded?: (e: Event) => void
   onError?: (e: Event) => void
-  onListen?: (currentTime: number) => void
+  onListen?: (e: Event) => void
   onPause?: (e: Event) => void
   onPlay?: (e: Event) => void
   onClickPrevious?: (e: React.SyntheticEvent) => void
@@ -226,28 +227,6 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     this.audio.current.volume = newVolume
   }
 
-  /**
-   * Set an interval to call props.onListen every props.listenInterval time period
-   */
-  setListenTrack = (): void => {
-    if (!this.listenTracker) {
-      const listenInterval = this.props.listenInterval
-      this.listenTracker = setInterval(() => {
-        this.props.onListen && this.props.onListen(this.audio.current.currentTime)
-      }, listenInterval)
-    }
-  }
-
-  /**
-   * Clear the onListen interval
-   */
-  clearListenTrack = (): void => {
-    if (this.listenTracker) {
-      clearInterval(this.listenTracker)
-      delete this.listenTracker
-    }
-  }
-
   handleKeyDown = (e: React.KeyboardEvent): void => {
     switch (e.keyCode) {
       case 32: // Space
@@ -306,13 +285,11 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
     // When audio play starts
     audio.addEventListener('play', (e) => {
       this.setState({ isPlaying: true })
-      this.setListenTrack()
       this.props.onPlay && this.props.onPlay(e)
     })
 
     // When unloading the audio player (switching to another src)
     audio.addEventListener('abort', (e) => {
-      this.clearListenTrack()
       const { autoPlayAfterSrcChange } = this.props
       if (autoPlayAfterSrcChange) {
         audio.play()
@@ -326,17 +303,22 @@ class H5AudioPlayer extends Component<PlayerProps, PlayerState> {
 
     // When the file has finished playing to the end
     audio.addEventListener('ended', (e) => {
-      this.clearListenTrack()
       this.props.onEnded && this.props.onEnded(e)
     })
 
     // When the user pauses playback
     audio.addEventListener('pause', (e) => {
-      this.clearListenTrack()
       if (!this.audio) return
       this.setState({ isPlaying: false })
       this.props.onPause && this.props.onPause(e)
     })
+
+    audio.addEventListener(
+      'timeupdate',
+      throttle((e) => {
+        this.props.onListen && this.props.onListen(e)
+      }, this.props.listenInterval)
+    )
   }
 
   renderProgressBarSection = (): Array<ReactElement> => {
