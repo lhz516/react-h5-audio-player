@@ -80,8 +80,6 @@ interface PlayerProps {
   defaultCurrentTime?: ReactNode
   defaultDuration?: ReactNode
   volume?: number
-  showLoopControl?: boolean
-  showVolumeControl?: boolean
   showJumpControls?: boolean
   showSkipControls?: boolean
   showDownloadProgress?: boolean
@@ -126,8 +124,6 @@ class H5AudioPlayer extends Component<PlayerProps> {
     defaultDuration: '--:--',
     volume: 1,
     className: '',
-    showLoopControl: true,
-    showVolumeControl: true,
     showJumpControls: true,
     showSkipControls: false,
     showDownloadProgress: true,
@@ -453,7 +449,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
   }
 
   renderAdditionalControls = (): Array<ReactElement> => {
-    const { customAdditionalControls, showLoopControl, customIcons, loop: loopProp } = this.props
+    const { customAdditionalControls, customIcons, loop: loopProp } = this.props
     const loop = this.audio.current ? this.audio.current.loop : loopProp
 
     let loopIcon: ReactNode
@@ -467,16 +463,14 @@ class H5AudioPlayer extends Component<PlayerProps> {
       switch (comp) {
         case RHAP_UI.LOOP:
           return (
-            showLoopControl && (
-              <button
-                key={i}
-                aria-label={loop ? 'Enable Loop' : 'Disable Loop'}
-                className="rhap_button-clear rhap_repeat-button"
-                onClick={this.handleClickLoopButton}
-              >
-                {loopIcon}
-              </button>
-            )
+            <button
+              key={i}
+              aria-label={loop ? 'Enable Loop' : 'Disable Loop'}
+              className="rhap_button-clear rhap_repeat-button"
+              onClick={this.handleClickLoopButton}
+            >
+              {loopIcon}
+            </button>
           )
         default:
           if (!isValidElement(comp)) {
@@ -488,7 +482,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
   }
 
   renderVolumeControls = (): Array<ReactElement> => {
-    const { customVolumeControls, showVolumeControl, customIcons, muted, volume: volumeProp } = this.props
+    const { customVolumeControls, customIcons, muted, volume: volumeProp } = this.props
 
     const { volume = muted ? 0 : volumeProp } = this.audio.current || {}
 
@@ -503,18 +497,16 @@ class H5AudioPlayer extends Component<PlayerProps> {
       switch (comp) {
         case RHAP_UI.VOLUME:
           return (
-            showVolumeControl && (
-              <div key={i} className="rhap_volume-container">
-                <button
-                  aria-label={volume ? 'Mute' : 'Unmute'}
-                  onClick={this.handleClickVolumeButton}
-                  className="rhap_button-clear rhap_volume-button"
-                >
-                  {volumeIcon}
-                </button>
-                <VolumeBar audio={this.audio.current} volume={volume} onMuteChange={this.handleMuteChange} />
-              </div>
-            )
+            <div key={i} className="rhap_volume-container">
+              <button
+                aria-label={volume ? 'Mute' : 'Unmute'}
+                onClick={this.handleClickVolumeButton}
+                className="rhap_button-clear rhap_volume-button"
+              >
+                {volumeIcon}
+              </button>
+              <VolumeBar audio={this.audio.current} volume={volume} onMuteChange={this.handleMuteChange} />
+            </div>
           )
         default:
           if (!isValidElement(comp)) {

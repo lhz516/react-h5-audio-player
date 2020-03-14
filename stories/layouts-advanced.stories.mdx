@@ -15,6 +15,35 @@ Please import `RHAP_UI` along with the audio player
 import AudioPlayer, { RHAP_UI } from 'react-h5-audio-player'
 ```
 
+![screenshot](https://raw.githubusercontent.com/lhz516/react-h5-audio-player/master/assets/advanced-layout.png)
+
+### Props
+
+layout
+
+- Type: `string`
+- Default: `'stacked' | 'horizontal'`
+
+customProgressBarSection
+
+- Type: `Array<PROGRESS_BAR_SECTION_UI | ReactElement>`
+- Default: `[RHAP_UI.CURRENT_TIME, RHAP_UI.PROGRESS_BAR, RHAP_UI.DURATION]`
+
+customControlsSection
+
+- Type: `Array<CONTROLS_SECTION_UI | ReactElement>`
+- Default: `[RHAP_UI.ADDITIONAL_CONTROLS, RHAP_UI.MAIN_CONTROLS, RHAP_UI.VOLUME_CONTROLS]`
+
+customAdditionalControls
+
+- Type: `Array<ADDITIONAL_CONTROLS_UI | ReactElement>`
+- Default: `[RHAP_UI.LOOP]`
+
+customVolumeControls
+
+- Type: `Array<VOLUME_CONTROLS_UI | ReactElement>`
+- Default: `[RHAP_UI.VOLUME]`
+
 #### Stacked (Default)
 
 <Preview>

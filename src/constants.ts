@@ -24,4 +24,4 @@ export const RHAP_UI = {
   ...ADDITIONAL_CONTROLS_UI,
   ...VOLUME_CONTROLS_UI,
 }
-// export type RHAP_UI = typeof RHAP_UI
+export type RHAP_UI = typeof RHAP_UI
