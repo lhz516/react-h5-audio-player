@@ -30,7 +30,7 @@ Website example: [hanzluo.com](https://hanzluo.com/#music) | [Code](https://gith
 
 Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE 11
 
-## [Migrate from v2.x to v3](https://github.com/lhz516/react-h5-audio-player/releases/tag/v3.0.0)
+## [Migrate from v2.x to v3](https://github.com/lhz516/react-h5-audio-player/releases/tag/v3.0.0) (WIP)
 
 ## Installation
 
@@ -108,11 +108,11 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | header                   | ReactNode         | null    | Header of the audio player |
 | footer                   | ReactNode         | null    | Footer of the audio player |
 | layout                   | 'stacked' \| 'horizontal' | 'stacked' | Header of the audio player |
-| customIcons              | [CustomIcons](https://github.com/lhz516/react-h5-audio-player/blob/6571f9e503695f25867bafb370640b2f9b331497/src/index.tsx#L85) | {}      | Customized icons to replace the default ones |
-| customProgressBarSection | Array | [CURRENT_TIME, PROGRESS_BAR, DURATION] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of progress bar section |
-| customControlsSection    | Array | [ADDITIONAL_CONTROLS, MAIN_CONTROLS, VOLUME_CONTROLS] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of controls section |
-| customAdditionalControls | Array | [LOOP] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of additional controls |
-| customVolumeControls     | Array| [VOLUME] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of volume controls |
+| customIcons              | [CustomIcons](https://github.com/lhz516/react-h5-audio-player/blob/fa1a61eb7f77146e1ce4547a14181279be68ecfd/src/index.tsx#L99) | {}      | [Customized icons](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts--custom-icons) to replace the default ones |
+| customProgressBarSection | [Array<string \| ReactElement>](https://github.com/lhz516/react-h5-audio-player/blob/fa1a61eb7f77146e1ce4547a14181279be68ecfd/src/index.tsx#L91) | [CURRENT_TIME, PROGRESS_BAR, DURATION] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of progress bar section |
+| customControlsSection    | [Array<string \| ReactElement>](https://github.com/lhz516/react-h5-audio-player/blob/fa1a61eb7f77146e1ce4547a14181279be68ecfd/src/index.tsx#L92) | [ADDITIONAL_CONTROLS, MAIN_CONTROLS, VOLUME_CONTROLS] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of controls section |
+| customAdditionalControls | [Array<string \| ReactElement>](https://github.com/lhz516/react-h5-audio-player/blob/fa1a61eb7f77146e1ce4547a14181279be68ecfd/src/index.tsx#L93) | [LOOP] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of additional controls |
+| customVolumeControls     | [Array<string \| ReactElement>](https://github.com/lhz516/react-h5-audio-player/blob/fa1a61eb7f77146e1ce4547a14181279be68ecfd/src/index.tsx#L94) | [VOLUME] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of volume controls |
 
 ### Event Props
 
