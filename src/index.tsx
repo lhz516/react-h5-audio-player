@@ -166,7 +166,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
     const audio = this.audio.current
     if (!audio) return false
 
-    return !audio.paused && !audio.ended && audio.readyState > 2
+    return !audio.paused && !audio.ended
   }
 
   handleClickVolumeButton = (): void => {
