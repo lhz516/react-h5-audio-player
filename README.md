@@ -30,7 +30,7 @@ Website example: [hanzluo.com](https://hanzluo.com/#music) | [Code](https://gith
 
 Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE 11
 
-## [Migrate from v2.x to v3](https://github.com/lhz516/react-h5-audio-player/releases/tag/v3.0.0) (WIP)
+## [Migrate from v2.x to v3](https://github.com/lhz516/react-h5-audio-player/releases/tag/v3.0.0-rc.3)
 
 ## Installation
 
