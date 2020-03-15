@@ -1,4 +1,21 @@
+import { MAIN_LAYOUT } from './constants'
+
 type throttleFunction<T> = (arg: T) => void
+
+export const getMainLayoutClassName = (layout: MAIN_LAYOUT): string => {
+  switch (layout) {
+    case 'stacked':
+      return 'rhap_stacked'
+    case 'stack-reverse':
+      return 'rhap_stacked-reverse'
+    case 'horizontal':
+      return 'rhap_horizontal'
+    case 'horizontal-reverse':
+      return 'rhap_horizontal-reverse'
+    default:
+      return 'rhap_stacked'
+  }
+}
 
 export const getPosX = (event: TouchEvent | MouseEvent): number => {
   if (event instanceof MouseEvent) {

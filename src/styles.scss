@@ -35,12 +35,33 @@ $rhap_font-family: inherit !default;
   flex: 1 1 auto;
 }
 
+.rhap_stacked {
+  .rhap_controls-section {
+    margin-top: 8px;
+  }
+}
+
 .rhap_horizontal {
   flex-direction: row;
 
   .rhap_controls-section {
-    margin-top: 0;
     margin-left: 8px;
+  }
+}
+
+.rhap_horizontal-reverse {
+  flex-direction: row-reverse;
+
+  .rhap_controls-section {
+    margin-right: 8px;
+  }
+}
+
+.rhap_stacked-reverse {
+  flex-direction: column-reverse;
+
+  .rhap_controls-section {
+    margin-bottom: 8px;
   }
 }
 
@@ -120,7 +141,6 @@ $rhap_font-family: inherit !default;
   flex: 1 1 auto;
   justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
 }
 
 .rhap_additional-controls {

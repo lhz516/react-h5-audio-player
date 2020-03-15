@@ -22,7 +22,7 @@ import AudioPlayer, { RHAP_UI } from 'react-h5-audio-player'
 layout
 
 - Type: `string`
-- Default: `'stacked' | 'horizontal'`
+- Default: `'stacked' | 'horizontal' | 'stacked-reverse' | 'horizontal-reverse'`
 
 customProgressBarSection
 
@@ -52,11 +52,27 @@ customVolumeControls
   </Story>
 </Preview>
 
+#### Stacked Reverse
+
+<Preview>
+  <Story name="Stacked Reverse">
+    <AudioPlayer src={SAMPLE_MP3_URL} layout="stacked-reverse" />
+  </Story>
+</Preview>
+
 #### Horizontal
 
 <Preview>
   <Story name="Horizontal">
     <AudioPlayer src={SAMPLE_MP3_URL} layout="horizontal" />
+  </Story>
+</Preview>
+
+#### Horizontal Reverse
+
+<Preview>
+  <Story name="Horizontal Reverse">
+    <AudioPlayer src={SAMPLE_MP3_URL} layout="horizontal-reverse" />
   </Story>
 </Preview>
 

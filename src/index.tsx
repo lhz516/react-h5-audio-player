@@ -28,8 +28,10 @@ import {
   CONTROLS_SECTION_UI,
   ADDITIONAL_CONTROLS_UI,
   VOLUME_CONTROLS_UI,
+  MAIN_LAYOUT,
+  AUDIO_PRELOAD_ATTRIBUTE,
 } from './constants'
-import { throttle } from './utils'
+import { throttle, getMainLayoutClassName } from './utils'
 
 interface PlayerProps {
   /**
@@ -68,7 +70,7 @@ interface PlayerProps {
   /**
    * HTML5 Audio tag preload property
    */
-  preload?: 'auto' | 'metadata' | 'none'
+  preload?: AUDIO_PRELOAD_ATTRIBUTE
   /**
    * Pregress indicator refresh interval
    */
@@ -87,7 +89,7 @@ interface PlayerProps {
   header?: ReactNode
   footer?: ReactNode
   customIcons?: CustomIcons
-  layout?: 'stacked' | 'horizontal'
+  layout?: MAIN_LAYOUT
   customProgressBarSection?: Array<PROGRESS_BAR_SECTION_UI | ReactElement>
   customControlsSection?: Array<CONTROLS_SECTION_UI | ReactElement>
   customAdditionalControls?: Array<ADDITIONAL_CONTROLS_UI | ReactElement>
@@ -562,7 +564,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
           {children}
         </audio>
         {header && <div className="rhap_header">{header}</div>}
-        <div className={`rhap_main  ${layout === 'horizontal' ? 'rhap_horizontal' : ''}`}>
+        <div className={`rhap_main ${getMainLayoutClassName(layout)}`}>
           <div className="rhap_progress-section">{this.renderProgressBarSection()}</div>
           <div className="rhap_controls-section">{this.renderControlsSection()}</div>
         </div>

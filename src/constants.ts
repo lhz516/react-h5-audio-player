@@ -24,4 +24,9 @@ export const RHAP_UI = {
   ...ADDITIONAL_CONTROLS_UI,
   ...VOLUME_CONTROLS_UI,
 }
+
 export type RHAP_UI = typeof RHAP_UI
+
+export type AUDIO_PRELOAD_ATTRIBUTE = 'auto' | 'metadata' | 'none'
+
+export type MAIN_LAYOUT = 'stacked' | 'stack-reverse' | 'horizontal' | 'horizontal-reverse'
