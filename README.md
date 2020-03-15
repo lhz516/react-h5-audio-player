@@ -26,7 +26,7 @@
 
 Live Demo: [Storybook](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts--default-story)
 
-Website example: [hanzluo.com](https://hanzluo.com/#music) | [Code](https://github.com/lhz516/hanzluo/blob/3a1de210bb8de72ef2def5a6216b58108088e131/src/components/home/home.js#L281)
+Website example: [hanzluo.com](https://hanzluo.com/#music) | [Code](https://github.com/lhz516/hanzluo/blob/master/src/components/home/home.js#L279)
 
 Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE 11
 
@@ -94,8 +94,6 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 
 | Props                    | Type              | Default | Note |
 | ------------------------ | ----------------- | ------- | ---- |
-| showVolumeControl        | boolean           | true    | Show volume bar and mute button |
-| showLoopControl          | boolean           | true    | Show loop toggle button | 
 | showSkipControls         | boolean           | false   | Show Previous/Next buttons |
 | showJumpControls         | boolean           | true    | Show Rewind/Forward buttons |
 | showDownloadProgress     | boolean           | true    | Show download progress over progress bar |
@@ -107,7 +105,7 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | defaultDuration          | ReactNode         | '--:--' | Default display for audio's duration before src's meta data is loaded |
 | header                   | ReactNode         | null    | Header of the audio player |
 | footer                   | ReactNode         | null    | Footer of the audio player |
-| layout                   | 'stacked' \| 'horizontal' | 'stacked' | Header of the audio player |
+| layout                   | 'stacked' \| 'horizontal' | 'stacked' | Overall layout of the audio player |
 | customIcons              | [CustomIcons](https://github.com/lhz516/react-h5-audio-player/blob/fa1a61eb7f77146e1ce4547a14181279be68ecfd/src/index.tsx#L99) | {}      | [Custom icons](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts--custom-icons) to replace the default ones |
 | customProgressBarSection | [Array<string \| ReactElement>](https://github.com/lhz516/react-h5-audio-player/blob/fa1a61eb7f77146e1ce4547a14181279be68ecfd/src/index.tsx#L91) | [CURRENT_TIME,<br>PROGRESS_BAR,<br>DURATION] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of progress bar section |
 | customControlsSection    | [Array<string \| ReactElement>](https://github.com/lhz516/react-h5-audio-player/blob/fa1a61eb7f77146e1ce4547a14181279be68ecfd/src/index.tsx#L92) | [ADDITIONAL_CONTROLS,<br>MAIN_CONTROLS,<br>VOLUME_CONTROLS] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of controls section |

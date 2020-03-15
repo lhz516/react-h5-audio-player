@@ -351,7 +351,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
           )
         default:
           if (!isValidElement(comp)) {
-            throw new Error('Invalid element in customProgressBarSection. It requires ReactElement, not ReactNode')
+            return null
           }
           return comp.key ? comp : cloneElement(comp as ReactElement, { key: i })
       }
@@ -441,7 +441,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
           )
         default:
           if (!isValidElement(comp)) {
-            throw new Error('Invalid element in customControlsSection. It requires ReactElement, not ReactNode')
+            return null
           }
           return comp.key ? comp : cloneElement(comp as ReactElement, { key: i })
       }
@@ -474,7 +474,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
           )
         default:
           if (!isValidElement(comp)) {
-            throw new Error('Invalid element in customAdditionalControls. It requires ReactElement, not ReactNode')
+            return null
           }
           return comp.key ? comp : cloneElement(comp as ReactElement, { key: i })
       }
@@ -510,7 +510,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
           )
         default:
           if (!isValidElement(comp)) {
-            throw new Error('Invalid element in customVolumeControls. It requires ReactElement, not ReactNode')
+            return null
           }
           return comp.key ? comp : cloneElement(comp as ReactElement, { key: i })
       }
