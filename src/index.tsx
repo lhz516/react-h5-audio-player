@@ -6,6 +6,7 @@ import React, {
   ReactNode,
   CSSProperties,
   ReactElement,
+  Key,
 } from 'react'
 import { Icon } from '@iconify/react'
 import playCircle from '@iconify/icons-mdi/play-circle'
@@ -22,16 +23,11 @@ import ProgressBar from './ProgressBar'
 import CurrentTime from './CurrentTime'
 import Duration from './Duration'
 import VolumeBar from './VolumeBar'
-import {
-  RHAP_UI,
-  PROGRESS_BAR_SECTION_UI,
-  CONTROLS_SECTION_UI,
-  ADDITIONAL_CONTROLS_UI,
-  VOLUME_CONTROLS_UI,
-  MAIN_LAYOUT,
-  AUDIO_PRELOAD_ATTRIBUTE,
-} from './constants'
+import { RHAP_UI, MAIN_LAYOUT, AUDIO_PRELOAD_ATTRIBUTE } from './constants'
 import { throttle, getMainLayoutClassName } from './utils'
+
+type CustomUIModule = RHAP_UI | ReactElement
+type CustomUIModules = Array<CustomUIModule>
 
 interface PlayerProps {
   /**
@@ -90,10 +86,10 @@ interface PlayerProps {
   footer?: ReactNode
   customIcons?: CustomIcons
   layout?: MAIN_LAYOUT
-  customProgressBarSection?: Array<PROGRESS_BAR_SECTION_UI | ReactElement>
-  customControlsSection?: Array<CONTROLS_SECTION_UI | ReactElement>
-  customAdditionalControls?: Array<ADDITIONAL_CONTROLS_UI | ReactElement>
-  customVolumeControls?: Array<VOLUME_CONTROLS_UI | ReactElement>
+  customProgressBarSection?: CustomUIModules
+  customControlsSection?: CustomUIModules
+  customAdditionalControls?: CustomUIModules
+  customVolumeControls?: CustomUIModules
   children?: ReactNode
   style?: CSSProperties
 }
@@ -254,6 +250,171 @@ class H5AudioPlayer extends Component<PlayerProps> {
     }
   }
 
+  renderUIModules = (modules: CustomUIModules): Array<ReactElement> => {
+    return modules.map((comp, i) => this.renderUIModule(comp, i))
+  }
+
+  renderUIModule = (comp: CustomUIModule, key: Key): ReactElement => {
+    const {
+      defaultCurrentTime,
+      progressUpdateInterval,
+      showDownloadProgress,
+      ShowFilledProgress,
+      defaultDuration,
+      customIcons,
+      showSkipControls,
+      onClickPrevious,
+      onClickNext,
+      showJumpControls,
+      customAdditionalControls,
+      customVolumeControls,
+      muted,
+      volume: volumeProp,
+      loop: loopProp,
+    } = this.props
+
+    switch (comp) {
+      case RHAP_UI.CURRENT_TIME:
+        return (
+          <div key={key} id="rhap_current-time" className="rhap_time rhap_current-time">
+            <CurrentTime audio={this.audio.current} defaultCurrentTime={defaultCurrentTime} />
+          </div>
+        )
+      case RHAP_UI.PROGRESS_BAR:
+        return (
+          <ProgressBar
+            key={key}
+            ref={this.progressBar}
+            audio={this.audio.current}
+            progressUpdateInterval={progressUpdateInterval}
+            showDownloadProgress={showDownloadProgress}
+            ShowFilledProgress={ShowFilledProgress}
+          />
+        )
+      case RHAP_UI.DURATION:
+        return (
+          <div key={key} className="rhap_time rhap_total-time">
+            <Duration audio={this.audio.current} defaultDuration={defaultDuration} />
+          </div>
+        )
+      case RHAP_UI.ADDITIONAL_CONTROLS:
+        return (
+          <div key={key} className="rhap_additional-controls">
+            {this.renderUIModules(customAdditionalControls)}
+          </div>
+        )
+      case RHAP_UI.MAIN_CONTROLS: {
+        const isPlaying = this.isPlaying()
+        let actionIcon: ReactNode
+        if (isPlaying) {
+          actionIcon = customIcons.pause ? customIcons.pause : <Icon icon={pauseCircle} />
+        } else {
+          actionIcon = customIcons.play ? customIcons.play : <Icon icon={playCircle} />
+        }
+        return (
+          <div key={key} className="rhap_main-controls">
+            {showSkipControls && (
+              <button
+                aria-label="Previous"
+                className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
+                onClick={onClickPrevious}
+              >
+                {customIcons.previous ? customIcons.previous : <Icon icon={skipPrevious} />}
+              </button>
+            )}
+            {showJumpControls && (
+              <button
+                aria-label="Rewind"
+                className="rhap_button-clear rhap_main-controls-button rhap_rewind-button"
+                onClick={this.handleClickRewind}
+              >
+                {customIcons.rewind ? customIcons.rewind : <Icon icon={rewind} />}
+              </button>
+            )}
+            <button
+              aria-label={isPlaying ? 'Pause' : 'Play'}
+              className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button"
+              onClick={this.togglePlay}
+            >
+              {actionIcon}
+            </button>
+            {showJumpControls && (
+              <button
+                aria-label="Forward"
+                className="rhap_button-clear rhap_main-controls-button rhap_forward-button"
+                onClick={this.handleClickForward}
+              >
+                {customIcons.forward ? customIcons.forward : <Icon icon={fastForward} />}
+              </button>
+            )}
+            {showSkipControls && (
+              <button
+                aria-label="Skip"
+                className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
+                onClick={onClickNext}
+              >
+                {customIcons.next ? customIcons.next : <Icon icon={skipNext} />}
+              </button>
+            )}
+          </div>
+        )
+      }
+      case RHAP_UI.VOLUME_CONTROLS:
+        return (
+          <div key={key} className="rhap_volume-controls">
+            {this.renderUIModules(customVolumeControls)}
+          </div>
+        )
+      case RHAP_UI.LOOP: {
+        const loop = this.audio.current ? this.audio.current.loop : loopProp
+
+        let loopIcon: ReactNode
+        if (loop) {
+          loopIcon = customIcons.loop ? customIcons.loop : <Icon icon={repeat} />
+        } else {
+          loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon={repeatOff} />
+        }
+        return (
+          <button
+            key={key}
+            aria-label={loop ? 'Enable Loop' : 'Disable Loop'}
+            className="rhap_button-clear rhap_repeat-button"
+            onClick={this.handleClickLoopButton}
+          >
+            {loopIcon}
+          </button>
+        )
+      }
+      case RHAP_UI.VOLUME: {
+        const { volume = muted ? 0 : volumeProp } = this.audio.current || {}
+
+        let volumeIcon: ReactNode
+        if (volume) {
+          volumeIcon = customIcons.volume ? customIcons.volume : <Icon icon={volumeHigh} />
+        } else {
+          volumeIcon = customIcons.volume ? customIcons.volumeMute : <Icon icon={volumeMute} />
+        }
+        return (
+          <div key={key} className="rhap_volume-container">
+            <button
+              aria-label={volume ? 'Mute' : 'Unmute'}
+              onClick={this.handleClickVolumeButton}
+              className="rhap_button-clear rhap_volume-button"
+            >
+              {volumeIcon}
+            </button>
+            <VolumeBar audio={this.audio.current} volume={volume} onMuteChange={this.handleMuteChange} />
+          </div>
+        )
+      }
+      default:
+        if (!isValidElement(comp)) {
+          return null
+        }
+        return comp.key ? comp : cloneElement(comp as ReactElement, { key })
+    }
+  }
+
   componentDidMount(): void {
     // force update to pass this.audio to child components
     this.forceUpdate()
@@ -317,208 +478,6 @@ class H5AudioPlayer extends Component<PlayerProps> {
     )
   }
 
-  renderProgressBarSection = (): Array<ReactElement> => {
-    const {
-      customProgressBarSection,
-      defaultCurrentTime,
-      progressUpdateInterval,
-      showDownloadProgress,
-      ShowFilledProgress,
-      defaultDuration,
-    } = this.props
-    return customProgressBarSection.map((comp, i) => {
-      switch (comp) {
-        case RHAP_UI.CURRENT_TIME:
-          return (
-            <div key={i} id="rhap_current-time" className="rhap_time rhap_current-time">
-              <CurrentTime audio={this.audio.current} defaultCurrentTime={defaultCurrentTime} />
-            </div>
-          )
-        case RHAP_UI.PROGRESS_BAR:
-          return (
-            <ProgressBar
-              key={i}
-              ref={this.progressBar}
-              audio={this.audio.current}
-              progressUpdateInterval={progressUpdateInterval}
-              showDownloadProgress={showDownloadProgress}
-              ShowFilledProgress={ShowFilledProgress}
-            />
-          )
-        case RHAP_UI.DURATION:
-          return (
-            <div key={i} className="rhap_time rhap_total-time">
-              <Duration audio={this.audio.current} defaultDuration={defaultDuration} />
-            </div>
-          )
-        default:
-          if (!isValidElement(comp)) {
-            return null
-          }
-          return comp.key ? comp : cloneElement(comp as ReactElement, { key: i })
-      }
-    })
-  }
-
-  renderControlsSection = (): Array<ReactElement> => {
-    const {
-      customIcons,
-      customControlsSection,
-      showSkipControls,
-      onClickPrevious,
-      onClickNext,
-      showJumpControls,
-    } = this.props
-
-    const isPlaying = this.isPlaying()
-
-    let actionIcon: ReactNode
-    if (isPlaying) {
-      actionIcon = customIcons.pause ? customIcons.pause : <Icon icon={pauseCircle} />
-    } else {
-      actionIcon = customIcons.play ? customIcons.play : <Icon icon={playCircle} />
-    }
-
-    return customControlsSection.map((comp, i) => {
-      switch (comp) {
-        case RHAP_UI.ADDITIONAL_CONTROLS:
-          return (
-            <div key={i} className="rhap_additional-controls">
-              {this.renderAdditionalControls()}
-            </div>
-          )
-        case RHAP_UI.MAIN_CONTROLS:
-          return (
-            <div key={i} className="rhap_main-controls">
-              {showSkipControls && (
-                <button
-                  aria-label="Previous"
-                  className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
-                  onClick={onClickPrevious}
-                >
-                  {customIcons.previous ? customIcons.previous : <Icon icon={skipPrevious} />}
-                </button>
-              )}
-              {showJumpControls && (
-                <button
-                  aria-label="Rewind"
-                  className="rhap_button-clear rhap_main-controls-button rhap_rewind-button"
-                  onClick={this.handleClickRewind}
-                >
-                  {customIcons.rewind ? customIcons.rewind : <Icon icon={rewind} />}
-                </button>
-              )}
-              <button
-                aria-label={isPlaying ? 'Pause' : 'Play'}
-                className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button"
-                onClick={this.togglePlay}
-              >
-                {actionIcon}
-              </button>
-              {showJumpControls && (
-                <button
-                  aria-label="Forward"
-                  className="rhap_button-clear rhap_main-controls-button rhap_forward-button"
-                  onClick={this.handleClickForward}
-                >
-                  {customIcons.forward ? customIcons.forward : <Icon icon={fastForward} />}
-                </button>
-              )}
-              {showSkipControls && (
-                <button
-                  aria-label="Skip"
-                  className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
-                  onClick={onClickNext}
-                >
-                  {customIcons.next ? customIcons.next : <Icon icon={skipNext} />}
-                </button>
-              )}
-            </div>
-          )
-        case RHAP_UI.VOLUME_CONTROLS:
-          return (
-            <div key={i} className="rhap_volume-controls">
-              {this.renderVolumeControls()}
-            </div>
-          )
-        default:
-          if (!isValidElement(comp)) {
-            return null
-          }
-          return comp.key ? comp : cloneElement(comp as ReactElement, { key: i })
-      }
-    })
-  }
-
-  renderAdditionalControls = (): Array<ReactElement> => {
-    const { customAdditionalControls, customIcons, loop: loopProp } = this.props
-    const loop = this.audio.current ? this.audio.current.loop : loopProp
-
-    let loopIcon: ReactNode
-    if (loop) {
-      loopIcon = customIcons.loop ? customIcons.loop : <Icon icon={repeat} />
-    } else {
-      loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon={repeatOff} />
-    }
-
-    return customAdditionalControls.map((comp, i) => {
-      switch (comp) {
-        case RHAP_UI.LOOP:
-          return (
-            <button
-              key={i}
-              aria-label={loop ? 'Enable Loop' : 'Disable Loop'}
-              className="rhap_button-clear rhap_repeat-button"
-              onClick={this.handleClickLoopButton}
-            >
-              {loopIcon}
-            </button>
-          )
-        default:
-          if (!isValidElement(comp)) {
-            return null
-          }
-          return comp.key ? comp : cloneElement(comp as ReactElement, { key: i })
-      }
-    })
-  }
-
-  renderVolumeControls = (): Array<ReactElement> => {
-    const { customVolumeControls, customIcons, muted, volume: volumeProp } = this.props
-
-    const { volume = muted ? 0 : volumeProp } = this.audio.current || {}
-
-    let volumeIcon: ReactNode
-    if (volume) {
-      volumeIcon = customIcons.volume ? customIcons.volume : <Icon icon={volumeHigh} />
-    } else {
-      volumeIcon = customIcons.volume ? customIcons.volumeMute : <Icon icon={volumeMute} />
-    }
-
-    return customVolumeControls.map((comp, i) => {
-      switch (comp) {
-        case RHAP_UI.VOLUME:
-          return (
-            <div key={i} className="rhap_volume-container">
-              <button
-                aria-label={volume ? 'Mute' : 'Unmute'}
-                onClick={this.handleClickVolumeButton}
-                className="rhap_button-clear rhap_volume-button"
-              >
-                {volumeIcon}
-              </button>
-              <VolumeBar audio={this.audio.current} volume={volume} onMuteChange={this.handleMuteChange} />
-            </div>
-          )
-        default:
-          if (!isValidElement(comp)) {
-            return null
-          }
-          return comp.key ? comp : cloneElement(comp as ReactElement, { key: i })
-      }
-    })
-  }
-
   render(): ReactNode {
     const {
       className,
@@ -531,6 +490,8 @@ class H5AudioPlayer extends Component<PlayerProps> {
       header,
       footer,
       layout,
+      customProgressBarSection,
+      customControlsSection,
       children,
       style,
     } = this.props
@@ -565,8 +526,8 @@ class H5AudioPlayer extends Component<PlayerProps> {
         </audio>
         {header && <div className="rhap_header">{header}</div>}
         <div className={`rhap_main ${getMainLayoutClassName(layout)}`}>
-          <div className="rhap_progress-section">{this.renderProgressBarSection()}</div>
-          <div className="rhap_controls-section">{this.renderControlsSection()}</div>
+          <div className="rhap_progress-section">{this.renderUIModules(customProgressBarSection)}</div>
+          <div className="rhap_controls-section">{this.renderUIModules(customControlsSection)}</div>
         </div>
         {footer && <div className="rhap_footer">{footer}</div>}
       </div>

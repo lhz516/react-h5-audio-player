@@ -6,7 +6,7 @@ export const getMainLayoutClassName = (layout: MAIN_LAYOUT): string => {
   switch (layout) {
     case 'stacked':
       return 'rhap_stacked'
-    case 'stack-reverse':
+    case 'stacked-reverse':
       return 'rhap_stacked-reverse'
     case 'horizontal':
       return 'rhap_horizontal'
