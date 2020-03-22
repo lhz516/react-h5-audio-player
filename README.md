@@ -97,6 +97,7 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | showSkipControls         | boolean           | false   | Show Previous/Next buttons |
 | showJumpControls         | boolean           | true    | Show Rewind/Forward buttons |
 | showDownloadProgress     | boolean           | true    | Show download progress over progress bar |
+| showFilledProgress       | boolean           | true    | Show filled (already played) area on progress bar |
 | volumeJumpStep           | number            | 0.1     | Indicates the volume jump step when pressing up/down arrow key, volume range is `0` to `1` |
 | progressJumpStep         | number            | 5000    | Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key|
 | progressUpdateInterval   | number            | 20      | Indicates the interval (ms) that the progress bar UI updates,  |
@@ -119,7 +120,7 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | onClickPrevious        | Function (Event)  | null    | Called when click Previous button |
 | onClickNext            | Function (Event)  | null    | Called when click Next button |
 | onPlayError            | Function (Error)  | null    | Called when there's error invoking `audio.play()`, it captures error that `onError` won't catch |
-| onListen               | Function (Event) | null    | Called every `listenInterval` milliseconds during playback |
+| onListen               | Function (Event)  | null    | Called every `listenInterval` milliseconds during playback |
 | onPlay                 | Function (Event)  | null    | Called when user plays the audio |
 | onPause                | Function (Event)  | null    | Called when user pauses the audio |
 | onAbort                | Function (Event)  | null    | Called when unloading the audio player, like when switching to a different src file |

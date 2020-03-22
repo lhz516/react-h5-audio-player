@@ -5,7 +5,7 @@ interface ProgressBarForwardRefProps {
   audio: HTMLAudioElement
   progressUpdateInterval: number
   showDownloadProgress: boolean
-  ShowFilledProgress: boolean
+  showFilledProgress: boolean
 }
 interface ProgressBarProps extends ProgressBarForwardRefProps {
   progressBar: React.RefObject<HTMLDivElement>
@@ -64,8 +64,8 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     return { currentTime, currentTimePos: `${((relativePos / maxRelativePos) * 100).toFixed(2)}%` }
   }
 
-  /* Handle mouse click on progress bar event */
-  handleMouseDownProgressBar = (event: React.MouseEvent | React.TouchEvent): void => {
+  /* Handle mouse down or touch start on progress bar event */
+  handleMouseDownOrTouchStartProgressBar = (event: React.MouseEvent | React.TouchEvent): void => {
     event.stopPropagation()
     const { currentTime, currentTimePos } = this.getCurrentProgress(event.nativeEvent)
 
@@ -166,7 +166,7 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   }
 
   render(): React.ReactNode {
-    const { showDownloadProgress, ShowFilledProgress, progressBar } = this.props
+    const { showDownloadProgress, showFilledProgress, progressBar } = this.props
     const { currentTimePos, downloadProgressArr, hasDownloadProgressAnimation } = this.state
 
     return (
@@ -180,12 +180,12 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
         aria-valuemax={100}
         aria-valuenow={Number(currentTimePos.split('%')[0])}
         tabIndex={0}
-        onMouseDown={this.handleMouseDownProgressBar}
-        onTouchStart={this.handleMouseDownProgressBar}
+        onMouseDown={this.handleMouseDownOrTouchStartProgressBar}
+        onTouchStart={this.handleMouseDownOrTouchStartProgressBar}
       >
         <div className={`rhap_progress-bar ${showDownloadProgress ? 'rhap_progress-bar-show-download' : ''}`}>
           <div className="rhap_progress-indicator" style={{ left: currentTimePos }} />
-          {ShowFilledProgress && <div className="rhap_progress-filled" style={{ width: currentTimePos }} />}
+          {showFilledProgress && <div className="rhap_progress-filled" style={{ width: currentTimePos }} />}
           {showDownloadProgress &&
             downloadProgressArr.map(({ left, width }, i) => (
               <div
@@ -206,3 +206,4 @@ const ProgressBarForwardRef = (
 ): React.ReactElement => <ProgressBar {...props} progressBar={ref as React.RefObject<HTMLDivElement>} />
 
 export default forwardRef(ProgressBarForwardRef)
+export { ProgressBar, ProgressBarForwardRef }

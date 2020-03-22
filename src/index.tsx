@@ -81,7 +81,7 @@ interface PlayerProps {
   showJumpControls?: boolean
   showSkipControls?: boolean
   showDownloadProgress?: boolean
-  ShowFilledProgress?: boolean
+  showFilledProgress?: boolean
   header?: ReactNode
   footer?: ReactNode
   customIcons?: CustomIcons
@@ -125,7 +125,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
     showJumpControls: true,
     showSkipControls: false,
     showDownloadProgress: true,
-    ShowFilledProgress: true,
+    showFilledProgress: true,
     customIcons: {},
     customProgressBarSection: [RHAP_UI.CURRENT_TIME, RHAP_UI.PROGRESS_BAR, RHAP_UI.DURATION],
     customControlsSection: [RHAP_UI.ADDITIONAL_CONTROLS, RHAP_UI.MAIN_CONTROLS, RHAP_UI.VOLUME_CONTROLS],
@@ -259,7 +259,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
       defaultCurrentTime,
       progressUpdateInterval,
       showDownloadProgress,
-      ShowFilledProgress,
+      showFilledProgress,
       defaultDuration,
       customIcons,
       showSkipControls,
@@ -288,7 +288,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
             audio={this.audio.current}
             progressUpdateInterval={progressUpdateInterval}
             showDownloadProgress={showDownloadProgress}
-            ShowFilledProgress={ShowFilledProgress}
+            showFilledProgress={showFilledProgress}
           />
         )
       case RHAP_UI.DURATION:
