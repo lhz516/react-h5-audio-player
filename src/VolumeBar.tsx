@@ -74,7 +74,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
     }
   }
 
-  handleVolumnControlMouseDown = (event: React.MouseEvent | React.TouchEvent): void => {
+  handleVolumnControlMouseOrTouchDown = (event: React.MouseEvent | React.TouchEvent): void => {
     event.stopPropagation()
     const { audio } = this.props
     const { currentVolume, currentVolumePos } = this.getCurrentVolume(event.nativeEvent)
@@ -164,8 +164,8 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
     return (
       <div
         ref={this.volumeBar}
-        onMouseDown={this.handleVolumnControlMouseDown}
-        onTouchStart={this.handleVolumnControlMouseDown}
+        onMouseDown={this.handleVolumnControlMouseOrTouchDown}
+        onTouchStart={this.handleVolumnControlMouseOrTouchDown}
         role="progressbar"
         aria-label="volume Control"
         aria-valuemin={0}

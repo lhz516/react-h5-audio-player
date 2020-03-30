@@ -102,4 +102,14 @@ module.exports = {
     'prefer-arrow-callback': 2,
     'template-curly-spacing': [2, 'never'],
   },
+  overrides: [
+    {
+      files: ['src/*.test.js'],
+      rules: {
+        '@typescript-eslint/ban-ts-ignore': 0,
+        '@typescript-eslint/no-empty-function': 0,
+        '@typescript-eslint/explicit-function-return-type': 0,
+      }
+    }
+  ],
 }
