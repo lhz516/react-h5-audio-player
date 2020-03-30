@@ -277,7 +277,13 @@ class H5AudioPlayer extends Component<PlayerProps> {
       case RHAP_UI.CURRENT_TIME:
         return (
           <div key={key} id="rhap_current-time" className="rhap_time rhap_current-time">
-            <CurrentTime audio={this.audio.current} defaultCurrentTime={defaultCurrentTime} />
+            <CurrentTime audio={this.audio.current} isLeftTime={false} defaultCurrentTime={defaultCurrentTime} />
+          </div>
+        )
+      case RHAP_UI.CURRENT_LEFT_TIME:
+        return (
+          <div key={key} id="rhap_current-left-time" className="rhap_time rhap_current-left-time">
+            <CurrentTime audio={this.audio.current} isLeftTime={true} defaultCurrentTime={defaultCurrentTime} />
           </div>
         )
       case RHAP_UI.PROGRESS_BAR:

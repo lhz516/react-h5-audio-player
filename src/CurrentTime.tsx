@@ -4,6 +4,7 @@ import { getDisplayTimeBySeconds } from './utils'
 interface CurrentTimeProps {
   audio?: HTMLAudioElement
   defaultCurrentTime: ReactNode
+  isLeftTime: boolean
 }
 
 interface CurrentTimeState {
@@ -21,7 +22,11 @@ class CurrentTime extends PureComponent<CurrentTimeProps, CurrentTimeState> {
 
   handleAudioCurrentTimeChange = (e: Event): void => {
     const audio = e.target as HTMLAudioElement
-    this.setState({ currentTime: getDisplayTimeBySeconds(audio.currentTime) })
+    this.setState({
+      currentTime: getDisplayTimeBySeconds(
+        this.props.isLeftTime ? audio.duration - audio.currentTime : audio.currentTime
+      ),
+    })
   }
 
   componentDidUpdate(): void {

@@ -229,3 +229,31 @@ class VolumePercentage extends PureComponent<{}, { volumeText: string }> {
   customVolumeControls={[]}
 />
 ```
+
+#### Use current left time
+
+<Story name="Use current left time">
+  <AudioPlayer
+    src={SAMPLE_MP3_URL}
+    customProgressBarSection={
+      [
+        RHAP_UI.CURRENT_TIME,
+        RHAP_UI.PROGRESS_BAR,
+        RHAP_UI.CURRENT_LEFT_TIME,
+      ]
+    }
+  />
+</Story>
+
+```jsx
+<AudioPlayer
+  src={SAMPLE_MP3_URL}
+  customProgressBarSection={
+    [
+      RHAP_UI.CURRENT_TIME,
+      RHAP_UI.PROGRESS_BAR,
+      RHAP_UI.CURRENT_LEFT_TIME,
+    ]
+  }
+/>
+```

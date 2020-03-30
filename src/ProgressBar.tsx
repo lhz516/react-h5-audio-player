@@ -174,7 +174,6 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
         className="rhap_progress-container"
         ref={progressBar}
         aria-label="Audio Progress Control"
-        aria-describedby="rhap_current-time"
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={100}
