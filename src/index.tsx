@@ -169,6 +169,27 @@ class H5AudioPlayer extends Component<PlayerProps> {
     return !audio.paused && !audio.ended
   }
 
+  handlePlay = (e: Event): void => {
+    this.forceUpdate()
+    this.props.onPlay && this.props.onPlay(e)
+  }
+
+  handlePause = (e: Event): void => {
+    if (!this.audio) return
+    this.forceUpdate()
+    this.props.onPause && this.props.onPause(e)
+  }
+
+  handleAbort = (e: Event): void => {
+    const { autoPlayAfterSrcChange } = this.props
+    if (autoPlayAfterSrcChange) {
+      this.audio.current.play()
+    } else {
+      this.forceUpdate()
+    }
+    this.props.onAbort && this.props.onAbort(e)
+  }
+
   handleClickVolumeButton = (): void => {
     const audio = this.audio.current
     if (audio.volume > 0) {
@@ -448,21 +469,10 @@ class H5AudioPlayer extends Component<PlayerProps> {
     })
 
     // When audio play starts
-    audio.addEventListener('play', (e) => {
-      this.forceUpdate()
-      this.props.onPlay && this.props.onPlay(e)
-    })
+    audio.addEventListener('play', this.handlePlay)
 
     // When unloading the audio player (switching to another src)
-    audio.addEventListener('abort', (e) => {
-      const { autoPlayAfterSrcChange } = this.props
-      if (autoPlayAfterSrcChange) {
-        audio.play()
-      } else {
-        this.forceUpdate()
-      }
-      this.props.onAbort && this.props.onAbort(e)
-    })
+    audio.addEventListener('abort', this.handleAbort)
 
     // When the file has finished playing to the end
     audio.addEventListener('ended', (e) => {
@@ -470,11 +480,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
     })
 
     // When the user pauses playback
-    audio.addEventListener('pause', (e) => {
-      if (!this.audio) return
-      this.forceUpdate()
-      this.props.onPause && this.props.onPause(e)
-    })
+    audio.addEventListener('pause', this.handlePause)
 
     audio.addEventListener(
       'timeupdate',
@@ -482,6 +488,15 @@ class H5AudioPlayer extends Component<PlayerProps> {
         this.props.onListen && this.props.onListen(e)
       }, this.props.listenInterval)
     )
+  }
+
+  componentWillUnmount(): void {
+    const audio = this.audio.current
+    if (audio) {
+      audio.removeEventListener('play', this.handlePlay)
+      audio.removeEventListener('pause', this.handlePause)
+      audio.removeEventListener('abort', this.handleAbort)
+    }
   }
 
   render(): ReactNode {
