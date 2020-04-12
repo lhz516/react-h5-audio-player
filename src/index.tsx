@@ -496,6 +496,8 @@ class H5AudioPlayer extends Component<PlayerProps> {
       audio.removeEventListener('play', this.handlePlay)
       audio.removeEventListener('pause', this.handlePause)
       audio.removeEventListener('abort', this.handleAbort)
+      audio.removeAttribute('src')
+      audio.load()
     }
   }
 
