@@ -344,6 +344,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
               <button
                 aria-label="Previous"
                 className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
+                type="button"
                 onClick={onClickPrevious}
               >
                 {customIcons.previous ? customIcons.previous : <Icon icon={skipPrevious} />}
@@ -353,6 +354,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
               <button
                 aria-label="Rewind"
                 className="rhap_button-clear rhap_main-controls-button rhap_rewind-button"
+                type="button"
                 onClick={this.handleClickRewind}
               >
                 {customIcons.rewind ? customIcons.rewind : <Icon icon={rewind} />}
@@ -361,6 +363,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
             <button
               aria-label={isPlaying ? 'Pause' : 'Play'}
               className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button"
+              type="button"
               onClick={this.togglePlay}
             >
               {actionIcon}
@@ -369,6 +372,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
               <button
                 aria-label="Forward"
                 className="rhap_button-clear rhap_main-controls-button rhap_forward-button"
+                type="button"
                 onClick={this.handleClickForward}
               >
                 {customIcons.forward ? customIcons.forward : <Icon icon={fastForward} />}
@@ -378,6 +382,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
               <button
                 aria-label="Skip"
                 className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
+                type="button"
                 onClick={onClickNext}
               >
                 {customIcons.next ? customIcons.next : <Icon icon={skipNext} />}
@@ -406,6 +411,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
             key={key}
             aria-label={loop ? 'Enable Loop' : 'Disable Loop'}
             className="rhap_button-clear rhap_repeat-button"
+            type="button"
             onClick={this.handleClickLoopButton}
           >
             {loopIcon}
@@ -426,6 +432,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
             <button
               aria-label={volume ? 'Mute' : 'Unmute'}
               onClick={this.handleClickVolumeButton}
+              type="button"
               className="rhap_button-clear rhap_volume-button"
             >
               {volumeIcon}
