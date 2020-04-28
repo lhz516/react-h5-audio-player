@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react'
+import React, { Component, createRef, SyntheticEvent } from 'react'
 import { getPosX } from './utils'
 
 interface VolumeControlsProps {
@@ -62,6 +62,10 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
     }
 
     return { currentVolume, currentVolumePos }
+  }
+
+  handleContextMenu = (event: SyntheticEvent): void => {
+    event.preventDefault()
   }
 
   handleClickVolumeButton = (): void => {
@@ -166,6 +170,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
         ref={this.volumeBar}
         onMouseDown={this.handleVolumnControlMouseOrTouchDown}
         onTouchStart={this.handleVolumnControlMouseOrTouchDown}
+        onContextMenu={this.handleContextMenu}
         role="progressbar"
         aria-label="volume Control"
         aria-valuemin={0}

@@ -1,4 +1,4 @@
-import React, { Component, forwardRef } from 'react'
+import React, { Component, forwardRef, SyntheticEvent } from 'react'
 import { getPosX, throttle } from './utils'
 
 interface ProgressBarForwardRefProps {
@@ -62,6 +62,10 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     }
     const currentTime = (this.props.audio.duration * relativePos) / maxRelativePos
     return { currentTime, currentTimePos: `${((relativePos / maxRelativePos) * 100).toFixed(2)}%` }
+  }
+
+  handleContextMenu = (event: SyntheticEvent): void => {
+    event.preventDefault()
   }
 
   /* Handle mouse down or touch start on progress bar event */
@@ -181,6 +185,7 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
         tabIndex={0}
         onMouseDown={this.handleMouseDownOrTouchStartProgressBar}
         onTouchStart={this.handleMouseDownOrTouchStartProgressBar}
+        onContextMenu={this.handleContextMenu}
       >
         <div className={`rhap_progress-bar ${showDownloadProgress ? 'rhap_progress-bar-show-download' : ''}`}>
           <div className="rhap_progress-indicator" style={{ left: currentTimePos }} />
