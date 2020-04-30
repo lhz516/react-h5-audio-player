@@ -100,6 +100,8 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | showFilledProgress       | boolean           | true    | Show filled (already played) area on progress bar |
 | volumeJumpStep           | number            | 0.1     | Indicates the volume jump step when pressing up/down arrow key, volume range is `0` to `1` |
 | progressJumpStep         | number            | 5000    | Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key|
+| progressJumpStepBackward | number            | 5000    | Indicates the progress jump step (ms) when clicking rewind button or left/right arrow key|
+| progressJumpStepForward  | number            | 5000    | Indicates the progress jump step (ms) when clicking forward button or right arrow key|
 | progressUpdateInterval   | number            | 20      | Indicates the interval (ms) that the progress bar UI updates,  |
 | listenInterval           | number            | 1000    | Indicates the interval (ms) to call the `onListened` prop during playback |
 | defaultCurrentTime       | ReactNode         | '--:--' | Default display for audio's current time before src's meta data is loaded |
