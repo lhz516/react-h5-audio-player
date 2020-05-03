@@ -1,0 +1,46 @@
+import { Meta, Story, Preview } from '@storybook/addon-docs/blocks';
+import { SAMPLE_MP3_URL } from './utils'
+import AudioPlayer from '../src/index.tsx'
+
+<Meta title="Config" component={AudioPlayer} />
+
+# Config
+
+Controls settings
+
+### Props
+
+progressJumpSteps
+
+- Type: `object`
+- Default: `{ forward: 5000, backward: 5000 }`
+
+progressJumpStep **(deprecated)**
+
+- Type: `number`
+- Default: `5000`
+
+
+#### progressJumpSteps
+
+<Preview>
+  <Story name="Forward and backward jump step">
+    <AudioPlayer
+      progressJumpSteps={{
+        forward: 30000,
+        backward: 10000
+      }}
+      src={SAMPLE_MP3_URL}
+    />
+  </Story>
+</Preview>
+
+#### progressJumpStep **(deprecated)**
+<Preview>
+  <Story name="Deprecated jump step">
+    <AudioPlayer
+      progressJumpStep={10000}
+      src={SAMPLE_MP3_URL}
+    />
+  </Story>
+</Preview>
