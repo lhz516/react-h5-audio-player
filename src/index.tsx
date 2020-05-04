@@ -48,7 +48,7 @@ interface PlayerProps {
   listenInterval?: number
   progressJumpStep?: number
   progressJumpSteps?: {
-    backward?: number,
+    backward?: number
     forward?: number
   }
   volumeJumpStep?: number
@@ -215,14 +215,14 @@ class H5AudioPlayer extends Component<PlayerProps> {
   }
 
   handleClickRewind = (): void => {
-    const { progressJumpSteps, progressJumpStep } = this.props;
-    const jumpStep = progressJumpSteps.backward || progressJumpStep;
+    const { progressJumpSteps, progressJumpStep } = this.props
+    const jumpStep = progressJumpSteps.backward || progressJumpStep
     this.setJumpTime(-jumpStep)
   }
 
   handleClickForward = (): void => {
-    const { progressJumpSteps, progressJumpStep } = this.props;
-    const jumpStep = progressJumpSteps.forward || progressJumpStep;
+    const { progressJumpSteps, progressJumpStep } = this.props
+    const jumpStep = progressJumpSteps.forward || progressJumpStep
     this.setJumpTime(jumpStep)
   }
 
