@@ -215,12 +215,14 @@ class H5AudioPlayer extends Component<PlayerProps> {
   }
 
   handleClickRewind = (): void => {
-    const jumpStep = this.props.progressJumpSteps.backward != undefined ? this.props.progressJumpSteps.backward : this.props.progressJumpStep
+    const { progressJumpSteps, progressJumpStep } = this.props;
+    const jumpStep = progressJumpSteps.backward || progressJumpStep;
     this.setJumpTime(-jumpStep)
   }
 
   handleClickForward = (): void => {
-    const jumpStep = this.props.progressJumpSteps.forward != undefined ? this.props.progressJumpSteps.forward : this.props.progressJumpStep
+    const { progressJumpSteps, progressJumpStep } = this.props;
+    const jumpStep = progressJumpSteps.forward || progressJumpStep;
     this.setJumpTime(jumpStep)
   }
 
