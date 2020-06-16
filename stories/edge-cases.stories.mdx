@@ -1,4 +1,5 @@
-import { Meta, Story, Preview, Description } from '@storybook/addon-docs/blocks';
+import { Meta, Story, Preview, Description } from '@storybook/addon-docs/blocks'
+import { action } from '@storybook/addon-actions'
 import { SAMPLE_MP3_URL } from './utils'
 import AudioPlayer from '../src/index.tsx'
 
@@ -16,7 +17,7 @@ No error is fired, and no console error
 
 <Preview>
   <Story name="No src">
-    <AudioPlayer />
+    <AudioPlayer onError={action('onError')} onPlayError={action('onPlayError')} />
   </Story>
 </Preview>
 
@@ -26,7 +27,7 @@ No error is fired, and no console error
 
 <Preview>
   <Story name="Empty string src">
-    <AudioPlayer src='' />
+    <AudioPlayer src='' onError={action('onError')} onPlayError={action('onPlayError')} />
   </Story>
 </Preview>
 
@@ -36,6 +37,6 @@ No error is fired, and no console error
 
 <Preview>
   <Story name="Invalid src">
-    <AudioPlayer src="https://invalidsrc.com/nothing.mp3" />
+    <AudioPlayer src="https://invalidsrc.com/nothing.mp3" onError={action('onError')} onPlayError={action('onPlayError')} />
   </Story>
 </Preview>

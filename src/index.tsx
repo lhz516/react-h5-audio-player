@@ -62,6 +62,7 @@ interface PlayerProps {
   onEnded?: (e: Event) => void
   onError?: (e: Event) => void
   onListen?: (e: Event) => void
+  onVolumeChange?: (e: Event) => void
   onPause?: (e: Event) => void
   onPlay?: (e: Event) => void
   onClickPrevious?: (e: React.SyntheticEvent) => void
@@ -504,6 +505,10 @@ class H5AudioPlayer extends Component<PlayerProps> {
         this.props.onListen && this.props.onListen(e)
       }, this.props.listenInterval)
     )
+
+    audio.addEventListener('volumechange', (e) => {
+      this.props.onVolumeChange && this.props.onVolumeChange(e)
+    })
   }
 
   componentWillUnmount(): void {

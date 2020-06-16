@@ -26,7 +26,7 @@
 
 Live Demo: [Storybook](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts--default-story)
 
-Website example: [hanzluo.com](https://hanzluo.com/#music) | [Code](https://github.com/lhz516/hanzluo/blob/master/src/components/home/home.js#L279)
+Try it on CodePen: [codepen.io/lhz516/pen/dyGpmgP](https://codepen.io/lhz516/pen/dyGpmgP)
 
 Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE 11
 
@@ -122,6 +122,7 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | onClickNext            | Function (Event)  | null    | Called when click Next button |
 | onPlayError            | Function (Error)  | null    | Called when there's error invoking `audio.play()`, it captures error that `onError` won't catch |
 | onListen               | Function (Event)  | null    | Called every `listenInterval` milliseconds during playback |
+| onVolumeChange         | Function (Event)  | null    | Called when volume is changed. Get volume by `e.target.volume` |
 | onPlay                 | Function (Event)  | null    | Called when user plays the audio |
 | onPause                | Function (Event)  | null    | Called when user pauses the audio |
 | onAbort                | Function (Event)  | null    | Called when unloading the audio player, like when switching to a different src file |

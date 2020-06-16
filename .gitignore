@@ -3,3 +3,4 @@ lib/
 es/
 react-h5-audio-player-storybook/
 coverage/
+.vscode/

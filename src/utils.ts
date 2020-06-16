@@ -41,7 +41,7 @@ export const getDisplayTimeBySeconds = (seconds: number): string => {
 
 export function throttle<K>(func: throttleFunction<K>, limit: number): throttleFunction<K> {
   let inThrottle = false
-  return function(arg): void {
+  return (arg) => {
     if (!inThrottle) {
       func(arg)
       inThrottle = true

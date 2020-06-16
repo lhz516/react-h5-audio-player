@@ -18,6 +18,10 @@ $rhap_font-family: inherit !default;
   &:focus:not(:focus-visible) {
     outline: 0;
   }
+
+  svg {
+    vertical-align: initial; // overwrite Bootstrap default
+  }
 }
 
 .rhap_header {
