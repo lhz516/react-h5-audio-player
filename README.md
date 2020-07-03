@@ -80,7 +80,6 @@ const Player = () => (
 | autoPlay    | boolean                        | false     | Won't work on most mobile devices |
 | loop        | boolean                        | false     | |
 | muted       | boolean                        | false     | |
-| loop        | boolean                        | false     | |
 | volume      | number                         | 1.0       | Won't work on most mobile devices |
 | crossOrigin | string                         | undefined | |
 | mediaGroup  | string                         | undefined | |
