@@ -89,7 +89,7 @@ More native attributes detail: [MDN Audio element](https://developer.mozilla.org
 
 The `controls` attribute defaults to `false` and should never be changed to `true` because this library is already providing UI.
 
-### UI Props
+### UI/UX Props
 
 | Props                    | Type              | Default | Note |
 | ------------------------ | ----------------- | ------- | ---- |
@@ -97,6 +97,7 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | showJumpControls         | boolean           | true    | Show Rewind/Forward buttons |
 | showDownloadProgress     | boolean           | true    | Show download progress over progress bar |
 | showFilledProgress       | boolean           | true    | Show filled (already played) area on progress bar |
+| autoPlayAfterSrcChange   | boolean           | true    | Play audio after `src` is changed, no matter `autoPlay` is `true` or `false` |
 | volumeJumpStep           | number            | 0.1     | Indicates the volume jump step when pressing up/down arrow key, volume range is `0` to `1` |
 | progressJumpStep         | number            | 5000    | **Deprecated, use progressJumpSteps.** Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key |
 | progressJumpSteps        | object            | `{ backward: 5000, forward: 5000 }`    | Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key|

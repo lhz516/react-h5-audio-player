@@ -35,7 +35,7 @@ interface PlayerProps {
    */
   autoPlay?: boolean
   /**
-   * Whether to play music after src prop is changed
+   * Whether to play audio after src prop is changed
    */
   autoPlayAfterSrcChange?: boolean
   /**
@@ -158,14 +158,25 @@ class H5AudioPlayer extends Component<PlayerProps> {
     e.stopPropagation()
     const audio = this.audio.current
     if (audio.paused && audio.src) {
-      const audioPromise = audio.play()
-      audioPromise.then(null).catch((err) => {
-        const { onPlayError } = this.props
-        onPlayError && onPlayError(new Error(err))
-      })
+      this.playAudioPromise()
     } else if (!audio.paused) {
       audio.pause()
     }
+  }
+
+  /**
+   * Safely play audio
+   *
+   * Reference: https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
+   */
+  playAudioPromise = (): void => {
+    this.audio.current
+      .play()
+      .then(null)
+      .catch((err) => {
+        const { onPlayError } = this.props
+        onPlayError && onPlayError(new Error(err))
+      })
   }
 
   isPlaying = (): boolean => {
@@ -189,7 +200,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
   handleAbort = (e: Event): void => {
     const { autoPlayAfterSrcChange } = this.props
     if (autoPlayAfterSrcChange) {
-      this.audio.current.play()
+      this.playAudioPromise()
     } else {
       this.forceUpdate()
     }
