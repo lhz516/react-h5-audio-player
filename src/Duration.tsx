@@ -30,12 +30,14 @@ class Duration extends PureComponent<DurationProps, DurationState> {
       this.audio = audio
       this.hasAddedAudioEventListener = true
       audio.addEventListener('durationchange', this.handleAudioDurationChange)
+      audio.addEventListener('abort', this.handleAudioDurationChange)
     }
   }
 
   componentWillUnmount(): void {
     if (this.audio && this.hasAddedAudioEventListener) {
       this.audio.removeEventListener('durationchange', this.handleAudioDurationChange)
+      this.audio.removeEventListener('abort', this.handleAudioDurationChange)
     }
   }
 

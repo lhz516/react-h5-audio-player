@@ -13,8 +13,9 @@ describe('Duration', () => {
     wrapper.setProps({ audio })
 
     const handleAudioDurationChange = wrapper.instance().handleAudioDurationChange
-    expect(audioAddEventListener).toHaveBeenCalledTimes(1)
+    expect(audioAddEventListener).toHaveBeenCalledTimes(2)
     expect(audioAddEventListener).toHaveBeenCalledWith('durationchange', handleAudioDurationChange)
+    expect(audioAddEventListener).toHaveBeenCalledWith('abort', handleAudioDurationChange)
     // @ts-ignore: error TS2540: Cannot assign to 'duration' because it is a read-only property.
     audio.duration = 18
     handleAudioDurationChange({ target: audio })
@@ -22,8 +23,9 @@ describe('Duration', () => {
     expect(wrapper.state('duration')).toBe('00:18')
 
     wrapper.unmount()
-    expect(audioRemoveEventListener).toHaveBeenCalledTimes(1)
+    expect(audioRemoveEventListener).toHaveBeenCalledTimes(2)
     expect(audioRemoveEventListener).toHaveBeenCalledWith('durationchange', handleAudioDurationChange)
+    expect(audioRemoveEventListener).toHaveBeenCalledWith('abort', handleAudioDurationChange)
   })
 
   it('should not throw when unmount even if no audio object passed in', () => {

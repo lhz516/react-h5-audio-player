@@ -13,12 +13,9 @@ interface PlayListState {
   currentMusicIndex: number
 }
 
-class PlayList extends Component<{}, PlayListState> {
-  constructor(props: {}) {
-    super(props)
-    this.state = {
-      currentMusicIndex: 0,
-    }
+class PlayList extends Component<null, PlayListState> {
+  state = {
+    currentMusicIndex: 0,
   }
 
   handleClickPrevious = (): void => {

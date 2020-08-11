@@ -198,12 +198,6 @@ class H5AudioPlayer extends Component<PlayerProps> {
   }
 
   handleAbort = (e: Event): void => {
-    const { autoPlayAfterSrcChange } = this.props
-    if (autoPlayAfterSrcChange) {
-      this.playAudioPromise()
-    } else {
-      this.forceUpdate()
-    }
     this.props.onAbort && this.props.onAbort(e)
   }
 
@@ -520,6 +514,13 @@ class H5AudioPlayer extends Component<PlayerProps> {
     audio.addEventListener('volumechange', (e) => {
       this.props.onVolumeChange && this.props.onVolumeChange(e)
     })
+  }
+
+  componentDidUpdate(prevProps: PlayerProps): void {
+    const { src, autoPlayAfterSrcChange } = this.props
+    if (prevProps.src !== src && autoPlayAfterSrcChange) {
+      this.playAudioPromise()
+    }
   }
 
   componentWillUnmount(): void {
