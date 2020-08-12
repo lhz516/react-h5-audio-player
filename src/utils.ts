@@ -1,4 +1,4 @@
-import { MAIN_LAYOUT } from './constants'
+import { MAIN_LAYOUT, TIME_FORMAT } from './constants'
 
 type throttleFunction<T> = (arg: T) => void
 
@@ -29,14 +29,31 @@ const addHeadingZero = (num: number): string => {
   return num > 9 ? num.toString() : `0${num}`
 }
 
-export const getDisplayTimeBySeconds = (seconds: number): string => {
+export const getDisplayTimeBySeconds = (seconds: number, totalSeconds: number, timeFormat: TIME_FORMAT): string => {
   if (!isFinite(seconds)) {
-    return '00:00'
+    return null
   }
 
-  const min = addHeadingZero(Math.floor(seconds / 60))
-  const sec = addHeadingZero(Math.floor(seconds % 60))
-  return `${min}:${sec}`
+  const min = Math.floor(seconds / 60)
+  const minStr = addHeadingZero(min)
+  const secStr = addHeadingZero(Math.floor(seconds % 60))
+  const minStrForHour = addHeadingZero(Math.floor(min % 60))
+  const hourStr = Math.floor(min / 60)
+
+  const mmSs = `${minStr}:${secStr}`
+  const hhMmSs = `${hourStr}:${minStrForHour}:${secStr}`
+
+  if (timeFormat === 'auto') {
+    if (totalSeconds >= 3600) {
+      return hhMmSs
+    } else {
+      return mmSs
+    }
+  } else if (timeFormat === 'mm:ss') {
+    return mmSs
+  } else if (timeFormat === 'hh:mm:ss') {
+    return hhMmSs
+  }
 }
 
 export function throttle<K>(func: throttleFunction<K>, limit: number): throttleFunction<K> {

@@ -105,6 +105,7 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | listenInterval           | number            | 1000    | Indicates the interval (ms) to call the `onListened` prop during playback |
 | defaultCurrentTime       | ReactNode         | '--:--' | Default display for audio's current time before src's meta data is loaded |
 | defaultDuration          | ReactNode         | '--:--' | Default display for audio's duration before src's meta data is loaded |
+| timeFormat               | 'auto' \| 'mm:ss'<br>\| 'hh:mm:ss' | 'auto' | Time format for both current time and duration. `'auto'` means when duration is greater than one hour, time format is `hh:mm:ss`, otherwise it's `mm:ss` |
 | header                   | ReactNode         | null    | Header of the audio player |
 | footer                   | ReactNode         | null    | Footer of the audio player |
 | layout                   | 'stacked' \| 'horizontal' \|<br>'stacked-reverse' \|<br>'horizontal-reverse' | 'stacked' | [Overall layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of the audio player |

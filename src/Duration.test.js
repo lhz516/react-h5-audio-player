@@ -4,7 +4,7 @@ import Duration from './Duration'
 
 describe('Duration', () => {
   it('should call add/removeEventListener and change duration properly', () => {
-    const wrapper = shallow(<Duration defaultDuration="00:00" audio={null} />)
+    const wrapper = shallow(<Duration defaultDuration="00:00" audio={null} timeFormat="auto" />)
     expect(wrapper.state('duration')).toBe('00:00')
 
     const audio = new Audio()

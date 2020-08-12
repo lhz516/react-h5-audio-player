@@ -23,7 +23,7 @@ import ProgressBar from './ProgressBar'
 import CurrentTime from './CurrentTime'
 import Duration from './Duration'
 import VolumeBar from './VolumeBar'
-import { RHAP_UI, MAIN_LAYOUT, AUDIO_PRELOAD_ATTRIBUTE } from './constants'
+import { RHAP_UI, MAIN_LAYOUT, AUDIO_PRELOAD_ATTRIBUTE, TIME_FORMAT } from './constants'
 import { throttle, getMainLayoutClassName } from './utils'
 
 type CustomUIModule = RHAP_UI | ReactElement
@@ -87,6 +87,7 @@ interface PlayerProps {
   showSkipControls?: boolean
   showDownloadProgress?: boolean
   showFilledProgress?: boolean
+  timeFormat?: TIME_FORMAT
   header?: ReactNode
   footer?: ReactNode
   customIcons?: CustomIcons
@@ -126,6 +127,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
     progressUpdateInterval: 20,
     defaultCurrentTime: '--:--',
     defaultDuration: '--:--',
+    timeFormat: 'auto',
     volume: 1,
     className: '',
     showJumpControls: true,
@@ -305,6 +307,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
       customAdditionalControls,
       customVolumeControls,
       muted,
+      timeFormat,
       volume: volumeProp,
       loop: loopProp,
     } = this.props
@@ -313,13 +316,23 @@ class H5AudioPlayer extends Component<PlayerProps> {
       case RHAP_UI.CURRENT_TIME:
         return (
           <div key={key} id="rhap_current-time" className="rhap_time rhap_current-time">
-            <CurrentTime audio={this.audio.current} isLeftTime={false} defaultCurrentTime={defaultCurrentTime} />
+            <CurrentTime
+              audio={this.audio.current}
+              isLeftTime={false}
+              defaultCurrentTime={defaultCurrentTime}
+              timeFormat={timeFormat}
+            />
           </div>
         )
       case RHAP_UI.CURRENT_LEFT_TIME:
         return (
           <div key={key} id="rhap_current-left-time" className="rhap_time rhap_current-left-time">
-            <CurrentTime audio={this.audio.current} isLeftTime={true} defaultCurrentTime={defaultCurrentTime} />
+            <CurrentTime
+              audio={this.audio.current}
+              isLeftTime={true}
+              defaultCurrentTime={defaultCurrentTime}
+              timeFormat={timeFormat}
+            />
           </div>
         )
       case RHAP_UI.PROGRESS_BAR:
@@ -336,7 +349,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
       case RHAP_UI.DURATION:
         return (
           <div key={key} className="rhap_time rhap_total-time">
-            <Duration audio={this.audio.current} defaultDuration={defaultDuration} />
+            <Duration audio={this.audio.current} defaultDuration={defaultDuration} timeFormat={timeFormat} />
           </div>
         )
       case RHAP_UI.ADDITIONAL_CONTROLS:

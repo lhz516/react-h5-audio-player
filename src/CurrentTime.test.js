@@ -4,7 +4,7 @@ import CurrentTime from './CurrentTime'
 
 describe('CurrentTime', () => {
   it('should call add/removeEventListener and change currentTime properly', () => {
-    const wrapper = shallow(<CurrentTime defaultCurrentTime="00:00" audio={null} />)
+    const wrapper = shallow(<CurrentTime defaultCurrentTime="00:00" audio={null} timeFormat="auto" />)
     expect(wrapper.state('currentTime')).toBe('00:00')
 
     const audio = new Audio()
