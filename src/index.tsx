@@ -531,8 +531,13 @@ class H5AudioPlayer extends Component<PlayerProps> {
 
   componentDidUpdate(prevProps: PlayerProps): void {
     const { src, autoPlayAfterSrcChange } = this.props
-    if (prevProps.src !== src && autoPlayAfterSrcChange) {
-      this.playAudioPromise()
+    if (prevProps.src !== src) {
+      if (autoPlayAfterSrcChange) {
+        this.playAudioPromise()
+      } else {
+        // Updating pause icon to play icon
+        this.forceUpdate()
+      }
     }
   }
 
