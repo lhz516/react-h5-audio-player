@@ -1,12 +1,12 @@
 {
   "name": "react-h5-audio-player",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "description": "A customizable React audio player. Written in TypeScript. Mobile compatible. Keyboard friendly",
   "main": "./lib/index.js",
   "module": "./es/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
-    "build": "run-p build:cjs build:d.ts build:es build:css build:less",
+    "build": "run-p build:cjs build:d.ts build:es build:umd build:css build:less",
     "build:cjs": "cross-env NODE_ENV=cjs babel src --out-dir lib --extensions .tsx,.ts",
     "build:es": "cross-env NODE_ENV=es babel src --out-dir es --extensions .tsx,.ts",
     "build:umd": "webpack",
