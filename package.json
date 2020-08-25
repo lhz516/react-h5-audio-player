@@ -103,6 +103,7 @@
     "react-dom": "^16.13.1",
     "sass": "^1.26.8",
     "sass-loader": "^8.0.2",
+    "static-server": "^2.2.1",
     "typescript": "^3.9.5",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11"
