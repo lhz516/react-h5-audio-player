@@ -24,7 +24,7 @@ import CurrentTime from './CurrentTime'
 import Duration from './Duration'
 import VolumeBar from './VolumeBar'
 import { RHAP_UI, MAIN_LAYOUT, AUDIO_PRELOAD_ATTRIBUTE, TIME_FORMAT } from './constants'
-import { throttle, getMainLayoutClassName } from './utils'
+import { throttle, getMainLayoutClassName, getDisplayTimeBySeconds } from './utils'
 
 type CustomUIModule = RHAP_UI | ReactElement
 type CustomUIModules = Array<CustomUIModule>
@@ -68,6 +68,7 @@ interface PlayerProps {
   onClickPrevious?: (e: React.SyntheticEvent) => void
   onClickNext?: (e: React.SyntheticEvent) => void
   onPlayError?: (err: Error) => void
+  onSeek?: (audio: HTMLAudioElement, time: number) => void
   /**
    * HTML5 Audio tag preload property
    */
@@ -82,6 +83,7 @@ interface PlayerProps {
   src?: string
   defaultCurrentTime?: ReactNode
   defaultDuration?: ReactNode
+  srcDuration?: number
   volume?: number
   showJumpControls?: boolean
   showSkipControls?: boolean
@@ -341,15 +343,21 @@ class H5AudioPlayer extends Component<PlayerProps> {
             key={key}
             ref={this.progressBar}
             audio={this.audio.current}
+            srcDuration={this.props.srcDuration}
             progressUpdateInterval={progressUpdateInterval}
             showDownloadProgress={showDownloadProgress}
             showFilledProgress={showFilledProgress}
+            onSeek={this.props.onSeek}
           />
         )
       case RHAP_UI.DURATION:
         return (
           <div key={key} className="rhap_time rhap_total-time">
-            <Duration audio={this.audio.current} defaultDuration={defaultDuration} timeFormat={timeFormat} />
+            {this.props.srcDuration !== 'undefined' ? (
+              getDisplayTimeBySeconds(this.props.srcDuration, this.props.srcDuration, this.props.timeFormat)
+            ) : (
+              <Duration audio={this.audio.current} defaultDuration={defaultDuration} timeFormat={timeFormat} />
+            )}
           </div>
         )
       case RHAP_UI.ADDITIONAL_CONTROLS:
@@ -526,6 +534,10 @@ class H5AudioPlayer extends Component<PlayerProps> {
 
     audio.addEventListener('volumechange', (e) => {
       this.props.onVolumeChange && this.props.onVolumeChange(e)
+    })
+
+    audio.addEventListener('encrypted', (e) => {
+      this.props.onEcrypted && this.props.onEcrypted(e)
     })
   }
 

@@ -44,10 +44,18 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     downloadProgressArr: [],
   }
 
+  getDuration(): number {
+    const { audio, srcDuration } = this.props
+    return typeof srcDuration === 'undefined' ? audio.duration : srcDuration
+  }
+
   // Get time info while dragging indicator by mouse or touch
   getCurrentProgress = (event: MouseEvent | TouchEvent): TimePosInfo => {
     const { audio, progressBar } = this.props
-    if (!audio.src || !isFinite(audio.currentTime) || !progressBar.current) {
+    const isSingleFileProgressiveDownload =
+      audio.src.indexOf('blob:') !== 0 && typeof this.props.srcDuration === 'undefined'
+
+    if (isSingleFileProgressiveDownload && (!audio.src || !isFinite(audio.currentTime) || !progressBar.current)) {
       return { currentTime: 0, currentTimePos: '0%' }
     }
 
@@ -60,7 +68,8 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     } else if (relativePos > maxRelativePos) {
       relativePos = maxRelativePos
     }
-    const currentTime = (this.props.audio.duration * relativePos) / maxRelativePos
+    const duration = this.getDuration()
+    const currentTime = (duration * relativePos) / maxRelativePos
     return { currentTime, currentTimePos: `${((relativePos / maxRelativePos) * 100).toFixed(2)}%` }
   }
 
@@ -105,12 +114,13 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
 
   handleWindowMouseOrTouchUp = (event: MouseEvent | TouchEvent): void => {
     event.stopPropagation()
-    this.setState((prevState) => {
-      if (prevState.isDraggingProgress && isFinite(this.timeOnMouseMove)) {
-        this.props.audio.currentTime = this.timeOnMouseMove
-      }
-      return { isDraggingProgress: false }
-    })
+    const newTime = this.timeOnMouseMove
+    const onSeek = this.props.onSeek
+
+    const afterStateUpdated = () =>
+      onSeek ? onSeek(this.props.audio, newTime) : (this.props.audio.currentTime = newTime)
+
+    this.setState({ isDraggingProgress: false }, afterStateUpdated)
 
     if (event instanceof MouseEvent) {
       window.removeEventListener('mousemove', this.handleWindowMouseOrTouchMove)
@@ -126,7 +136,9 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     const audio = e.target as HTMLAudioElement
     if (isDraggingProgress) return
 
-    const { duration, currentTime } = audio
+    const { currentTime } = audio
+    const duration = this.getDuration()
+
     this.setState({
       currentTimePos: `${((currentTime / duration) * 100 || 0).toFixed(2)}%`,
     })
@@ -134,13 +146,15 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
 
   handleAudioDownloadProgressUpdate = (e: Event): void => {
     const audio = e.target as HTMLAudioElement
+    const duration = this.getDuration()
+
     const downloadProgressArr: DownloadProgress[] = []
     for (let i = 0; i < audio.buffered.length; i++) {
       const bufferedStart: number = audio.buffered.start(i)
       const bufferedEnd: number = audio.buffered.end(i)
       downloadProgressArr.push({
-        left: `${Math.round((100 / audio.duration) * bufferedStart) || 0}%`,
-        width: `${Math.round((100 / audio.duration) * (bufferedEnd - bufferedStart)) || 0}%`,
+        left: `${Math.round((100 / duration) * bufferedStart) || 0}%`,
+        width: `${Math.round((100 / duration) * (bufferedEnd - bufferedStart)) || 0}%`,
       })
     }
 
