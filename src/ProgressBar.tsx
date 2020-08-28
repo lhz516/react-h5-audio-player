@@ -1,11 +1,14 @@
 import React, { Component, forwardRef, SyntheticEvent } from 'react'
 import { getPosX, throttle } from './utils'
+import { OnSeek } from './index'
 
 interface ProgressBarForwardRefProps {
   audio: HTMLAudioElement
   progressUpdateInterval: number
   showDownloadProgress: boolean
   showFilledProgress: boolean
+  srcDuration?: number
+  onSeek?: OnSeek
 }
 interface ProgressBarProps extends ProgressBarForwardRefProps {
   progressBar: React.RefObject<HTMLDivElement>
@@ -16,6 +19,7 @@ interface ProgressBarState {
   currentTimePos: string
   hasDownloadProgressAnimation: boolean
   downloadProgressArr: DownloadProgress[]
+  waitingForSeekCallback: boolean
 }
 
 interface DownloadProgress {
@@ -42,6 +46,7 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     currentTimePos: '0%',
     hasDownloadProgressAnimation: false,
     downloadProgressArr: [],
+    waitingForSeekCallback: false,
   }
 
   getDuration(): number {
@@ -117,10 +122,16 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     const newTime = this.timeOnMouseMove
     const onSeek = this.props.onSeek
 
-    const afterStateUpdated = () =>
-      onSeek ? onSeek(this.props.audio, newTime) : (this.props.audio.currentTime = newTime)
-
-    this.setState({ isDraggingProgress: false }, afterStateUpdated)
+    if (onSeek) {
+      this.setState({ isDraggingProgress: false, waitingForSeekCallback: true }, () => {
+        onSeek(this.props.audio, newTime).then(() => this.setState({ waitingForSeekCallback: false }))
+      })
+    } else {
+      if (isFinite(newTime)) {
+        this.props.audio.currentTime = newTime
+      }
+      this.setState({ isDraggingProgress: false })
+    }
 
     if (event instanceof MouseEvent) {
       window.removeEventListener('mousemove', this.handleWindowMouseOrTouchMove)
@@ -134,7 +145,7 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   handleAudioTimeUpdate = throttle((e: Event): void => {
     const { isDraggingProgress } = this.state
     const audio = e.target as HTMLAudioElement
-    if (isDraggingProgress) return
+    if (isDraggingProgress || this.state.waitingForSeekCallback === true) return
 
     const { currentTime } = audio
     const duration = this.getDuration()

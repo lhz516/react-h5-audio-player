@@ -86,30 +86,39 @@ function handleMessage(ev) {
 
 interface ChunkData {
   name: string
-  data: Array<number> | null
+  data: BufferSource | null
   segmentTime: number
   chunkIndex: number
 }
 
-class MediaSourcePlayer extends PureComponent<unknown, { volumeText: string }> {
-  player = createRef<AudioPlayer>()
-  mediaSource = null
-  loadingChunk = false
-  chunks = []
-  whenBufferUpdateEndCallbacks = []
+interface MediaSourcePlayerState {
+  audioSrc: string
+  srcDuration: number
+}
 
-  state = {
+interface MediaEncryptedEvent {
+  target: HTMLAudioElement
+  initDataType: string
+  initData: BufferSource
+}
+
+class MediaSourcePlayer extends PureComponent<MediaSourcePlayer> {
+  player = createRef<AudioPlayer>()
+  mediaSource: MediaSource | null = null
+  loadingChunk = false
+  chunks: ChunkData[] = []
+  whenBufferUpdateEndCallbacks = []
+  sourceBuffer: any = null
+
+  state: MediaSourcePlayerState = {
     audioSrc: '',
     srcDuration: void 0,
   }
 
   onEncrypted(ev: MediaEncryptedEvent): void {
-    const audio = ev.target
+    const audio: HTMLAudioElement = ev.target
     EnsureMediaKeysCreated(audio, 'org.w3.clearkey', config).then(() => {
-      audio.sessions = []
-
       const session = audio.mediaKeys.createSession()
-      audio.sessions.push(session)
       session.addEventListener('message', handleMessage)
 
       return session.generateRequest(ev.initDataType, ev.initData)
@@ -119,36 +128,39 @@ class MediaSourcePlayer extends PureComponent<unknown, { volumeText: string }> {
     this.props.onEncrypted(ev)
   }
 
-  onSeek(audio: HTMLAudioElement, time: number): void {
+  onSeek(audio: HTMLAudioElement, time: number): Promise<void> {
     const playlist = this.chunks
     const bufferIsCompleteUpToNewCurrentTime = playlist.every((chunk, i) => {
       const chunkStartTime = chunk.segmentTime * i
       return chunkStartTime > time || chunk.data
     })
-
-    if (bufferIsCompleteUpToNewCurrentTime) {
-      audio.currentTime = time
-    } else {
-      if (!audio.paused) audio.pause()
-
-      const firstChunkInNewSegment = playlist.find((chunk, i) => {
-        const chunkEndTime = chunk.segmentTime * (i + 1)
-        return chunkEndTime > time
-      })
-
-      // set the player time relative to the new time
-      const segmentStartTime = firstChunkInNewSegment.segmentTime * firstChunkInNewSegment.chunkIndex
-      this.onTimeUpdate()
-
-      this.whenBufferUpdateEndCallbacks.push(() => {
+    return new Promise((resolve) => {
+      if (bufferIsCompleteUpToNewCurrentTime) {
         audio.currentTime = time
-        if (audio.paused) audio.play()
-      })
+        resolve()
+      } else {
+        if (!audio.paused) audio.pause()
 
-      // use or fetch buffers
-      const timestampOffset = segmentStartTime
-      this.loadChunk(firstChunkInNewSegment, timestampOffset)
-    }
+        const firstChunkInNewSegment = playlist.find((chunk, i) => {
+          const chunkEndTime = chunk.segmentTime * (i + 1)
+          return chunkEndTime > time
+        })
+
+        // set the player time relative to the new time
+        const segmentStartTime = firstChunkInNewSegment.segmentTime * firstChunkInNewSegment.chunkIndex
+        this.onTimeUpdate()
+
+        this.whenBufferUpdateEndCallbacks.push(() => {
+          audio.currentTime = time
+          if (audio.paused) audio.play()
+          resolve()
+        })
+
+        // use or fetch buffers
+        const timestampOffset = segmentStartTime
+        this.loadChunk(firstChunkInNewSegment, timestampOffset)
+      }
+    })
   }
 
   onChunkLoad(): void {

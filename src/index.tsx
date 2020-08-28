@@ -28,6 +28,7 @@ import { throttle, getMainLayoutClassName, getDisplayTimeBySeconds } from './uti
 
 type CustomUIModule = RHAP_UI | ReactElement
 type CustomUIModules = Array<CustomUIModule>
+type OnSeek = (audio: HTMLAudioElement, time: number) => Promise<void>
 
 interface PlayerProps {
   /**
@@ -68,7 +69,8 @@ interface PlayerProps {
   onClickPrevious?: (e: React.SyntheticEvent) => void
   onClickNext?: (e: React.SyntheticEvent) => void
   onPlayError?: (err: Error) => void
-  onSeek?: (audio: HTMLAudioElement, time: number) => void
+  onSeek?: OnSeek
+  onEcrypted?: (e: any) => void
   /**
    * HTML5 Audio tag preload property
    */
@@ -353,7 +355,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
       case RHAP_UI.DURATION:
         return (
           <div key={key} className="rhap_time rhap_total-time">
-            {this.props.srcDuration !== 'undefined' ? (
+            {this.props.srcDuration ? (
               getDisplayTimeBySeconds(this.props.srcDuration, this.props.srcDuration, this.props.timeFormat)
             ) : (
               <Duration audio={this.audio.current} defaultDuration={defaultDuration} timeFormat={timeFormat} />
@@ -622,4 +624,4 @@ class H5AudioPlayer extends Component<PlayerProps> {
 }
 
 export default H5AudioPlayer
-export { RHAP_UI }
+export { RHAP_UI, OnSeek }
