@@ -137,6 +137,7 @@ class MediaSourcePlayer extends PureComponent<MediaSourcePlayer> {
     return new Promise((resolve) => {
       if (bufferIsCompleteUpToNewCurrentTime) {
         audio.currentTime = time
+        this.checkBufferLoad()
         resolve()
       } else {
         if (!audio.paused) audio.pause()
@@ -152,8 +153,11 @@ class MediaSourcePlayer extends PureComponent<MediaSourcePlayer> {
 
         this.whenBufferUpdateEndCallbacks.push(() => {
           audio.currentTime = time
-          if (audio.paused) audio.play()
-          resolve()
+          this.checkBufferLoad()
+
+          if (audio.paused) {
+            audio.play().then(resolve)
+          } else resolve()
         })
 
         // use or fetch buffers
@@ -200,6 +204,7 @@ class MediaSourcePlayer extends PureComponent<MediaSourcePlayer> {
   }
 
   onTimeUpdate(): void {
+    if (this.state.audioSrc === SAMPLE_MP3_URL) return
     this.checkBufferLoad()
   }
 
@@ -259,9 +264,11 @@ class MediaSourcePlayer extends PureComponent<MediaSourcePlayer> {
           autoPlayAfterSrcChange={false}
           ref={this.player}
           src={this.state.audioSrc}
-          srcDuration={this.state.srcDuration}
-          onEcrypted={(e) => this.onEncrypted(e)}
-          onSeek={this.state.srcDuration && ((audio, time) => this.onSeek(audio, time))}
+          useMSE={{
+            srcDuration: this.state.srcDuration,
+            onEcrypted: (e) => this.onEncrypted(e),
+            onSeek: (audio, time) => this.onSeek(audio, time),
+          }}
           onListen={() => this.onTimeUpdate()}
           listenInterval={250}
         />

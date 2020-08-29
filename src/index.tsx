@@ -30,6 +30,19 @@ type CustomUIModule = RHAP_UI | ReactElement
 type CustomUIModules = Array<CustomUIModule>
 type OnSeek = (audio: HTMLAudioElement, time: number) => Promise<void>
 
+interface AudioChunk {
+  url: string
+  duration: number
+  data?: AudioBuffer
+}
+
+interface MSEPropsObject {
+  onSeek?: OnSeek
+  onEcrypted?: (e: unknown) => void
+  srcDuration?: number
+  playlist?: AudioChunk[]
+}
+
 interface PlayerProps {
   /**
    * HTML5 Audio tag autoPlay property
@@ -69,8 +82,7 @@ interface PlayerProps {
   onClickPrevious?: (e: React.SyntheticEvent) => void
   onClickNext?: (e: React.SyntheticEvent) => void
   onPlayError?: (err: Error) => void
-  onSeek?: OnSeek
-  onEcrypted?: (e: any) => void
+  useMSE?: MSEPropsObject
   /**
    * HTML5 Audio tag preload property
    */
@@ -85,7 +97,6 @@ interface PlayerProps {
   src?: string
   defaultCurrentTime?: ReactNode
   defaultDuration?: ReactNode
-  srcDuration?: number
   volume?: number
   showJumpControls?: boolean
   showSkipControls?: boolean
@@ -345,18 +356,22 @@ class H5AudioPlayer extends Component<PlayerProps> {
             key={key}
             ref={this.progressBar}
             audio={this.audio.current}
-            srcDuration={this.props.srcDuration}
+            srcDuration={this.props.useMSE.srcDuration}
             progressUpdateInterval={progressUpdateInterval}
             showDownloadProgress={showDownloadProgress}
             showFilledProgress={showFilledProgress}
-            onSeek={this.props.onSeek}
+            onSeek={this.props.useMSE.onSeek}
           />
         )
       case RHAP_UI.DURATION:
         return (
           <div key={key} className="rhap_time rhap_total-time">
-            {this.props.srcDuration ? (
-              getDisplayTimeBySeconds(this.props.srcDuration, this.props.srcDuration, this.props.timeFormat)
+            {this.props.useMSE && this.props.useMSE.srcDuration ? (
+              getDisplayTimeBySeconds(
+                this.props.useMSE.srcDuration,
+                this.props.useMSE.srcDuration,
+                this.props.timeFormat
+              )
             ) : (
               <Duration audio={this.audio.current} defaultDuration={defaultDuration} timeFormat={timeFormat} />
             )}
@@ -539,7 +554,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
     })
 
     audio.addEventListener('encrypted', (e) => {
-      this.props.onEcrypted && this.props.onEcrypted(e)
+      this.props.useMSE.onEcrypted && this.props.useMSE.onEcrypted(e)
     })
   }
 
