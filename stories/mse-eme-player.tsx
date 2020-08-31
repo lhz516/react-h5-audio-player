@@ -264,7 +264,7 @@ class MediaSourcePlayer extends PureComponent<MediaSourcePlayer> {
           autoPlayAfterSrcChange={false}
           ref={this.player}
           src={this.state.audioSrc}
-          useMSE={{
+          mse={{
             srcDuration: this.state.srcDuration,
             onEcrypted: (e) => this.onEncrypted(e),
             onSeek: (audio, time) => this.onSeek(audio, time),

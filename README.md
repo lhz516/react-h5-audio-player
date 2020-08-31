@@ -114,10 +114,10 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | customControlsSection    | [Array<string \|<br>ReactElement>](https://github.com/lhz516/react-h5-audio-player/blob/fa1a61eb7f77146e1ce4547a14181279be68ecfd/src/index.tsx#L92) | [ADDITIONAL_CONTROLS,<br>MAIN_CONTROLS,<br>VOLUME_CONTROLS] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of controls section |
 | customAdditionalControls | [Array<string \|<br>ReactElement>](https://github.com/lhz516/react-h5-audio-player/blob/fa1a61eb7f77146e1ce4547a14181279be68ecfd/src/index.tsx#L93) | [LOOP] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of additional controls |
 | customVolumeControls     | [Array<string \|<br>ReactElement>](https://github.com/lhz516/react-h5-audio-player/blob/fa1a61eb7f77146e1ce4547a14181279be68ecfd/src/index.tsx#L94) | [VOLUME] | [Custom layout](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts-advanced) of volume controls |
-| useMSE     | Object | null | A configuration object so the player can play audio chunks, MSE streams and encrypted audio (See [section about Media Source Extensions](#media-source-extensions-and-encrypted-media-extensions) in this Readme) |
-| useMSE > srcDuration     | Number | - | The complete duration of the MSE audio chunks together (this is a key of the _useMSE_ prop) |
-| useMSE > onSeek     | Function | - | The callback to be used when seek happens (this is a key of the _useMSE_ prop) |
-| useMSE > srcDuration     | Number | - | The callback to be used when encrypted audio is detected and needs to be decrypted (this is a key of the _useMSE_ prop) |
+| mse     | Object | null | A configuration object so the player can play audio chunks, MSE streams and encrypted audio (See [section about Media Source Extensions](#media-source-extensions-and-encrypted-media-extensions) in this Readme) |
+| mse > srcDuration     | Number | - | The complete duration of the MSE audio chunks together (this is a key of the _mse_ prop) |
+| mse > onSeek     | Function | - | The callback to be used when seek happens (this is a key of the _mse_ prop) |
+| mse > srcDuration     | Number | - | The callback to be used when encrypted audio is detected and needs to be decrypted (this is a key of the _mse_ prop) |
 
 ### Event Props
 

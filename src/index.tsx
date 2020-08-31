@@ -37,10 +37,9 @@ interface AudioChunk {
 }
 
 interface MSEPropsObject {
-  onSeek?: OnSeek
+  onSeek: OnSeek
   onEcrypted?: (e: unknown) => void
-  srcDuration?: number
-  playlist?: AudioChunk[]
+  srcDuration: number
 }
 
 interface PlayerProps {
@@ -82,7 +81,7 @@ interface PlayerProps {
   onClickPrevious?: (e: React.SyntheticEvent) => void
   onClickNext?: (e: React.SyntheticEvent) => void
   onPlayError?: (err: Error) => void
-  useMSE?: MSEPropsObject
+  mse?: MSEPropsObject
   /**
    * HTML5 Audio tag preload property
    */
@@ -325,6 +324,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
       timeFormat,
       volume: volumeProp,
       loop: loopProp,
+      mse,
     } = this.props
 
     switch (comp) {
@@ -356,22 +356,18 @@ class H5AudioPlayer extends Component<PlayerProps> {
             key={key}
             ref={this.progressBar}
             audio={this.audio.current}
-            srcDuration={this.props.useMSE.srcDuration}
             progressUpdateInterval={progressUpdateInterval}
             showDownloadProgress={showDownloadProgress}
             showFilledProgress={showFilledProgress}
-            onSeek={this.props.useMSE.onSeek}
+            onSeek={mse && mse.onSeek}
+            srcDuration={mse && mse.srcDuration}
           />
         )
       case RHAP_UI.DURATION:
         return (
           <div key={key} className="rhap_time rhap_total-time">
-            {this.props.useMSE && this.props.useMSE.srcDuration ? (
-              getDisplayTimeBySeconds(
-                this.props.useMSE.srcDuration,
-                this.props.useMSE.srcDuration,
-                this.props.timeFormat
-              )
+            {mse && mse.srcDuration ? (
+              getDisplayTimeBySeconds(mse.srcDuration, mse.srcDuration, this.props.timeFormat)
             ) : (
               <Duration audio={this.audio.current} defaultDuration={defaultDuration} timeFormat={timeFormat} />
             )}
@@ -554,7 +550,8 @@ class H5AudioPlayer extends Component<PlayerProps> {
     })
 
     audio.addEventListener('encrypted', (e) => {
-      this.props.useMSE.onEcrypted && this.props.useMSE.onEcrypted(e)
+      const { mse } = this.props
+      mse && mse.onEcrypted && mse.onEcrypted(e)
     })
   }
 
