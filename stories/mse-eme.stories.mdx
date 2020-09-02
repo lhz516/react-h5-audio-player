@@ -1,0 +1,15 @@
+import { Meta, Story, Preview } from '@storybook/addon-docs/blocks'
+import { action } from '@storybook/addon-actions'
+import MediaSourcePlayer from './mse-eme-player.tsx'
+
+<Meta title="MSE-EME" component={AudioPlayer} />
+
+# Media Source Extensions & Encrypted Media Extensions
+
+Event will fire when encrypted audio is provided
+
+<Preview>
+  <Story name="MSE-EME">
+    <MediaSourcePlayer onEncrypted={action('onEncrypted')} />
+  </Story>
+</Preview>

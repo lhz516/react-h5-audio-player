@@ -24,10 +24,23 @@ import CurrentTime from './CurrentTime'
 import Duration from './Duration'
 import VolumeBar from './VolumeBar'
 import { RHAP_UI, MAIN_LAYOUT, AUDIO_PRELOAD_ATTRIBUTE, TIME_FORMAT } from './constants'
-import { throttle, getMainLayoutClassName } from './utils'
+import { throttle, getMainLayoutClassName, getDisplayTimeBySeconds } from './utils'
 
 type CustomUIModule = RHAP_UI | ReactElement
 type CustomUIModules = Array<CustomUIModule>
+type OnSeek = (audio: HTMLAudioElement, time: number) => Promise<void>
+
+interface AudioChunk {
+  url: string
+  duration: number
+  data?: AudioBuffer
+}
+
+interface MSEPropsObject {
+  onSeek: OnSeek
+  onEcrypted?: (e: unknown) => void
+  srcDuration: number
+}
 
 interface PlayerProps {
   /**
@@ -68,6 +81,7 @@ interface PlayerProps {
   onClickPrevious?: (e: React.SyntheticEvent) => void
   onClickNext?: (e: React.SyntheticEvent) => void
   onPlayError?: (err: Error) => void
+  mse?: MSEPropsObject
   /**
    * HTML5 Audio tag preload property
    */
@@ -310,6 +324,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
       timeFormat,
       volume: volumeProp,
       loop: loopProp,
+      mse,
     } = this.props
 
     switch (comp) {
@@ -344,12 +359,18 @@ class H5AudioPlayer extends Component<PlayerProps> {
             progressUpdateInterval={progressUpdateInterval}
             showDownloadProgress={showDownloadProgress}
             showFilledProgress={showFilledProgress}
+            onSeek={mse && mse.onSeek}
+            srcDuration={mse && mse.srcDuration}
           />
         )
       case RHAP_UI.DURATION:
         return (
           <div key={key} className="rhap_time rhap_total-time">
-            <Duration audio={this.audio.current} defaultDuration={defaultDuration} timeFormat={timeFormat} />
+            {mse && mse.srcDuration ? (
+              getDisplayTimeBySeconds(mse.srcDuration, mse.srcDuration, this.props.timeFormat)
+            ) : (
+              <Duration audio={this.audio.current} defaultDuration={defaultDuration} timeFormat={timeFormat} />
+            )}
           </div>
         )
       case RHAP_UI.ADDITIONAL_CONTROLS:
@@ -527,6 +548,11 @@ class H5AudioPlayer extends Component<PlayerProps> {
     audio.addEventListener('volumechange', (e) => {
       this.props.onVolumeChange && this.props.onVolumeChange(e)
     })
+
+    audio.addEventListener('encrypted', (e) => {
+      const { mse } = this.props
+      mse && mse.onEcrypted && mse.onEcrypted(e)
+    })
   }
 
   componentDidUpdate(prevProps: PlayerProps): void {
@@ -610,4 +636,4 @@ class H5AudioPlayer extends Component<PlayerProps> {
 }
 
 export default H5AudioPlayer
-export { RHAP_UI }
+export { RHAP_UI, OnSeek }

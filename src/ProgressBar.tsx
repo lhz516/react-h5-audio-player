@@ -1,11 +1,14 @@
 import React, { Component, forwardRef, SyntheticEvent } from 'react'
 import { getPosX, throttle } from './utils'
+import { OnSeek } from './index'
 
 interface ProgressBarForwardRefProps {
   audio: HTMLAudioElement
   progressUpdateInterval: number
   showDownloadProgress: boolean
   showFilledProgress: boolean
+  srcDuration?: number
+  onSeek?: OnSeek
 }
 interface ProgressBarProps extends ProgressBarForwardRefProps {
   progressBar: React.RefObject<HTMLDivElement>
@@ -16,6 +19,7 @@ interface ProgressBarState {
   currentTimePos: string
   hasDownloadProgressAnimation: boolean
   downloadProgressArr: DownloadProgress[]
+  waitingForSeekCallback: boolean
 }
 
 interface DownloadProgress {
@@ -42,12 +46,21 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     currentTimePos: '0%',
     hasDownloadProgressAnimation: false,
     downloadProgressArr: [],
+    waitingForSeekCallback: false,
+  }
+
+  getDuration(): number {
+    const { audio, srcDuration } = this.props
+    return typeof srcDuration === 'undefined' ? audio.duration : srcDuration
   }
 
   // Get time info while dragging indicator by mouse or touch
   getCurrentProgress = (event: MouseEvent | TouchEvent): TimePosInfo => {
     const { audio, progressBar } = this.props
-    if (!audio.src || !isFinite(audio.currentTime) || !progressBar.current) {
+    const isSingleFileProgressiveDownload =
+      audio.src.indexOf('blob:') !== 0 && typeof this.props.srcDuration === 'undefined'
+
+    if (isSingleFileProgressiveDownload && (!audio.src || !isFinite(audio.currentTime) || !progressBar.current)) {
       return { currentTime: 0, currentTimePos: '0%' }
     }
 
@@ -60,7 +73,8 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     } else if (relativePos > maxRelativePos) {
       relativePos = maxRelativePos
     }
-    const currentTime = (this.props.audio.duration * relativePos) / maxRelativePos
+    const duration = this.getDuration()
+    const currentTime = (duration * relativePos) / maxRelativePos
     return { currentTime, currentTimePos: `${((relativePos / maxRelativePos) * 100).toFixed(2)}%` }
   }
 
@@ -105,12 +119,19 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
 
   handleWindowMouseOrTouchUp = (event: MouseEvent | TouchEvent): void => {
     event.stopPropagation()
-    this.setState((prevState) => {
-      if (prevState.isDraggingProgress && isFinite(this.timeOnMouseMove)) {
-        this.props.audio.currentTime = this.timeOnMouseMove
+    const newTime = this.timeOnMouseMove
+    const onSeek = this.props.onSeek
+
+    if (onSeek) {
+      this.setState({ isDraggingProgress: false, waitingForSeekCallback: true }, () => {
+        onSeek(this.props.audio, newTime).then(() => this.setState({ waitingForSeekCallback: false }))
+      })
+    } else {
+      if (isFinite(newTime)) {
+        this.props.audio.currentTime = newTime
       }
-      return { isDraggingProgress: false }
-    })
+      this.setState({ isDraggingProgress: false })
+    }
 
     if (event instanceof MouseEvent) {
       window.removeEventListener('mousemove', this.handleWindowMouseOrTouchMove)
@@ -124,9 +145,11 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   handleAudioTimeUpdate = throttle((e: Event): void => {
     const { isDraggingProgress } = this.state
     const audio = e.target as HTMLAudioElement
-    if (isDraggingProgress) return
+    if (isDraggingProgress || this.state.waitingForSeekCallback === true) return
 
-    const { duration, currentTime } = audio
+    const { currentTime } = audio
+    const duration = this.getDuration()
+
     this.setState({
       currentTimePos: `${((currentTime / duration) * 100 || 0).toFixed(2)}%`,
     })
@@ -134,13 +157,15 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
 
   handleAudioDownloadProgressUpdate = (e: Event): void => {
     const audio = e.target as HTMLAudioElement
+    const duration = this.getDuration()
+
     const downloadProgressArr: DownloadProgress[] = []
     for (let i = 0; i < audio.buffered.length; i++) {
       const bufferedStart: number = audio.buffered.start(i)
       const bufferedEnd: number = audio.buffered.end(i)
       downloadProgressArr.push({
-        left: `${Math.round((100 / audio.duration) * bufferedStart) || 0}%`,
-        width: `${Math.round((100 / audio.duration) * (bufferedEnd - bufferedStart)) || 0}%`,
+        left: `${Math.round((100 / duration) * bufferedStart) || 0}%`,
+        width: `${Math.round((100 / duration) * (bufferedEnd - bufferedStart)) || 0}%`,
       })
     }
 
