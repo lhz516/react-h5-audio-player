@@ -19,9 +19,9 @@ export const getMainLayoutClassName = (layout: MAIN_LAYOUT): string => {
 
 export const getPosX = (event: TouchEvent | MouseEvent): number => {
   if (event instanceof MouseEvent) {
-    return event.pageX || event.clientX
+    return event.clientX
   } else {
-    return event.touches[0].pageX || event.touches[0].clientX
+    return event.touches[0].clientX
   }
 }
 
