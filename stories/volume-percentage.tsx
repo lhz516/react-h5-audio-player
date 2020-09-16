@@ -2,7 +2,7 @@ import React, { PureComponent, createRef } from 'react'
 import AudioPlayer, { RHAP_UI } from '../src/index'
 import { SAMPLE_MP3_URL } from './utils'
 
-class VolumePercentage extends PureComponent<{}, { volumeText: string }> {
+class VolumePercentage extends PureComponent<null, { volumeText: string }> {
   player = createRef<AudioPlayer>()
 
   state = { volumeText: '100%' }

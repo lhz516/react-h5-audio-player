@@ -1,4 +1,4 @@
-import { Meta, Story, Preview } from '@storybook/addon-docs/blocks';
+import { Meta, Story, Canvas } from '@storybook/addon-docs/blocks';
 import { SAMPLE_MP3_URL } from './utils'
 import AudioPlayer from '../src/index.tsx'
 
@@ -23,8 +23,8 @@ progressJumpStep **(deprecated)**
 
 #### progressJumpSteps
 
-<Preview>
-  <Story name="Forward and backward jump step">
+<Canvas>
+  <Story name="Forward and backward jump step" height="auto">
     <AudioPlayer
       progressJumpSteps={{
         forward: 30000,
@@ -33,14 +33,14 @@ progressJumpStep **(deprecated)**
       src={SAMPLE_MP3_URL}
     />
   </Story>
-</Preview>
+</Canvas>
 
 #### progressJumpStep **(deprecated)**
-<Preview>
-  <Story name="Deprecated jump step">
+<Canvas>
+  <Story name="Deprecated jump step" height="auto">
     <AudioPlayer
       progressJumpStep={10000}
       src={SAMPLE_MP3_URL}
     />
   </Story>
-</Preview>
+</Canvas>
