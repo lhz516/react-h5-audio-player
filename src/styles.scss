@@ -245,6 +245,14 @@ $rhap_font-family: inherit !default;
   }
 }
 
+.rhap_volume-filled {
+  height: 100%;
+  position: absolute;
+  z-index: 2;
+  background-color: $rhap_theme-color;
+  border-radius: 2px;
+}
+
 /* Utils */
 .rhap_button-clear {
   background-color: transparent;
