@@ -5,6 +5,7 @@ interface VolumeControlsProps {
   audio: HTMLAudioElement
   volume: number
   onMuteChange: () => void
+  showFilledVolume: boolean
 }
 
 interface VolumeControlsState {
@@ -161,7 +162,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
   }
 
   render(): React.ReactNode {
-    const { audio } = this.props
+    const { audio, showFilledVolume } = this.props
     const { currentVolumePos, hasVolumeAnimation } = this.state
 
     const { volume } = audio || {}
@@ -184,6 +185,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
             className="rhap_volume-indicator"
             style={{ left: currentVolumePos, transitionDuration: hasVolumeAnimation ? '.1s' : '0s' }}
           />
+          {showFilledVolume && <div className="rhap_volume-filled" style={{ width: currentVolumePos }} />}
         </div>
       </div>
     )
