@@ -14,7 +14,12 @@ describe('VolumeBar', () => {
         }),
       },
     }
-    const wrapper = shallow(<VolumeBar audio={null} volumeBar={mockRef} />)
+    const wrapper = shallow(
+      <VolumeBar
+        audio={null}
+        volumeBar={mockRef}
+        showFilledVolume={true}
+      />)
     expect(wrapper.state('currentVolumePos')).toBe('0.00%')
 
     const instance = wrapper.instance()
@@ -85,11 +90,9 @@ describe('VolumeBar', () => {
     }
     const wrapper = shallow(
       <VolumeBar
-        showFilledProgress={true}
-        showDownloadProgress={true}
-        progressUpdateInterval={20}
         audio={null}
         progressBar={mockRef}
+        showFilledVolume={true}
       />
     )
     expect(wrapper.state('currentVolumePos')).toBe('0.00%')
@@ -129,11 +132,9 @@ describe('VolumeBar', () => {
     }
     const wrapper = shallow(
       <VolumeBar
-        showFilledProgress={true}
-        showDownloadProgress={true}
-        progressUpdateInterval={20}
         audio={null}
         progressBar={mockRef}
+        showFilledVolume={true}
       />
     )
     expect(wrapper.state('currentVolumePos')).toBe('0.00%')
@@ -161,7 +162,7 @@ describe('VolumeBar', () => {
   })
 
   it('should not throw when unmount even if no audio object passed in', () => {
-    const wrapper = shallow(<VolumeBar audio={null} />)
+    const wrapper = shallow(<VolumeBar audio={null} showFilledVolume={true} />)
 
     wrapper.setProps({ audio: null })
     expect(() => {
