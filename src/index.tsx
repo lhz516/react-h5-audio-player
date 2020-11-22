@@ -149,7 +149,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
     showSkipControls: false,
     showDownloadProgress: true,
     showFilledProgress: true,
-    showFilledVolume: true,
+    showFilledVolume: false,
     customIcons: {},
     customProgressBarSection: [RHAP_UI.CURRENT_TIME, RHAP_UI.PROGRESS_BAR, RHAP_UI.DURATION],
     customControlsSection: [RHAP_UI.ADDITIONAL_CONTROLS, RHAP_UI.MAIN_CONTROLS, RHAP_UI.VOLUME_CONTROLS],
