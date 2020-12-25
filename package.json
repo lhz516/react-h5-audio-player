@@ -94,7 +94,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.0",
     "husky": "^4.2.5",
-    "jest": "^25.3.0",
+    "jest": "^26.6.3",
     "less-plugin-sass2less": "^1.2.0",
     "lint-staged": "^10.2.10",
     "node-sass": "^4.14.1",
