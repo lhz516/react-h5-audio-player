@@ -73,6 +73,16 @@ interface PlayerProps {
   onCanPlay?: (e: Event) => void
   onCanPlayThrough?: (e: Event) => void
   onEnded?: (e: Event) => void
+  onPlaying?: (e: Event) => void
+  onSeeking?: (e: Event) => void
+  onSeeked?: (e: Event) => void
+  onStalled?: (e: Event) => void
+  onSuspend?: (e: Event) => void
+  onLoadStart?: (e: Event) => void
+  onLoadedMetaData?: (e: Event) => void
+  onLoadedData?: (e: Event) => void
+  onWaiting?: (e: Event) => void
+  onEmptied?: (e: Event) => void
   onError?: (e: Event) => void
   onListen?: (e: Event) => void
   onVolumeChange?: (e: Event) => void
@@ -541,6 +551,61 @@ class H5AudioPlayer extends Component<PlayerProps> {
     // When the file has finished playing to the end
     audio.addEventListener('ended', (e) => {
       this.props.onEnded && this.props.onEnded(e)
+    })
+
+    // When the media has enough data to start playing, after the play event, but also when recovering from being
+    // stalled, when looping media restarts, and after seeked, if it was playing before seeking.
+    audio.addEventListener('playing', (e) => {
+      this.props.onPlaying && this.props.onPlaying(e)
+    })
+
+    // When a seek operation begins
+    audio.addEventListener('seeking', (e) => {
+      this.props.onSeeking && this.props.onSeeking(e)
+    })
+
+    // when a seek operation completes
+    audio.addEventListener('seeked', (e) => {
+      this.props.onSeeked && this.props.onSeeked(e)
+    })
+
+    // when the requested operation (such as playback) is delayed pending the completion of another operation (such as
+    // a seek).
+    audio.addEventListener('waiting', (e) => {
+      this.props.onWaiting && this.props.onWaiting(e)
+    })
+
+    // The media has become empty; for example, this event is sent if the media has already been loaded (or partially
+    // loaded), and the load() method is called to reload it.
+    audio.addEventListener('emptied', (e) => {
+      this.props.onEmptied && this.props.onEmptied(e)
+    })
+
+    // when the user agent is trying to fetch media data, but data is unexpectedly not forthcoming
+    audio.addEventListener('stalled', (e) => {
+      this.props.onStalled && this.props.onStalled(e)
+    })
+
+    // when loading of the media is suspended; this may happen either because the download has completed or because it
+    // has been paused for any other reason
+    audio.addEventListener('suspend', (e) => {
+      this.props.onSuspend && this.props.onSuspend(e)
+    })
+
+    //  when loading of the media begins
+    audio.addEventListener('loadstart', (e) => {
+      this.props.onLoadStart && this.props.onLoadStart(e)
+    })
+
+    // when media's metadata has finished loading; all attributes now contain as much useful information as they're
+    // going to
+    audio.addEventListener('loadedmetadata', (e) => {
+      this.props.onLoadedMetaData && this.props.onLoadedMetaData(e)
+    })
+
+    // when the first frame of the media has finished loading.
+    audio.addEventListener('loadeddata', (e) => {
+      this.props.onLoadedData && this.props.onLoadedData(e)
     })
 
     // When the user pauses playback

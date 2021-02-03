@@ -123,20 +123,20 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 
 ### Event Props
 
+Supported media events: `onPlay`, `onPause`, `onEnded`, `onSeeking`, `onSeeked`, `onAbort`, `onCanPlay`, `onCanPlayThrough`, `onEmptied`, `onError`, `onLoadStart`, `onLoadedMetaData`, `onLoadedData`, `onPlaying`, `onSuspend`, `onWaiting`, `onVolumeChange`
+
+Docs: [Media Events | MDN](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events)
+
+Note: `onTimeUpdate` is not supported. Please use `onListen` with `listenInterval` for better performance.
+
+### Other events
+
 | Props                  | Type              | Default | Note |
 | ---------------------- | ----------------- | ------- | ---- |
 | onClickPrevious        | Function (Event)  | null    | Called when click Previous button |
 | onClickNext            | Function (Event)  | null    | Called when click Next button |
-| onPlayError            | Function (Error)  | null    | Called when there's error invoking `audio.play()`, it captures error that `onError` won't catch |
 | onListen               | Function (Event)  | null    | Called every `listenInterval` milliseconds during playback |
-| onVolumeChange         | Function (Event)  | null    | Called when volume is changed. Get volume by `e.target.volume` |
-| onPlay                 | Function (Event)  | null    | Called when user plays the audio |
-| onPause                | Function (Event)  | null    | Called when user pauses the audio |
-| onAbort                | Function (Event)  | null    | Called when unloading the audio player, like when switching to a different src file |
-| onCanPlay              | Function (Event)  | null    | Called when enough of the file has been downloaded to be able to start playing |
-| onCanPlayThrough       | Function (Event)  | null    | Called when enough of the file has been downloaded to play through the entire file |
-| onEnded                | Function (Event)  | null    | Called when playback has finished to the end of the file |
-| onError                | Function (Event)  | null    | Called when the audio tag encounters an error |
+| onPlayError            | Function (Error)  | null    | Called when there's error invoking `audio.play()`, it captures error that `onError` won't catch |
 
 ## UI Overwrites
 
