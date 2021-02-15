@@ -14,12 +14,7 @@ describe('VolumeBar', () => {
         }),
       },
     }
-    const wrapper = shallow(
-      <VolumeBar
-        audio={null}
-        volumeBar={mockRef}
-        showFilledVolume={true}
-      />)
+    const wrapper = shallow(<VolumeBar audio={null} volumeBar={mockRef} showFilledVolume={true} />)
     expect(wrapper.state('currentVolumePos')).toBe('0.00%')
 
     const instance = wrapper.instance()
@@ -88,13 +83,7 @@ describe('VolumeBar', () => {
         }),
       },
     }
-    const wrapper = shallow(
-      <VolumeBar
-        audio={null}
-        progressBar={mockRef}
-        showFilledVolume={true}
-      />
-    )
+    const wrapper = shallow(<VolumeBar audio={null} progressBar={mockRef} showFilledVolume={true} />)
     expect(wrapper.state('currentVolumePos')).toBe('0.00%')
 
     const instance = wrapper.instance()
@@ -130,13 +119,7 @@ describe('VolumeBar', () => {
         }),
       },
     }
-    const wrapper = shallow(
-      <VolumeBar
-        audio={null}
-        progressBar={mockRef}
-        showFilledVolume={true}
-      />
-    )
+    const wrapper = shallow(<VolumeBar audio={null} progressBar={mockRef} showFilledVolume={true} />)
     expect(wrapper.state('currentVolumePos')).toBe('0.00%')
 
     const instance = wrapper.instance()

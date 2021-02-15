@@ -129,7 +129,7 @@ Docs: [Media Events | MDN](https://developer.mozilla.org/en-US/docs/Web/Guide/Ev
 
 Note: `onTimeUpdate` is not supported. Please use `onListen` with `listenInterval` for better performance.
 
-### Other events
+#### Other events
 
 | Props                  | Type              | Default | Note |
 | ---------------------- | ----------------- | ------- | ---- |
