@@ -17,8 +17,18 @@ class Duration extends PureComponent<DurationProps, DurationState> {
 
   hasAddedAudioEventListener = false
 
+  constructor(props: DurationProps) {
+    super(props)
+    const { audio, timeFormat, defaultDuration } = props
+    this.state = {
+      duration: audio ? getDisplayTimeBySeconds(audio.duration, audio.duration, timeFormat) : defaultDuration,
+    }
+  }
+
   state: DurationState = {
-    duration: this.props.defaultDuration,
+    duration: this.props.audio
+      ? getDisplayTimeBySeconds(this.props.audio.duration, this.props.audio.duration, this.props.timeFormat)
+      : this.props.defaultDuration,
   }
 
   handleAudioDurationChange = (e: Event): void => {
@@ -29,7 +39,7 @@ class Duration extends PureComponent<DurationProps, DurationState> {
     })
   }
 
-  componentDidUpdate(): void {
+  addAudioEventListeners = (): void => {
     const { audio } = this.props
     if (audio && !this.hasAddedAudioEventListener) {
       this.audio = audio
@@ -37,6 +47,14 @@ class Duration extends PureComponent<DurationProps, DurationState> {
       audio.addEventListener('durationchange', this.handleAudioDurationChange)
       audio.addEventListener('abort', this.handleAudioDurationChange)
     }
+  }
+
+  componentDidMount(): void {
+    this.addAudioEventListeners()
+  }
+
+  componentDidUpdate(): void {
+    this.addAudioEventListeners()
   }
 
   componentWillUnmount(): void {

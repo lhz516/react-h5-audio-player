@@ -18,6 +18,22 @@ class CurrentTime extends PureComponent<CurrentTimeProps, CurrentTimeState> {
 
   hasAddedAudioEventListener = false
 
+  constructor(props: CurrentTimeProps) {
+    super(props)
+    const { audio, defaultCurrentTime, isLeftTime, timeFormat } = props
+    let currentTime = defaultCurrentTime
+    if (audio) {
+      currentTime = getDisplayTimeBySeconds(
+        isLeftTime ? audio.duration - audio.currentTime : audio.currentTime,
+        audio.duration,
+        timeFormat
+      )
+    }
+    this.state = {
+      currentTime,
+    }
+  }
+
   state: CurrentTimeState = {
     currentTime: this.props.defaultCurrentTime,
   }
@@ -35,7 +51,7 @@ class CurrentTime extends PureComponent<CurrentTimeProps, CurrentTimeState> {
     })
   }
 
-  componentDidUpdate(): void {
+  addAudioEventListeners = (): void => {
     const { audio } = this.props
     if (audio && !this.hasAddedAudioEventListener) {
       this.audio = audio
@@ -43,6 +59,14 @@ class CurrentTime extends PureComponent<CurrentTimeProps, CurrentTimeState> {
       audio.addEventListener('timeupdate', this.handleAudioCurrentTimeChange)
       audio.addEventListener('loadedmetadata', this.handleAudioCurrentTimeChange)
     }
+  }
+
+  componentDidMount(): void {
+    this.addAudioEventListeners()
+  }
+
+  componentDidUpdate(): void {
+    this.addAudioEventListeners()
   }
 
   componentWillUnmount(): void {
