@@ -198,13 +198,14 @@ class H5AudioPlayer extends Component<PlayerProps> {
    * Reference: https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
    */
   playAudioPromise = (): void => {
-    this.audio.current
-      .play()
-      .then(null)
-      .catch((err) => {
+    const playPromise = this.audio.current.play()
+    // playPromise is null in IE 11
+    if (playPromise) {
+      playPromise.then(null).catch((err) => {
         const { onPlayError } = this.props
         onPlayError && onPlayError(new Error(err))
       })
+    }
   }
 
   isPlaying = (): boolean => {
