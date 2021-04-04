@@ -185,7 +185,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
   togglePlay = (e: React.SyntheticEvent): void => {
     e.stopPropagation()
     const audio = this.audio.current
-    if (audio.paused && audio.src) {
+    if ((audio.paused || audio.ended) && audio.src) {
       this.playAudioPromise()
     } else if (!audio.paused) {
       audio.pause()
@@ -205,6 +205,9 @@ class H5AudioPlayer extends Component<PlayerProps> {
         const { onPlayError } = this.props
         onPlayError && onPlayError(new Error(err))
       })
+    } else {
+      // Remove forceUpdate when stop supporting IE 11
+      this.forceUpdate()
     }
   }
 
@@ -224,6 +227,13 @@ class H5AudioPlayer extends Component<PlayerProps> {
     if (!this.audio) return
     this.forceUpdate()
     this.props.onPause && this.props.onPause(e)
+  }
+
+  handleEnded = (e: Event): void => {
+    if (!this.audio) return
+    // Remove forceUpdate when stop supporting IE 11
+    this.forceUpdate()
+    this.props.onEnded && this.props.onEnded(e)
   }
 
   handleAbort = (e: Event): void => {
@@ -550,9 +560,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
     audio.addEventListener('abort', this.handleAbort)
 
     // When the file has finished playing to the end
-    audio.addEventListener('ended', (e) => {
-      this.props.onEnded && this.props.onEnded(e)
-    })
+    audio.addEventListener('ended', this.handleEnded)
 
     // When the media has enough data to start playing, after the play event, but also when recovering from being
     // stalled, when looping media restarts, and after seeked, if it was playing before seeking.
