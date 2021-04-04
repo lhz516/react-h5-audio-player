@@ -43,6 +43,10 @@ describe('ProgressBar', () => {
       end: () => 50,
     }
 
+    Object.defineProperty(audio, 'readyState', {
+      get: jest.fn(() => audio.HAVE_ENOUGH_DATA),
+    })
+
     const mockMouseEvent = new MouseEvent(null)
     const mockSyntheticEvent = {
       nativeEvent: mockMouseEvent,
