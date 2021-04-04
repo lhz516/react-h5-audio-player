@@ -9,6 +9,7 @@ interface ProgressBarForwardRefProps {
   showFilledProgress: boolean
   srcDuration?: number
   onSeek?: OnSeek
+  onChangeCurrentTimeError?: () => void
 }
 interface ProgressBarProps extends ProgressBarForwardRefProps {
   progressBar: React.RefObject<HTMLDivElement>
@@ -16,7 +17,7 @@ interface ProgressBarProps extends ProgressBarForwardRefProps {
 
 interface ProgressBarState {
   isDraggingProgress: boolean
-  currentTimePos: string
+  currentTimePos?: string
   hasDownloadProgressAnimation: boolean
   downloadProgressArr: DownloadProgress[]
   waitingForSeekCallback: boolean
@@ -120,11 +121,11 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   handleWindowMouseOrTouchUp = (event: MouseEvent | TouchEvent): void => {
     event.stopPropagation()
     const newTime = this.timeOnMouseMove
-    const onSeek = this.props.onSeek
+    const { audio, onChangeCurrentTimeError, onSeek } = this.props
 
     if (onSeek) {
       this.setState({ isDraggingProgress: false, waitingForSeekCallback: true }, () => {
-        onSeek(this.props.audio, newTime).then(
+        onSeek(audio, newTime).then(
           () => this.setState({ waitingForSeekCallback: false }),
           (err) => {
             throw new Error(err)
@@ -132,10 +133,16 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
         )
       })
     } else {
-      if (isFinite(newTime)) {
-        this.props.audio.currentTime = newTime
+      const newProps: { isDraggingProgress: boolean; currentTimePos?: string } = {
+        isDraggingProgress: false,
       }
-      this.setState({ isDraggingProgress: false })
+      if (audio.readyState === audio.HAVE_NOTHING || audio.readyState === audio.HAVE_METADATA || !isFinite(newTime)) {
+        newProps.currentTimePos = '0%'
+        onChangeCurrentTimeError && onChangeCurrentTimeError()
+      } else {
+        audio.currentTime = newTime
+      }
+      this.setState(newProps)
     }
 
     if (event instanceof MouseEvent) {

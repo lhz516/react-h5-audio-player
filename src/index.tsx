@@ -85,6 +85,7 @@ interface PlayerProps {
   onClickPrevious?: (e: React.SyntheticEvent) => void
   onClickNext?: (e: React.SyntheticEvent) => void
   onPlayError?: (err: Error) => void
+  onChangeCurrentTimeError?: () => void
   mse?: MSEPropsObject
   /**
    * HTML5 Audio tag preload property
@@ -268,7 +269,14 @@ class H5AudioPlayer extends Component<PlayerProps> {
   setJumpTime = (time: number): void => {
     const audio = this.audio.current
     const { duration, currentTime: prevTime } = audio
-    if (!isFinite(duration) || !isFinite(prevTime)) return
+    if (
+      audio.readyState === audio.HAVE_NOTHING ||
+      audio.readyState === audio.HAVE_METADATA ||
+      !isFinite(duration) ||
+      !isFinite(prevTime)
+    ) {
+      return this.props.onChangeCurrentTimeError && this.props.onChangeCurrentTimeError()
+    }
     let currentTime = prevTime + time / 1000
     if (currentTime < 0) {
       audio.currentTime = 0
@@ -335,6 +343,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
       showSkipControls,
       onClickPrevious,
       onClickNext,
+      onChangeCurrentTimeError,
       showJumpControls,
       customAdditionalControls,
       customVolumeControls,
@@ -378,6 +387,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
             showDownloadProgress={showDownloadProgress}
             showFilledProgress={showFilledProgress}
             onSeek={mse && mse.onSeek}
+            onChangeCurrentTimeError={onChangeCurrentTimeError}
             srcDuration={mse && mse.srcDuration}
           />
         )
