@@ -60,6 +60,9 @@ const Player = () => (
 ```
 
 #### Keyboard shortcuts (When audio player focused)
+
+They can be turned off by setting `hasDefaultKeyBindings` prop to `false`
+
 | Key binding | Action |
 | ----------- | ------ |
 | Space       | Play/Pause |
@@ -99,6 +102,7 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | showDownloadProgress     | boolean           | true    | Show download progress over progress bar |
 | showFilledProgress       | boolean           | true    | Show filled (already played) area on progress bar |
 | showFilledVolume         | boolean           | false   | Show filled volume area on volume bar |
+| hasDefaultKeyBindings    | boolean           | true    | Whether has default keyboard shortcuts |
 | autoPlayAfterSrcChange   | boolean           | true    | Play audio after `src` is changed, no matter `autoPlay` is `true` or `false` |
 | volumeJumpStep           | number            | 0.1     | Indicates the volume jump step when pressing up/down arrow key, volume range is `0` to `1` |
 | progressJumpStep         | number            | 5000    | **Deprecated, use progressJumpSteps.** Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key |
@@ -131,12 +135,13 @@ Note: `onTimeUpdate` is not supported. Please use `onListen` with `listenInterva
 
 #### Other events
 
-| Props                  | Type              | Default | Note |
-| ---------------------- | ----------------- | ------- | ---- |
-| onClickPrevious        | Function (Event)  | null    | Called when click Previous button |
-| onClickNext            | Function (Event)  | null    | Called when click Next button |
-| onListen               | Function (Event)  | null    | Called every `listenInterval` milliseconds during playback |
-| onPlayError            | Function (Error)  | null    | Called when there's error invoking `audio.play()`, it captures error that `onError` won't catch |
+| Props                    | Type              | Default | Note |
+| ------------------------ | ----------------- | ------- | ---- |
+| onClickPrevious          | Function (Event)  | null    | Called when click Previous button |
+| onClickNext              | Function (Event)  | null    | Called when click Next button |
+| onListen                 | Function (Event)  | null    | Called every `listenInterval` milliseconds during playback |
+| onPlayError              | Function (Error)  | null    | Called when there's error invoking `audio.play()`, it captures error that `onError` won't catch |
+| onChangeCurrentTimeError | Function ()       | null    | Called when dragging progress bar or press rewind/forward while the audio hasn't loaded yet |
 
 ## UI Overwrites
 
