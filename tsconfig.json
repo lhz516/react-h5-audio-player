@@ -62,8 +62,5 @@
   },
   "include": [
     "./src",
-    "./.eslintrc.js",
-    "babel.config.js",
-    "webpack.config.js"
   ]
 }
