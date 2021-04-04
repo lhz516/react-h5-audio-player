@@ -63,6 +63,7 @@ interface PlayerProps {
   muted?: boolean
   crossOrigin?: string
   mediaGroup?: string
+  hasDefaultKeyBindings?: boolean
   onAbort?: (e: Event) => void
   onCanPlay?: (e: Event) => void
   onCanPlayThrough?: (e: Event) => void
@@ -161,6 +162,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
     customAdditionalControls: [RHAP_UI.LOOP],
     customVolumeControls: [RHAP_UI.VOLUME],
     layout: 'stacked',
+    hasDefaultKeyBindings: true,
   }
 
   audio = createRef<HTMLAudioElement>()
@@ -297,33 +299,35 @@ class H5AudioPlayer extends Component<PlayerProps> {
   }
 
   handleKeyDown = (e: React.KeyboardEvent): void => {
-    switch (e.keyCode) {
-      case 32: // Space
-        if (e.target === this.container.current || e.target === this.progressBar.current) {
-          e.preventDefault() // Prevent scrolling page by pressing Space key
-          this.togglePlay(e)
-        }
-        break
-      case 37: // Left arrow
-        this.handleClickRewind()
-        break
-      case 39: // Right arrow
-        this.handleClickForward()
-        break
-      case 38: // Up arrow
-        e.preventDefault() // Prevent scrolling page by pressing arrow key
-        this.setJumpVolume(this.props.volumeJumpStep)
-        break
-      case 40: // Down arrow
-        e.preventDefault() // Prevent scrolling page by pressing arrow key
-        this.setJumpVolume(-this.props.volumeJumpStep)
-        break
-      case 76: // L = Loop
-        this.handleClickLoopButton()
-        break
-      case 77: // M = Mute
-        this.handleClickVolumeButton()
-        break
+    if (this.props.hasDefaultKeyBindings) {
+      switch (e.key) {
+        case ' ':
+          if (e.target === this.container.current || e.target === this.progressBar.current) {
+            e.preventDefault() // Prevent scrolling page by pressing Space key
+            this.togglePlay(e)
+          }
+          break
+        case 'ArrowLeft':
+          this.handleClickRewind()
+          break
+        case 'ArrowRight':
+          this.handleClickForward()
+          break
+        case 'ArrowUp':
+          e.preventDefault() // Prevent scrolling page by pressing arrow key
+          this.setJumpVolume(this.props.volumeJumpStep)
+          break
+        case 'ArrowDown':
+          e.preventDefault() // Prevent scrolling page by pressing arrow key
+          this.setJumpVolume(-this.props.volumeJumpStep)
+          break
+        case 'l':
+          this.handleClickLoopButton()
+          break
+        case 'm':
+          this.handleClickVolumeButton()
+          break
+      }
     }
   }
 
