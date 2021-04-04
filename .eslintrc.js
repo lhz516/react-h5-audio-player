@@ -11,11 +11,15 @@ module.exports = {
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:jsx-a11y/recommended',
-    'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
-    'prettier/@typescript-eslint', // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:prettier/recommended', // Enables eslint-plugin-prettier and displays prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
   ],
   parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+    project: ['./tsconfig.json'],
     sourceType: 'module',
   },
   settings: {
@@ -58,14 +62,14 @@ module.exports = {
     'eol-last': 2,
     'no-empty': [2, { allowEmptyCatch: true }],
     'no-undefined': 2,
-    'no-use-before-define': [2, 'nofunc'],
+    'no-use-before-define': 0, // ts lint will take care of it
     'no-multi-assign': 2,
     'no-useless-concat': 2,
     'no-useless-return': 2,
     'no-shadow-restricted-names': 2,
     'no-multi-spaces': 2,
     'no-multi-str': 2,
-    'no-unused-vars': 1,
+    'no-unused-vars': 0, // ts lint will take care of it
     'no-alert': 0,
     'no-console': 1,
     'no-useless-constructor': 1,
@@ -106,14 +110,18 @@ module.exports = {
     'prefer-arrow-callback': 2,
     'template-curly-spacing': [2, 'never'],
     '@typescript-eslint/ban-ts-comment': 0,
+    '@typescript-eslint/no-misused-promises': 0,
   },
   overrides: [
     {
-      files: ['src/*.test.js'],
+      files: ['src/*.test.js', './webpack.config.js'],
       rules: {
         '@typescript-eslint/ban-ts-ignore': 0,
         '@typescript-eslint/no-empty-function': 0,
         '@typescript-eslint/explicit-function-return-type': 0,
+        '@typescript-eslint/no-unsafe-call': 0,
+        '@typescript-eslint/no-unsafe-member-access': 0,
+        '@typescript-eslint/no-unsafe-assignment': 0,
       },
     },
   ],

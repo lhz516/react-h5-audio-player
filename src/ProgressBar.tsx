@@ -124,7 +124,12 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
 
     if (onSeek) {
       this.setState({ isDraggingProgress: false, waitingForSeekCallback: true }, () => {
-        onSeek(this.props.audio, newTime).then(() => this.setState({ waitingForSeekCallback: false }))
+        onSeek(this.props.audio, newTime).then(
+          () => this.setState({ waitingForSeekCallback: false }),
+          (err) => {
+            throw new Error(err)
+          }
+        )
       })
     } else {
       if (isFinite(newTime)) {

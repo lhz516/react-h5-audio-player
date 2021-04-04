@@ -30,12 +30,6 @@ type CustomUIModule = RHAP_UI | ReactElement
 type CustomUIModules = Array<CustomUIModule>
 type OnSeek = (audio: HTMLAudioElement, time: number) => Promise<void>
 
-interface AudioChunk {
-  url: string
-  duration: number
-  data?: AudioBuffer
-}
-
 interface MSEPropsObject {
   onSeek: OnSeek
   onEcrypted?: (e: unknown) => void
