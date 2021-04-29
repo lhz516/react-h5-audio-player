@@ -82,6 +82,7 @@ $rhap_font-family: inherit !default;
   align-self: center;
   margin: 0 calc(10px + 1%);
   cursor: pointer;
+  user-select: none;
   -webkit-user-select: none;
 
   &:focus:not(:focus-visible) {
@@ -202,6 +203,7 @@ $rhap_font-family: inherit !default;
   display: flex;
   align-items: center;
   flex: 0 1 100px;
+  user-select: none;
   -webkit-user-select: none;
 }
 
