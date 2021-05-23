@@ -102,7 +102,9 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   }
 
   handleWindowMouseOrTouchMove = (event: TouchEvent | MouseEvent): void => {
-    event.preventDefault()
+    if (event instanceof MouseEvent) {
+      event.preventDefault()
+    }
     event.stopPropagation()
     // Prevent Chrome drag selection bug
     const windowSelection: Selection | null = window.getSelection()

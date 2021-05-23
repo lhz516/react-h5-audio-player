@@ -96,7 +96,9 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
   }
 
   handleWindowMouseOrTouchMove = (event: TouchEvent | MouseEvent): void => {
-    event.preventDefault()
+    if (event instanceof MouseEvent) {
+      event.preventDefault()
+    }
     event.stopPropagation()
     const { audio } = this.props
     // Prevent Chrome drag selection bug
