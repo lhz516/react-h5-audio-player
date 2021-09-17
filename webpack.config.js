@@ -30,7 +30,6 @@ module.exports = {
                 '@babel/preset-env',
                 {
                   targets: 'defaults', // > 0.5%, last 2 versions, Firefox ESR, not dead
-                  loose: true,
                 },
               ],
               [
@@ -43,7 +42,7 @@ module.exports = {
               '@babel/preset-react',
             ],
             plugins: [
-              ['@babel/plugin-proposal-private-methods', { loose: false }],
+              ['@babel/plugin-proposal-private-methods'],
               '@babel/plugin-proposal-class-properties',
               '@babel/plugin-transform-runtime',
             ],
