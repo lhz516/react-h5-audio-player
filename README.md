@@ -163,12 +163,12 @@ For LESS variables, just replace `$` with `@`.
 
 ### Access to the audio element
 
-You can get direct access to the underlying audio element. First get a ref to ReactAudioPlayer:
+You can get direct access to the underlying audio element. First get a ref to the AudioPlayer:
 
 ```jsx
 this.player = createRef()
 
-<ReactAudioPlayer ref={this.player} />
+<AudioPlayer ref={this.player} />
 ```
 
 Then you can access the audio element like this:
