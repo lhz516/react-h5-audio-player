@@ -483,15 +483,15 @@ class H5AudioPlayer extends Component<PlayerProps> {
 
         let loopIcon: ReactNode
         if (loop) {
-          loopIcon = customIcons.loop ? customIcons.loop : <Icon icon={repeat} />
+          loopIcon = customIcons.loop ? customIcons.loop : <Icon icon={repeat} className="rhap_loop-on" />
         } else {
-          loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon={repeatOff} />
+          loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon={repeatOff} className="rhap_loop-off" />
         }
         return (
           <button
             key={key}
             aria-label={loop ? 'Enable Loop' : 'Disable Loop'}
-            className="rhap_button-clear rhap_repeat-button"
+            className="rhap_button-clear rhap_repeat-button rhap_loop"
             type="button"
             onClick={this.handleClickLoopButton}
           >
