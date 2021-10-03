@@ -491,7 +491,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
           <button
             key={key}
             aria-label={loop ? 'Enable Loop' : 'Disable Loop'}
-            className="rhap_button-clear rhap_repeat-button rhap_loop"
+            className="rhap_button-clear rhap_repeat-button"
             type="button"
             onClick={this.handleClickLoopButton}
           >
