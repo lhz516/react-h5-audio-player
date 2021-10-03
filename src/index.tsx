@@ -483,9 +483,9 @@ class H5AudioPlayer extends Component<PlayerProps> {
 
         let loopIcon: ReactNode
         if (loop) {
-          loopIcon = customIcons.loop ? customIcons.loop : <Icon icon={repeat} className="rhap_loop-on" />
+          loopIcon = customIcons.loop ? customIcons.loop : <Icon icon={repeat} />
         } else {
-          loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon={repeatOff} className="rhap_loop-off" />
+          loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon={repeatOff} />
         }
         return (
           <button
@@ -686,6 +686,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
       style,
     } = this.props
     const loop = this.audio.current ? this.audio.current.loop : loopProp
+    const loopClass = loop ? 'rhap_loop-on' : 'rhap_loop-off'
 
     return (
       /* We want the container to catch bubbled events */
@@ -695,7 +696,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
         /* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */
         tabIndex={0}
         aria-label="Audio Player"
-        className={`rhap_container ${className}`}
+        className={`rhap_container ${loopClass} ${className}`}
         onKeyDown={this.handleKeyDown}
         ref={this.container}
         style={style}
