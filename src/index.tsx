@@ -443,7 +443,9 @@ class H5AudioPlayer extends Component<PlayerProps> {
             )}
             <button
               aria-label={isPlaying ? 'Pause' : 'Play'}
-              className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button"
+              className={`rhap_button-clear rhap_main-controls-button rhap_play-pause-rhap_play-pause-button-state-${
+                isPlaying ? 'pause' : 'play'
+              }`}
               type="button"
               onClick={this.togglePlay}
             >
