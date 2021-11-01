@@ -443,9 +443,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
             )}
             <button
               aria-label={isPlaying ? 'Pause' : 'Play'}
-              className={`rhap_button-clear rhap_main-controls-button rhap_play-pause-rhap_play-pause-button-state-${
-                isPlaying ? 'pause' : 'play'
-              }`}
+              className="rhap_button-clear rhap_main-controls-button rhap_play-pause-button"
               type="button"
               onClick={this.togglePlay}
             >
@@ -689,6 +687,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
     } = this.props
     const loop = this.audio.current ? this.audio.current.loop : loopProp
     const loopClass = loop ? 'rhap_loop-on' : 'rhap_loop-off'
+    const isPlayingClass = this.isPlaying() ? 'pause' : 'play'
 
     return (
       /* We want the container to catch bubbled events */
@@ -698,7 +697,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
         /* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */
         tabIndex={0}
         aria-label="Audio Player"
-        className={`rhap_container ${loopClass} ${className}`}
+        className={`rhap_container ${loopClass} ${isPlayingClass} ${className}`}
         onKeyDown={this.handleKeyDown}
         ref={this.container}
         style={style}
