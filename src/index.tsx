@@ -686,8 +686,8 @@ class H5AudioPlayer extends Component<PlayerProps> {
       style,
     } = this.props
     const loop = this.audio.current ? this.audio.current.loop : loopProp
-    const loopClass = loop ? 'rhap_loop-on' : 'rhap_loop-off'
-    const isPlayingClass = this.isPlaying() ? 'rhap_play-status-pause' : 'rhap_play-status-playing'
+    const loopClass = loop ? 'rhap_loop--on' : 'rhap_loop--off'
+    const isPlayingClass = this.isPlaying() ? 'rhap_play-status--paused' : 'rhap_play-status--playing'
 
     return (
       /* We want the container to catch bubbled events */
