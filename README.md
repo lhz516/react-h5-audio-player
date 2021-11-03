@@ -157,7 +157,25 @@ $rhap_time-color: #333 !default;       // Font color of current time and duratio
 $rhap_font-family: inherit !default;   // Font family of current time and duration
 ```
 
-For LESS variables, just replace `$` with `@`.
+For LESS variables, just replace `$` with `@`. This library supports both.
+
+### Status class names
+
+There are some status class names on the audio player's wrapper div. They can be used for overwriting styles.
+
+| className                   | Description        | 
+| --------------------------- | ------------------ | 
+| rhap_loop--on               | Loop is on         | 
+| rhap_loop--off              | Loop is off        |
+| rhap_play-status--paused    | Paused status      |
+| rhap_play-status--playing   | Playing status     |
+
+For example:
+```scss
+.rhap_play-status--paused .rhap_progress-bar {
+  // Overwrite the progress bar style while the audio is paused
+}
+```
 
 ## Advanced Usage
 

@@ -1,6 +1,6 @@
 {
   "name": "react-h5-audio-player",
-  "version": "3.7.2",
+  "version": "3.7.3",
   "description": "A customizable React audio player. Written in TypeScript. Mobile compatible. Keyboard friendly",
   "main": "./lib/index.js",
   "module": "./es/index.js",
@@ -54,7 +54,7 @@
   "bugs": {
     "url": "https://github.com/lhz516/react-h5-audio-player/issues"
   },
-  "homepage": "https://github.com/lhz516/react-h5-audio-player#readme",
+  "homepage": "https://codepen.io/lhz516/pen/dyGpmgP",
   "peerDependencies": {
     "react": "^16.3.0 || ^17.0.0",
     "react-dom": "^16.3.0 || ^17.0.0"
