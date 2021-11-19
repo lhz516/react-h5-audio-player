@@ -6,6 +6,7 @@ interface VolumeControlsProps {
   volume: number
   onMuteChange: () => void
   showFilledVolume: boolean
+  i18nVolumeControl: string
 }
 
 interface VolumeControlsState {
@@ -164,7 +165,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
   }
 
   render(): React.ReactNode {
-    const { audio, showFilledVolume } = this.props
+    const { audio, showFilledVolume, i18nVolumeControl } = this.props
     const { currentVolumePos, hasVolumeAnimation } = this.state
 
     const { volume } = audio || {}
@@ -175,7 +176,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
         onTouchStart={this.handleVolumnControlMouseOrTouchDown}
         onContextMenu={this.handleContextMenu}
         role="progressbar"
-        aria-label="volume Control"
+        aria-label={i18nVolumeControl}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Number((volume * 100).toFixed(0))}

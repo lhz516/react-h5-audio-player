@@ -1,6 +1,6 @@
 {
   "name": "react-h5-audio-player",
-  "version": "3.7.4",
+  "version": "3.8.0",
   "description": "A customizable React audio player. Written in TypeScript. Mobile compatible. Keyboard friendly",
   "main": "./lib/index.js",
   "module": "./es/index.js",
