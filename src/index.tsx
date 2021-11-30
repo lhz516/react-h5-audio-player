@@ -485,7 +485,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
             </button>
             {showJumpControls && (
               <button
-                aria-label="Forward"
+                aria-label={i18nAriaLabels.forward}
                 className="rhap_button-clear rhap_main-controls-button rhap_forward-button"
                 type="button"
                 onClick={this.handleClickForward}
@@ -495,7 +495,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
             )}
             {showSkipControls && (
               <button
-                aria-label="Skip"
+                aria-label={i18nAriaLabels.next}
                 className="rhap_button-clear rhap_main-controls-button rhap_skip-button"
                 type="button"
                 onClick={onClickNext}
@@ -545,7 +545,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
         return (
           <div key={key} className="rhap_volume-container">
             <button
-              aria-label={volume ? 'Mute' : 'Unmute'}
+              aria-label={volume ? i18nAriaLabels.volume : i18nAriaLabels.volumeMute}
               onClick={this.handleClickVolumeButton}
               type="button"
               className="rhap_button-clear rhap_volume-button"
