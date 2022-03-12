@@ -36,6 +36,7 @@ class PlayList extends Component<null, PlayListState> {
       <div>
         <p>currentMusicIndex: {currentMusicIndex}</p>
         <AudioPlayer
+          onEnded={this.handleClickNext}
           autoPlayAfterSrcChange={true}
           showSkipControls={true}
           showJumpControls={false}
