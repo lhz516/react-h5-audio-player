@@ -720,6 +720,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
       children,
       style,
       i18nAriaLabels,
+	  tabIndex,
     } = this.props
     const loop = this.audio.current ? this.audio.current.loop : loopProp
     const loopClass = loop ? 'rhap_loop--on' : 'rhap_loop--off'
@@ -731,7 +732,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
       <div
         role="group"
         /* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */
-        tabIndex={0}
+        tabIndex={tabIndex || 0}
         aria-label={i18nAriaLabels.player}
         className={`rhap_container ${loopClass} ${isPlayingClass} ${className}`}
         onKeyDown={this.handleKeyDown}
