@@ -25,11 +25,11 @@
 
 ![screenshot](./assets/screenshot.png)
 
-Live Demo: [Storybook](https://static.hanzluo.com/react-h5-audio-player-storybook/index.html?path=/docs/layouts--default-story)
+Live Demo: [Storybook](https://lhz516.github.io/react-h5-audio-player/)
 
-Try it on CodePen: [codepen.io/lhz516/pen/dyGpmgP](https://codepen.io/lhz516/pen/dyGpmgP)
+Try it on CodePen: [Basic](https://codepen.io/lhz516/pen/dyGpmgP), [Playlist](https://codepen.io/lhz516/pen/ZExvXjx)
 
-Supported browsers: Chrome, Firefox, Safari, Opera, Edge, IE 11
+Supported browsers: Chrome, Firefox, Safari, Edge
 
 ## [Migrate from v2.x to v3](https://github.com/lhz516/react-h5-audio-player/releases/tag/v3.0.0)
 

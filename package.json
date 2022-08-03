@@ -13,7 +13,7 @@
     "build:d.ts": "tsc",
     "build:css": "sass --no-source-map src/styles.scss lib/styles.css",
     "build:less": "sass2less src/styles.scss lib/styles.less",
-    "lint": "eslint src --fix --ext .ts,.tsx,.js",
+    "lint": "eslint src --fix --ext .ts,.tsx",
     "test": "jest --env=jsdom",
     "cov": "jest --env=jsdom --coverage",
     "storybook": "start-storybook -p 9000",
@@ -21,8 +21,8 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "*.{ts,tsx,js}": [
-      "npm run lint"
+    "*.{ts,tsx}": [
+      "yarn lint"
     ]
   },
   "jest": {
