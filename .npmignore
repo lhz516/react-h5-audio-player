@@ -5,6 +5,6 @@ screenshot.png
 .cache/
 .github/
 stories/
-react-h5-audio-player-storybook/
+docs/
 assets/
 coverage/
