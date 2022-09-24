@@ -692,16 +692,6 @@ class H5AudioPlayer extends Component<PlayerProps> {
     }
   }
 
-  componentWillUnmount(): void {
-    const audio = this.audio.current
-    if (audio) {
-      audio.removeEventListener('play', this.handlePlay)
-      audio.removeEventListener('pause', this.handlePause)
-      audio.removeEventListener('abort', this.handleAbort)
-      audio.load()
-    }
-  }
-
   render(): ReactNode {
     const {
       className,
