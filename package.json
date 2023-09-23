@@ -1,12 +1,12 @@
 {
   "name": "react-h5-audio-player",
-  "version": "3.8.6",
+  "version": "3.9.0",
   "description": "A customizable React audio player. Written in TypeScript. Mobile compatible. Keyboard friendly",
   "main": "./lib/index.js",
   "module": "./es/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
-    "build": "run-p build:cjs build:d.ts build:es build:umd build:css build:less",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider run-p build:cjs build:d.ts build:es build:umd build:css build:less",
     "build:cjs": "cross-env NODE_ENV=cjs babel src --out-dir lib --extensions .tsx,.ts",
     "build:es": "cross-env NODE_ENV=es babel src --out-dir es --extensions .tsx,.ts",
     "build:umd": "webpack",
@@ -75,6 +75,7 @@
     "@storybook/addon-docs": "^6.1.14",
     "@storybook/react": "^6.1.14",
     "@types/events": "^3.0.0",
+    "@types/react": "^16.0.0",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.20.0",
     "babel-loader": "^8.1.0",

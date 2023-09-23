@@ -51,7 +51,7 @@ interface PlayerProps {
   volumeJumpStep?: number
   loop?: boolean
   muted?: boolean
-  crossOrigin?: string
+  crossOrigin?: React.AudioHTMLAttributes<HTMLAudioElement>['crossOrigin']
   mediaGroup?: string
   hasDefaultKeyBindings?: boolean
   onAbort?: (e: Event) => void
