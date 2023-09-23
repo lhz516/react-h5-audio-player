@@ -2,11 +2,9 @@ import React, { Component } from 'react'
 import AudioPlayer from '../src/index'
 
 const playlist = [
-  { name: '枝芽', src: 'https://hanzluo.s3-us-west-1.amazonaws.com/music/zhiya.mp3' },
-  { name: '自由女神', src: 'https://hanzluo.s3-us-west-1.amazonaws.com/music/ziyounvshen.mp3' },
-  { name: '无雨无晴', src: 'https://hanzluo.s3-us-west-1.amazonaws.com/music/wuyuwuqing.mp3' },
-  { name: '碎片', src: 'https://hanzluo.s3-us-west-1.amazonaws.com/music/suipian.mp3' },
-  { name: '永恒的港湾', src: 'https://hanzluo.s3-us-west-1.amazonaws.com/music/yonghengdegangwan.mp3' },
+  { name: 'SoundHelix-Song-9', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3' },
+  { name: 'SoundHelix-Song-4', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+  { name: 'SoundHelix-Song-8', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
 ]
 
 interface PlayListState {

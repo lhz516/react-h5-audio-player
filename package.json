@@ -16,7 +16,7 @@
     "lint": "eslint src --fix --ext .ts,.tsx",
     "test": "jest --env=jsdom",
     "cov": "jest --env=jsdom --coverage",
-    "storybook": "start-storybook -p 9000",
+    "storybook": "NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 9000",
     "build:storybook": "build-storybook -c .storybook -o docs",
     "prepare": "husky install"
   },

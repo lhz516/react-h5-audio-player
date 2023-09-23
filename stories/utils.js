@@ -1,1 +1,1 @@
-export const SAMPLE_MP3_URL = 'https://hanzluo.s3-us-west-1.amazonaws.com/music/wuyuwuqing.mp3'
+export const SAMPLE_MP3_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3'
