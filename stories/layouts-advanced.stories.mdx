@@ -2,6 +2,7 @@ import { Meta, Story, Preview } from '@storybook/addon-docs/blocks';
 import { SAMPLE_MP3_URL } from './utils'
 import VolumePercentage from './volume-percentage.tsx'
 import AudioPlayer, { RHAP_UI } from '../src/index.tsx'
+import ChangeLayout from './change-layout.tsx'
 
 <Meta title="Layouts - Advanced" component={AudioPlayer} />
 
@@ -256,4 +257,14 @@ class VolumePercentage extends PureComponent<{}, { volumeText: string }> {
     ]
   }
 />
+```
+
+#### Change Layout
+
+<Story name="Change Layout">
+  <ChangeLayout />
+</Story>
+
+```jsx
+<ChangeLayout />
 ```

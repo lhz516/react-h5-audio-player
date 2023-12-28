@@ -111,6 +111,7 @@ module.exports = {
     'template-curly-spacing': [2, 'never'],
     '@typescript-eslint/ban-ts-comment': 0,
     '@typescript-eslint/no-misused-promises': 0,
+    '@typescript-eslint/no-unsafe-member-access': 0,
   },
   overrides: [
     {

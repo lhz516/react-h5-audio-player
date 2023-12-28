@@ -191,7 +191,7 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     }, 200)
   }
 
-  componentDidUpdate(): void {
+  initialize(): void {
     const { audio } = this.props
     if (audio && !this.hasAddedAudioEventListener) {
       this.audio = audio
@@ -199,6 +199,14 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
       audio.addEventListener('timeupdate', this.handleAudioTimeUpdate)
       audio.addEventListener('progress', this.handleAudioDownloadProgressUpdate)
     }
+  }
+
+  componentDidMount(): void {
+    this.initialize()
+  }
+
+  componentDidUpdate(): void {
+    this.initialize()
   }
 
   componentWillUnmount(): void {

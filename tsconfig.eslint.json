@@ -3,6 +3,7 @@
   "include": [
     "./src",
     "./.eslintrc.js",
+    "./stories/**/*.tsx",
     "babel.config.js",
     "webpack.config.js"
   ]
