@@ -76,7 +76,7 @@ interface PlayerProps {
   onClickPrevious?: (e: React.SyntheticEvent) => void
   onClickNext?: (e: React.SyntheticEvent) => void
   onPlayError?: (err: Error) => void
-  onChangeCurrentTimeError?: () => void
+  onChangeCurrentTimeError?: (err: Error) => void
   mse?: MSEPropsObject
   /**
    * HTML5 Audio tag preload property
@@ -217,6 +217,9 @@ class H5AudioPlayer extends Component<PlayerProps> {
    * Reference: https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
    */
   playAudioPromise = (): void => {
+    if (this.audio.current.error) {
+      this.audio.current.load()
+    }
     const playPromise = this.audio.current.play()
     // playPromise is null in IE 11
     if (playPromise) {
@@ -299,7 +302,11 @@ class H5AudioPlayer extends Component<PlayerProps> {
       !isFinite(duration) ||
       !isFinite(prevTime)
     ) {
-      return this.props.onChangeCurrentTimeError && this.props.onChangeCurrentTimeError()
+      try {
+        audio.load()
+      } catch (err) {
+        return this.props.onChangeCurrentTimeError && this.props.onChangeCurrentTimeError(err as Error)
+      }
     }
     let currentTime = prevTime + time / 1000
     if (currentTime < 0) {
@@ -573,6 +580,11 @@ class H5AudioPlayer extends Component<PlayerProps> {
     }
 
     audio.addEventListener('error', (e) => {
+      const target = e.target as HTMLAudioElement
+      // Calls onEnded when currentTime is the same as duration even if there is an error
+      if (target.error && target.currentTime === target.duration) {
+        return this.props.onEnded && this.props.onEnded(e)
+      }
       this.props.onError && this.props.onError(e)
     })
 

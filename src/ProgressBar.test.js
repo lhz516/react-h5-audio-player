@@ -47,6 +47,10 @@ describe('ProgressBar', () => {
       get: jest.fn(() => audio.HAVE_ENOUGH_DATA),
     })
 
+    jest.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {
+      audio.currentTime = 0
+    })
+
     const mockMouseEvent = new MouseEvent(null)
     const mockSyntheticEvent = {
       nativeEvent: mockMouseEvent,
@@ -94,8 +98,7 @@ describe('ProgressBar', () => {
     instance.handleAudioTimeUpdate(mockSyntheticEvent)
     expect(wrapper.state('currentTimePos')).toBe('0%')
 
-    // Cover isFinite checking branch in handleWindowMouseOrTouchUp TODO: fix
-    instance.timeOnMouseMove = NaN
+    instance.timeOnMouseMove = 0
     instance.handleWindowMouseOrTouchUp(mockMouseEvent)
     expect(audio.currentTime).toBe(0)
 

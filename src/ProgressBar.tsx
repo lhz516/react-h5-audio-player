@@ -9,7 +9,7 @@ interface ProgressBarForwardRefProps {
   showFilledProgress: boolean
   srcDuration?: number
   onSeek?: OnSeek
-  onChangeCurrentTimeError?: () => void
+  onChangeCurrentTimeError?: (err: Error) => void
   i18nProgressBar: string
 }
 interface ProgressBarProps extends ProgressBarForwardRefProps {
@@ -140,11 +140,15 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
         isDraggingProgress: false,
       }
       if (audio.readyState === audio.HAVE_NOTHING || audio.readyState === audio.HAVE_METADATA || !isFinite(newTime)) {
-        newProps.currentTimePos = '0%'
-        onChangeCurrentTimeError && onChangeCurrentTimeError()
-      } else {
-        audio.currentTime = newTime
+        try {
+          audio.load()
+        } catch (err) {
+          newProps.currentTimePos = '0%'
+          return onChangeCurrentTimeError && onChangeCurrentTimeError(err as Error)
+        }
       }
+
+      audio.currentTime = newTime
       this.setState(newProps)
     }
 
