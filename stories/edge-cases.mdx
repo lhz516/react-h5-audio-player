@@ -1,0 +1,35 @@
+import { Meta, Story, Canvas, Description } from '@storybook/blocks'
+import { action } from '@storybook/addon-actions'
+import { SAMPLE_MP3_URL } from './utils'
+import AudioPlayer from '../src/index.tsx'
+import * as EdgeCasesStories from './edge-cases.stories';
+
+<Meta of={EdgeCasesStories} />
+
+# Edge Cases
+
+Edge Cases of the player
+
+#### No src
+
+No error is fired, and no console error
+
+<Canvas>
+  <Story of={EdgeCasesStories.NoSrc} />
+</Canvas>
+
+#### Empty string src
+
+`onError` will be fired, no browser console error
+
+<Canvas>
+  <Story of={EdgeCasesStories.EmptyStringSrc} />
+</Canvas>
+
+#### Invalid url src
+
+`onError` will be fired with browser console error
+
+<Canvas>
+  <Story of={EdgeCasesStories.InvalidSrc} />
+</Canvas>

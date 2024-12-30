@@ -1,0 +1,34 @@
+import { Meta, Story, Canvas } from '@storybook/blocks';
+import { SAMPLE_MP3_URL } from './utils'
+import AudioPlayer from '../src/index.tsx'
+import * as ConfigStories from './config.stories';
+
+<Meta of={ConfigStories} />
+
+# Config
+
+Controls settings
+
+### Props
+
+progressJumpSteps
+
+* Type: `object`
+* Default: `{ forward: 5000, backward: 5000 }`
+
+progressJumpStep **(deprecated)**
+
+* Type: `number`
+* Default: `5000`
+
+#### progressJumpSteps
+
+<Canvas>
+  <Story of={ConfigStories.ForwardAndBackwardJumpStep} />
+</Canvas>
+
+#### progressJumpStep **(deprecated)**
+
+<Canvas>
+  <Story of={ConfigStories.DeprecatedJumpStep} />
+</Canvas>

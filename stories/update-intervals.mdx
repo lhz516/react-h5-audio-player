@@ -1,0 +1,18 @@
+import { Meta, Story, Canvas } from '@storybook/blocks';
+import { SAMPLE_MP3_URL } from './utils'
+import AudioPlayer from '../src/index.tsx'
+import * as UpdateIntervalsStories from './update-intervals.stories';
+
+<Meta of={UpdateIntervalsStories} />
+
+# Update Intervals
+
+Different progress bar update Intervals of the player
+
+#### Compare different `progressUpdateInterval`
+
+Not recommend any value greater than `1000` (1000ms)
+
+<Canvas>
+  <Story of={UpdateIntervalsStories.Compares} />
+</Canvas>

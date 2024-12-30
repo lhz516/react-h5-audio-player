@@ -1,0 +1,17 @@
+import { Meta, Story, Canvas } from '@storybook/blocks'
+import { action } from '@storybook/addon-actions'
+import { SAMPLE_MP3_URL } from './utils'
+import AudioPlayer from '../src/index.tsx'
+import * as ActionsStories from './actions.stories';
+
+<Meta of={ActionsStories} />
+
+# Actions
+
+Different event listeners of the player
+
+Go to `Canvas` tab to see `Actions` logger
+
+<Canvas>
+  <Story of={ActionsStories.Actions} />
+</Canvas>

@@ -24,8 +24,6 @@ module.exports = (api) => {
       '@babel/preset-react',
     ],
     plugins: [
-      ['@babel/plugin-proposal-private-methods'],
-      '@babel/plugin-proposal-class-properties',
       '@babel/plugin-transform-runtime'
     ],
     comments: false,

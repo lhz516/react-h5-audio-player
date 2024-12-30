@@ -1,0 +1,109 @@
+import { Meta, Story, Canvas } from '@storybook/blocks';
+import { SAMPLE_MP3_URL } from './utils'
+import AudioPlayer from '../src/index.tsx'
+import * as LayoutsStories from './layouts.stories';
+
+<Meta of={LayoutsStories} />
+
+# Layouts
+
+Different layouts of the player
+
+#### Default
+
+<Canvas>
+  <Story of={LayoutsStories.Default} />
+</Canvas>
+
+#### Width
+
+Default width is `100%`, you can always overwrite it to any value that greater than `300px`.
+
+<Canvas>
+  <Story of={LayoutsStories.Width} />
+</Canvas>
+
+#### Show Skip Controls
+
+`onClickPrevious` and `onClickNext` are provided for callback.
+
+<Canvas>
+  <Story of={LayoutsStories.ShowSkipControls} />
+</Canvas>
+
+#### Hide jump Controls and Show Skip Controls
+
+<Canvas>
+  <Story of={LayoutsStories.ShowJumpControlsAndShowSkipControls} />
+</Canvas>
+
+#### Hide all Controls
+
+<Canvas>
+  <Story of={LayoutsStories.HideAllControls} />
+</Canvas>
+
+#### Hide Volume
+
+Useful for most mobile browsers because they don't support volume control
+
+<Canvas>
+  <Story of={LayoutsStories.HideVolume} />
+</Canvas>
+
+#### Hide Loop Button
+
+Useful for most mobile browsers because they don't support volume control
+
+<Canvas>
+  <Story of={LayoutsStories.HideLoopButton} />
+</Canvas>
+
+#### Hide Download Progress
+
+<Canvas>
+  <Story of={LayoutsStories.HideDownloadProgress} />
+</Canvas>
+
+#### Custom default current time and duration
+
+<Canvas>
+  <Story of={LayoutsStories.CustomDefaultCurrentTimeAndDuration} />
+</Canvas>
+
+#### Hide filled progress
+
+<Canvas>
+  <Story of={LayoutsStories.HideFilledProgress} />
+</Canvas>
+
+#### Show header and footer
+
+<Canvas>
+  <Story of={LayoutsStories.ShowHeaderAndFooter} />
+</Canvas>
+
+#### Custom icons
+
+Pass custom icons as needed to the props `customIcons`. Below is an example to use custom play icon for the audio player.
+
+```ts
+CustomIcons {
+  play?: ReactNode
+  pause?: ReactNode
+  rewind?: ReactNode
+  forward?: ReactNode
+  previous?: ReactNode
+  next?: ReactNode
+  loop?: ReactNode
+  loopOff?: ReactNode
+  volume?: ReactNode
+  volumeMute?: ReactNode
+}
+```
+
+export const sampleIcon = (<svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>asciinema icon</title><path d="M1.61 0V24L22.39 12L1.61 0M5.76 7.2L10.06 9.68L5.76 12.16V7.2M12.55 11.12L14.08 12L5.76 16.8V15.04L12.55 11.12Z"></path></svg>)
+
+<Canvas>
+  <Story of={LayoutsStories.CustomIcons} />
+</Canvas>
