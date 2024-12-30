@@ -1,4 +1,4 @@
-import { Meta, Story, Preview } from '@storybook/addon-docs/blocks';
+import { Meta, Story, Canvas } from '@storybook/blocks';
 import { SAMPLE_MP3_URL } from './utils'
 import AudioPlayer from '../src/index.tsx'
 import PlayList from './playlist.tsx'
@@ -16,8 +16,8 @@ Show skip controls (`Previous` and `Next` buttons), and play a list of music
 Source code: https://github.com/lhz516/react-h5-audio-player/blob/master/stories/playlist.tsx
 (MDX doesn't support nested component)
 
-<Preview>
+<Canvas>
   <Story name="playlist">
     <PlayList />
   </Story>
-</Preview>
+</Canvas>

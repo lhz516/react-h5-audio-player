@@ -1,4 +1,4 @@
-import { Meta, Story, Preview } from '@storybook/addon-docs/blocks'
+import { Meta, Story, Canvas } from '@storybook/blocks'
 import { action } from '@storybook/addon-actions'
 import { SAMPLE_MP3_URL } from './utils'
 import AudioPlayer from '../src/index.tsx'
@@ -11,7 +11,7 @@ Different event listeners of the player
 
 Go to `Canvas` tab to see `Actions` logger
 
-<Preview>
+<Canvas>
   <Story name="Actions">
     <AudioPlayer
       onAbort={action('onAbort')}
@@ -38,4 +38,4 @@ Go to `Canvas` tab to see `Actions` logger
       src="https://assets.alllq.in/prod/AQ/content/audios/EnglishFluency/U1/A5/6-3-te.mp3"
     />
   </Story>
-</Preview>
+</Canvas>

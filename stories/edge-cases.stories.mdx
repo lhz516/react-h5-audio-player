@@ -1,11 +1,9 @@
-import { Meta, Story, Preview, Description } from '@storybook/addon-docs/blocks'
+import { Meta, Story, Canvas, Description } from '@storybook/blocks'
 import { action } from '@storybook/addon-actions'
 import { SAMPLE_MP3_URL } from './utils'
 import AudioPlayer from '../src/index.tsx'
 
 <Meta title="Edge Cases" component={AudioPlayer} />
-
-<Props of={AudioPlayer} />
 
 # Edge Cases
 
@@ -15,28 +13,28 @@ Edge Cases of the player
 
 No error is fired, and no console error
 
-<Preview>
+<Canvas>
   <Story name="No src">
     <AudioPlayer onError={action('onError')} onPlayError={action('onPlayError')} />
   </Story>
-</Preview>
+</Canvas>
 
 #### Empty string src
 
 `onError` will be fired, no browser console error
 
-<Preview>
+<Canvas>
   <Story name="Empty string src">
     <AudioPlayer src='' onError={action('onError')} onPlayError={action('onPlayError')} />
   </Story>
-</Preview>
+</Canvas>
 
 #### Invalid url src
 
 `onError` will be fired with browser console error
 
-<Preview>
+<Canvas>
   <Story name="Invalid src">
     <AudioPlayer src="https://invalidsrc.com/nothing.mp3" onError={action('onError')} onPlayError={action('onPlayError')} />
   </Story>
-</Preview>
+</Canvas>

@@ -1,4 +1,4 @@
-import { Meta, Story, Preview } from '@storybook/addon-docs/blocks';
+import { Meta, Story, Canvas } from '@storybook/blocks';
 import { SAMPLE_MP3_URL } from './utils'
 import AudioPlayer from '../src/index.tsx'
 
@@ -12,7 +12,7 @@ Different progress bar update Intervals of the player
 
 Not recommend any value greater than `1000` (1000ms)
 
-<Preview>
+<Canvas>
   <Story name="Compares">
     <div>
       <p>50ms</p>
@@ -23,4 +23,4 @@ Not recommend any value greater than `1000` (1000ms)
       <AudioPlayer autoPlay progressUpdateInterval={1000} src={SAMPLE_MP3_URL} muted />
     </div>
   </Story>
-</Preview>
+</Canvas>

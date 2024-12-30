@@ -16,8 +16,8 @@
     "lint": "eslint src --fix --ext .ts,.tsx",
     "test": "jest --env=jsdom",
     "cov": "jest --env=jsdom --coverage",
-    "storybook": "NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 9000",
-    "build:storybook": "NODE_OPTIONS=--openssl-legacy-provider build-storybook -c .storybook -o docs",
+    "storybook": "sb dev -p 9000",
+    "build:storybook": "sb build -c .storybook -o docs",
     "prepare": "husky install"
   },
   "lint-staged": {
@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.10.2",
-    "@iconify/react": "^4.1.1"
+    "@iconify/react": "^5"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.1",
@@ -72,9 +72,13 @@
     "@babel/preset-react": "^7.10.1",
     "@babel/preset-typescript": "^7.10.1",
     "@cfaester/enzyme-adapter-react-18": "^0.8.0",
-    "@storybook/addon-actions": "^6.1.14",
-    "@storybook/addon-docs": "^6.1.14",
-    "@storybook/react": "^6.1.14",
+    "@storybook/addon-actions": "7.6.20",
+    "@storybook/addon-docs": "7.6.20",
+    "@storybook/addon-mdx-gfm": "7.6.20",
+    "@storybook/blocks": "^7",
+    "@storybook/cli": "^7",
+    "@storybook/react": "7.6.20",
+    "@storybook/react-webpack5": "7.6.20",
     "@types/events": "^3.0.0",
     "@types/react": "^19",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
@@ -93,7 +97,6 @@
     "jest-environment-jsdom": "^29.7.0",
     "less-plugin-sass2less": "^1.2.0",
     "lint-staged": "^10.2.10",
-    "node-sass": "^7.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.0.5",
     "react": "^18",
@@ -101,6 +104,7 @@
     "sass": "^1.26.8",
     "sass-loader": "^10.2.0",
     "static-server": "^2.2.1",
+    "style-loader": "^4.0.0",
     "typescript": "^4.2.3",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11"

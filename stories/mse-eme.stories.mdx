@@ -1,4 +1,4 @@
-import { Meta, Story, Preview } from '@storybook/addon-docs/blocks'
+import { Meta, Story, Canvas } from '@storybook/blocks'
 import { action } from '@storybook/addon-actions'
 import AudioPlayer from '../src/index'
 import MediaSourcePlayer from './mse-eme-player.tsx'
@@ -9,8 +9,8 @@ import MediaSourcePlayer from './mse-eme-player.tsx'
 
 Event will fire when encrypted audio is provided
 
-<Preview>
+<Canvas>
   <Story name="MSE-EME">
     <MediaSourcePlayer onEncrypted={action('onEncrypted')} />
   </Story>
-</Preview>
+</Canvas>

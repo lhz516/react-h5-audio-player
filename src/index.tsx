@@ -142,49 +142,20 @@ interface I18nAriaLabels {
 }
 
 class H5AudioPlayer extends Component<PlayerProps> {
-  static defaultProps: PlayerProps = {
-    autoPlay: false,
-    autoPlayAfterSrcChange: true,
-    listenInterval: 1000,
-    progressJumpStep: 5000,
-    progressJumpSteps: {}, // define when removing progressJumpStep
-    volumeJumpStep: 0.1,
-    loop: false,
-    muted: false,
-    preload: 'auto',
-    progressUpdateInterval: 20,
-    defaultCurrentTime: '--:--',
-    defaultDuration: '--:--',
-    timeFormat: 'auto',
-    volume: 1,
-    className: '',
-    showJumpControls: true,
-    showSkipControls: false,
-    showDownloadProgress: true,
-    showFilledProgress: true,
-    showFilledVolume: false,
-    customIcons: {},
-    customProgressBarSection: [RHAP_UI.CURRENT_TIME, RHAP_UI.PROGRESS_BAR, RHAP_UI.DURATION],
-    customControlsSection: [RHAP_UI.ADDITIONAL_CONTROLS, RHAP_UI.MAIN_CONTROLS, RHAP_UI.VOLUME_CONTROLS],
-    customAdditionalControls: [RHAP_UI.LOOP],
-    customVolumeControls: [RHAP_UI.VOLUME],
-    layout: 'stacked',
-    hasDefaultKeyBindings: true,
-    i18nAriaLabels: {
-      player: 'Audio player',
-      progressControl: 'Audio progress control',
-      volumeControl: 'Volume control',
-      play: 'Play',
-      pause: 'Pause',
-      rewind: 'Rewind',
-      forward: 'Forward',
-      previous: 'Previous',
-      next: 'Skip',
-      loop: 'Disable loop',
-      loopOff: 'Enable loop',
-      volume: 'Mute',
-      volumeMute: 'Unmute',
-    },
+  static defaultI18nAriaLabels: I18nAriaLabels = {
+    player: 'Audio player',
+    progressControl: 'Audio progress control',
+    volumeControl: 'Volume control',
+    play: 'Play',
+    pause: 'Pause',
+    rewind: 'Rewind',
+    forward: 'Forward',
+    previous: 'Previous',
+    next: 'Skip',
+    loop: 'Disable loop',
+    loopOff: 'Enable loop',
+    volume: 'Mute',
+    volumeMute: 'Unmute',
   }
 
   audio = createRef<HTMLAudioElement>()
@@ -193,7 +164,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
 
   container = createRef<HTMLDivElement>()
 
-  lastVolume: number = this.props.volume // To store the volume before clicking mute button
+  lastVolume: number = this.props.volume ?? 1 // To store the volume before clicking mute button
 
   listenTracker?: number // Determine whether onListen event should be called continuously
 
@@ -328,7 +299,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
   }
 
   handleKeyDown = (e: React.KeyboardEvent): void => {
-    if (this.props.hasDefaultKeyBindings) {
+    if (this.props.hasDefaultKeyBindings ?? true) {
       switch (e.key) {
         case ' ':
           if (e.target === this.container.current || e.target === this.progressBar.current) {
@@ -366,26 +337,26 @@ class H5AudioPlayer extends Component<PlayerProps> {
 
   renderUIModule = (comp: CustomUIModule, key: Key): ReactElement => {
     const {
-      defaultCurrentTime,
-      progressUpdateInterval,
-      showDownloadProgress,
-      showFilledProgress,
-      showFilledVolume,
-      defaultDuration,
-      customIcons,
-      showSkipControls,
+      defaultCurrentTime = '--:--',
+      progressUpdateInterval = 20,
+      showDownloadProgress = true,
+      showFilledProgress = true,
+      showFilledVolume = false,
+      defaultDuration = '--:--',
+      customIcons = {},
+      showSkipControls = false,
       onClickPrevious,
       onClickNext,
       onChangeCurrentTimeError,
-      showJumpControls,
-      customAdditionalControls,
-      customVolumeControls,
-      muted,
-      timeFormat,
-      volume: volumeProp,
-      loop: loopProp,
+      showJumpControls = true,
+      customAdditionalControls = [RHAP_UI.LOOP],
+      customVolumeControls = [RHAP_UI.VOLUME],
+      muted = false,
+      timeFormat = 'auto',
+      volume: volumeProp = 1,
+      loop: loopProp = false,
       mse,
-      i18nAriaLabels,
+      i18nAriaLabels = H5AudioPlayer.defaultI18nAriaLabels,
     } = this.props
 
     switch (comp) {
@@ -563,7 +534,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
         if (!isValidElement(comp)) {
           return null
         }
-        return comp.key ? comp : cloneElement(comp as ReactElement, { key })
+        return comp.key ? comp : cloneElement(comp, { key })
     }
   }
 
@@ -696,21 +667,21 @@ class H5AudioPlayer extends Component<PlayerProps> {
 
   render(): ReactNode {
     const {
-      className,
+      className = '',
       src,
-      loop: loopProp,
-      preload,
-      autoPlay,
+      loop: loopProp = false,
+      preload = 'auto',
+      autoPlay = false,
       crossOrigin,
       mediaGroup,
       header,
       footer,
-      layout,
-      customProgressBarSection,
-      customControlsSection,
+      layout = 'stacked',
+      customProgressBarSection = [RHAP_UI.CURRENT_TIME, RHAP_UI.PROGRESS_BAR, RHAP_UI.DURATION],
+      customControlsSection = [RHAP_UI.ADDITIONAL_CONTROLS, RHAP_UI.MAIN_CONTROLS, RHAP_UI.VOLUME_CONTROLS],
       children,
       style,
-      i18nAriaLabels,
+      i18nAriaLabels = H5AudioPlayer.defaultI18nAriaLabels,
     } = this.props
     const loop = this.audio.current ? this.audio.current.loop : loopProp
     const loopClass = loop ? 'rhap_loop--on' : 'rhap_loop--off'
