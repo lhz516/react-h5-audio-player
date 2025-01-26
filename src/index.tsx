@@ -36,6 +36,10 @@ interface PlayerProps {
    */
   autoPlayAfterSrcChange?: boolean
   /**
+   * Whether to force a load of the audio after src or srcKey prop is changed
+   */
+  autoLoadAfterSrcChange?: boolean
+  /**
    * custom classNames
    */
   className?: string
@@ -90,6 +94,11 @@ interface PlayerProps {
    * HTML5 Audio tag src property
    */
   src?: string
+  /**
+   * A unique key for the current audio source, for use along with child
+   * <source> elements
+   */
+  srcKey?: string
   defaultCurrentTime?: ReactNode
   defaultDuration?: ReactNode
   volume?: number
@@ -183,7 +192,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
   togglePlay = (e: React.SyntheticEvent): void => {
     e.stopPropagation()
     const audio = this.audio.current
-    if ((audio.paused || audio.ended) && audio.src) {
+    if ((audio.paused || audio.ended) && (audio.src || audio.currentSrc)) {
       this.playAudioPromise()
     } else if (!audio.paused) {
       audio.pause()
@@ -663,8 +672,13 @@ class H5AudioPlayer extends Component<PlayerProps> {
   }
 
   componentDidUpdate(prevProps: PlayerProps): void {
-    const { src, autoPlayAfterSrcChange } = this.props
-    if (prevProps.src !== src) {
+    const { src, srcKey, autoPlayAfterSrcChange, autoLoadAfterSrcChange } = this.props
+
+    if (prevProps.src !== src || prevProps.srcKey !== srcKey) {
+      if (autoLoadAfterSrcChange && this.audio.current) {
+        this.audio.current.load()
+      }
+
       if (autoPlayAfterSrcChange) {
         this.playAudioPromise()
       } else {
