@@ -36,7 +36,8 @@ interface PlayerProps {
    */
   autoPlayAfterSrcChange?: boolean
   /**
-   * Whether to force a load of the audio after src or srcKey prop is changed
+   * Whether to load the audio after changing the src. This is necessary when
+   * using child `<source>` elements
    */
   autoLoadAfterSrcChange?: boolean
   /**
@@ -95,8 +96,8 @@ interface PlayerProps {
    */
   src?: string
   /**
-   * A unique key for the current audio source, for use along with child
-   * <source> elements
+   * A unique key for the current audio source when not using the `src` prop,
+   * i.e., when using child <source> elements
    */
   srcKey?: string
   defaultCurrentTime?: ReactNode
@@ -672,7 +673,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
   }
 
   componentDidUpdate(prevProps: PlayerProps): void {
-    const { src, srcKey, autoPlayAfterSrcChange, autoLoadAfterSrcChange } = this.props
+    const { src, srcKey, autoPlayAfterSrcChange, autoLoadAfterSrcChange = true } = this.props
 
     if (prevProps.src !== src || prevProps.srcKey !== srcKey) {
       if (autoLoadAfterSrcChange && this.audio.current) {

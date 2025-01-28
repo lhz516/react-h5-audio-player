@@ -103,7 +103,8 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | showFilledProgress       | boolean           | true    | Show filled (already played) area on progress bar |
 | showFilledVolume         | boolean           | false   | Show filled volume area on volume bar |
 | hasDefaultKeyBindings    | boolean           | true    | Whether has default keyboard shortcuts |
-| autoPlayAfterSrcChange   | boolean           | true    | Play audio after `src` is changed, no matter `autoPlay` is `true` or `false` |
+| autoPlayAfterSrcChange   | boolean           | true    | Play audio after `src` or `srcKey` is changed, no matter `autoPlay` is `true` or `false` |
+| autoLoadAfterSrcChange   | boolean           | true    | Load audio after `src` or `srcKey` is changed, necessary if using child `<source>` elements |
 | volumeJumpStep           | number            | 0.1     | Indicates the volume jump step when pressing up/down arrow key, volume range is `0` to `1` |
 | progressJumpStep         | number            | 5000    | **Deprecated, use progressJumpSteps.** Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key |
 | progressJumpSteps        | object            | `{ backward: 5000, forward: 5000 }`    | Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key|
@@ -125,6 +126,12 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | mse.srcDuration          | number           | -        | The complete duration of the MSE audio chunks together (this is a key of the _mse_ prop) |
 | mse.onSeek               | Function (Event) | -        | The callback to be used when seek happens (this is a key of the _mse_ prop) |
 | mse.srcDuration          | number           | -        | The callback to be used when encrypted audio is detected and needs to be decrypted (this is a key of the _mse_ prop) |
+
+### Other Props
+
+| Props                    | Type              | Default | Note |
+| ------------------------ | ----------------- | ------- | ---- |
+| srcKey                   | string            | ''      | A unique key for the current audio source when not using the `src` prop, i.e., when using child `<source>` elements with a playlist. |
 
 ### Event Props
 
@@ -197,6 +204,30 @@ Then you can access the audio element like this:
 ### Media Source Extensions and Encrypted Media Extensions
 
 You can use [Media Source Extensions](https://developer.mozilla.org/en-US/docs/Web/API/Media_Source_Extensions_API) and [Encrypted Media Extensions](https://developer.mozilla.org/en-US/docs/Web/API/Encrypted_Media_Extensions_API) with this player. You need to provide the complete duration, and also a onSeek and onEncrypted callbacks. The logic for feeding the audio buffer and providing the decryption keys (if using encryption) must be set in the consumer side. The player does not provide that logic. Check the [StoryBook example](https://github.com/lhz516/react-h5-audio-player/blob/master/stories/mse-eme-player.tsx) to understand better how to use.
+
+### Using `<source>` Elements
+
+You can use child `<source>` elements instead of the `src` prop, for example [to provide different file types or codecs based on browser support](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio#usage_notes).
+
+```jsx
+<AudioPlayer>
+  <source src="https://example.com/audio.aac" type="audio/aac" />
+  <source src="https://example.com/audio.ogg" type="audio/ogg" />
+  <source src="https://example.com/audio.mp3" type="audio/mpeg" />
+  <source src="https://example.com/audio.wav" type="audio/wav" />
+</AudioPlayer>
+```
+
+When using `<source>` elements in playlists, use the `srcKey` prop to specify a unique identifier for the current src.
+
+```jsx
+<AudioPlayer srcKey="https://example.com/audio.wav">
+  <source src="https://example.com/audio.aac" type="audio/aac" />
+  <source src="https://example.com/audio.ogg" type="audio/ogg" />
+  <source src="https://example.com/audio.mp3" type="audio/mpeg" />
+  <source src="https://example.com/audio.wav" type="audio/wav" />
+</AudioPlayer>
+```
 
 ## Release Notes
 

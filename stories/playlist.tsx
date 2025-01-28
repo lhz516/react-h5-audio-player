@@ -4,7 +4,7 @@ import AudioPlayer from '../src/index'
 interface Track {
   src: string
   type: string
-  additionalSrcs: [
+  additionalSrcs?: [
     {
       src: string
       type: string
@@ -57,14 +57,13 @@ class PlayList extends Component<PlaylistProps, PlayListState> {
 
         {this.useSourceElements ? (
           <AudioPlayer
+            srcKey={track.src}
             onEnded={this.handleClickNext}
             autoPlayAfterSrcChange={true}
             showSkipControls={true}
             showJumpControls={false}
             onClickPrevious={this.handleClickPrevious}
             onClickNext={this.handleClickNext}
-            srcKey={track.src}
-            autoLoadAfterSrcChange={true}
           >
             <source src={track.src} type={track.type} />
             {track.additionalSrcs &&
@@ -72,11 +71,11 @@ class PlayList extends Component<PlaylistProps, PlayListState> {
           </AudioPlayer>
         ) : (
           <AudioPlayer
+            src={track.src}
             onEnded={this.handleClickNext}
             autoPlayAfterSrcChange={true}
             showSkipControls={true}
             showJumpControls={false}
-            src={track.src}
             onClickPrevious={this.handleClickPrevious}
             onClickNext={this.handleClickNext}
           />
