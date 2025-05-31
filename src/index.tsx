@@ -158,6 +158,14 @@ class H5AudioPlayer extends Component<PlayerProps> {
     volumeMute: 'Unmute',
   }
 
+  static defaultProps: Partial<PlayerProps> = {
+    progressJumpSteps: {
+      backward: 5_000,
+      forward: 5_000,
+    },
+    progressJumpStep: 5_000,
+  }
+
   audio = createRef<HTMLAudioElement>()
 
   progressBar = createRef<HTMLDivElement>()
