@@ -202,9 +202,10 @@ class H5AudioPlayer extends Component<PlayerProps> {
     const playPromise = this.audio.current.play()
     // playPromise is null in IE 11
     if (playPromise) {
-      playPromise.then(null).catch((err) => {
+      playPromise.then(null).catch((err: unknown) => {
         const { onPlayError } = this.props
-        onPlayError && onPlayError(new Error(err))
+        const message = err instanceof Error ? err.message : String(err)
+        onPlayError && onPlayError(new Error(message))
       })
     } else {
       // Remove forceUpdate when stop supporting IE 11

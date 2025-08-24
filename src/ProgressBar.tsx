@@ -130,8 +130,9 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
       this.setState({ isDraggingProgress: false, waitingForSeekCallback: true }, () => {
         onSeek(audio, newTime).then(
           () => this.setState({ waitingForSeekCallback: false }),
-          (err) => {
-            throw new Error(err)
+          (err: unknown) => {
+            const message = err instanceof Error ? err.message : String(err)
+            throw new Error(message)
           }
         )
       })
