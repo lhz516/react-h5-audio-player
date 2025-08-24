@@ -1,4 +1,4 @@
-import { action } from "@storybook/addon-actions";
+import { action } from "storybook/actions";
 import AudioPlayer from "../src/index";
 import MediaSourcePlayer from "./mse-eme-player.tsx";
 import React from "react";

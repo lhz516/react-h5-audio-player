@@ -6,9 +6,7 @@ const config: StorybookConfig = {
 
   addons: [
     '@storybook/addon-docs',
-    '@storybook/addon-actions',
     '@storybook/addon-webpack5-compiler-babel',
-    
   ],
 
   framework: {

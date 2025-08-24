@@ -1,4 +1,4 @@
-import { action } from "@storybook/addon-actions";
+import { action } from "storybook/actions";
 import { SAMPLE_MP3_URL } from "./utils";
 import AudioPlayer from "../src/index.tsx";
 import React from "react";
