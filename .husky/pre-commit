@@ -1,4 +1,5 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+#!/usr/bin/env sh
 
+# Husky v9+ no longer requires sourcing husky.sh (deprecated and removed in v10)
+# Run lint-staged on staged TypeScript files
 npx lint-staged
