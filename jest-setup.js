@@ -1,9 +1,3 @@
-import { configure } from 'enzyme'
-import Adapter from '@cfaester/enzyme-adapter-react-18'
-
-// Configure the enzyme adapter.
-configure({ adapter: new Adapter() })
-
 // Mock Audio object in Jest: https://github.com/jsdom/jsdom/issues/2155#issuecomment-581862425
 // Mock data and helper methods
 global.window.HTMLMediaElement.prototype._mock = {
