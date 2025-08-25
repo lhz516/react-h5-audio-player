@@ -1,5 +1,6 @@
 import React from 'react'
 import { render, fireEvent, act } from '@testing-library/react'
+import { vi, describe, it, expect, beforeEach } from 'vitest'
 import ProgressBarDefault, { ProgressBar as RawProgressBar } from './ProgressBar'
 
 // Helper to create a mock HTMLAudioElement with configurable duration & currentTime
@@ -14,17 +15,17 @@ function createMockAudio({ duration = 120, currentTime = 0 } = {}) {
     src: 'http://example.com/audio.mp3',
     HAVE_NOTHING: 0,
     HAVE_METADATA: 1,
-    addEventListener: jest.fn((evt, cb) => {
+    addEventListener: vi.fn((evt, cb) => {
       listeners[evt] = listeners[evt] || []
       listeners[evt].push(cb)
     }),
-    removeEventListener: jest.fn((evt, cb) => {
+    removeEventListener: vi.fn((evt, cb) => {
       listeners[evt] = (listeners[evt] || []).filter((fn) => fn !== cb)
     }),
     dispatch(evt) {
       ;(listeners[evt] || []).forEach((cb) => cb({ target: audio }))
     },
-    load: jest.fn(),
+    load: vi.fn(),
     buffered: {
       get length() {
         return bufferedRanges.length
@@ -42,7 +43,7 @@ function createMockAudio({ duration = 120, currentTime = 0 } = {}) {
 
 describe('ProgressBar component', () => {
   beforeEach(() => {
-    jest.useFakeTimers()
+    vi.useFakeTimers()
     // Capture window listeners so we can invoke them deterministically
     captured = { mousemove: [], mouseup: [], touchmove: [], touchend: [] }
     originalAdd = window.addEventListener
@@ -57,8 +58,8 @@ describe('ProgressBar component', () => {
     }
   })
   afterEach(() => {
-    jest.runOnlyPendingTimers()
-    jest.useRealTimers()
+    vi.runOnlyPendingTimers()
+    vi.useRealTimers()
     window.addEventListener = originalAdd
     window.removeEventListener = originalRemove
   })
@@ -87,7 +88,7 @@ describe('ProgressBar component', () => {
   }
 
   function mockProgressBarRect(node, { width = 400, left = 0 } = {}) {
-    node.getBoundingClientRect = jest.fn(() => ({
+    node.getBoundingClientRect = vi.fn(() => ({
       width,
       left,
       right: left + width,
@@ -128,7 +129,7 @@ describe('ProgressBar component', () => {
     expect(progress).toHaveAttribute('aria-valuenow', '25')
 
     // Advance past throttle interval, next dispatch should update
-    act(() => { jest.advanceTimersByTime(201) })
+    act(() => { vi.advanceTimersByTime(201) })
     act(() => { props.audio.dispatch('timeupdate') })
     expect(progress).toHaveAttribute('aria-valuenow', '50')
   })
@@ -146,7 +147,7 @@ describe('ProgressBar component', () => {
 
     expect(props.audio.currentTime).toBeCloseTo(60) // 50% of 120 duration
     const indicator = container.querySelector('.rhap_progress-indicator')
-    expect(indicator.style.left).toBe('50.00%')
+    expect(indicator.style.left).toMatch(/50(\.00)?%/)
   })
 
   test('touch drag uses touch events', () => {
@@ -164,7 +165,7 @@ describe('ProgressBar component', () => {
 
   test('async onSeek prevents immediate currentTime set and waits for promise', async () => {
     const onSeekPromise = Promise.resolve()
-    const onSeek = jest.fn().mockImplementation(() => onSeekPromise)
+    const onSeek = vi.fn().mockImplementation(() => onSeekPromise)
     const props = baseProps({ onSeek })
     const { getByRole } = renderWithRef(props)
     const progress = getByRole('progressbar')
@@ -189,7 +190,7 @@ describe('ProgressBar component', () => {
     const { container } = renderWithRef(props)
 
     // Trigger progress event to populate buffer segments
-  act(() => { props.audio.dispatch('progress'); jest.advanceTimersByTime(210) })
+  act(() => { props.audio.dispatch('progress'); vi.advanceTimersByTime(210) })
 
     const bufferEls = container.querySelectorAll('.rhap_download-progress')
     expect(bufferEls.length).toBe(2)

@@ -1,10 +1,10 @@
 import React from 'react'
 import { render, fireEvent, act, screen, waitFor } from '@testing-library/react'
-import '@testing-library/jest-dom'
+import { vi, describe, it, expect, beforeEach } from 'vitest'
 import H5AudioPlayer, { RHAP_UI } from './index'
 
 // Mock Icon component from iconify
-jest.mock('@iconify/react', () => ({
+vi.mock('@iconify/react', () => ({
   Icon: ({ icon }) => <span data-testid={`icon-${icon}`}>{icon}</span>
 }))
 
@@ -15,12 +15,12 @@ describe('H5AudioPlayer', () => {
     if (audioElement) {
       // Mock audio properties and methods
       const mockMethods = {
-        play: jest.fn(() => Promise.resolve()),
-        pause: jest.fn(),
-        load: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
+        play: vi.fn(() => Promise.resolve()),
+        pause: vi.fn(),
+        load: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
       }
       
       const mockProperties = {
@@ -82,7 +82,7 @@ describe('H5AudioPlayer', () => {
     it('renders with custom style', () => {
       const customStyle = { backgroundColor: 'red' }
       const { container } = render(<H5AudioPlayer style={customStyle} />)
-      expect(container.querySelector('.rhap_container')).toHaveStyle('background-color: red')
+      expect(container.querySelector('.rhap_container')).toHaveStyle('background-color: rgb(255, 0, 0)')
     })
 
     it('renders with header and footer', () => {
@@ -284,7 +284,7 @@ describe('H5AudioPlayer', () => {
     })
 
     it('handles play error callback', async () => {
-      const onPlayError = jest.fn()
+      const onPlayError = vi.fn()
       const { container } = render(<H5AudioPlayer onPlayError={onPlayError} />)
       
       // Test that the callback prop is passed and component renders
@@ -371,7 +371,7 @@ describe('H5AudioPlayer', () => {
     })
 
     it('handles error callbacks', () => {
-      const onChangeCurrentTimeError = jest.fn()
+      const onChangeCurrentTimeError = vi.fn()
       const { container } = render(
         <H5AudioPlayer onChangeCurrentTimeError={onChangeCurrentTimeError} />
       )
@@ -384,27 +384,27 @@ describe('H5AudioPlayer', () => {
   describe('Event Handlers', () => {
     it('supports all event handler props', () => {
       const eventHandlers = {
-        onAbort: jest.fn(),
-        onCanPlay: jest.fn(),
-        onCanPlayThrough: jest.fn(),
-        onEnded: jest.fn(),
-        onPlaying: jest.fn(),
-        onSeeking: jest.fn(),
-        onSeeked: jest.fn(),
-        onStalled: jest.fn(),
-        onSuspend: jest.fn(),
-        onLoadStart: jest.fn(),
-        onLoadedMetaData: jest.fn(),
-        onLoadedData: jest.fn(),
-        onWaiting: jest.fn(),
-        onEmptied: jest.fn(),
-        onError: jest.fn(),
-        onListen: jest.fn(),
-        onVolumeChange: jest.fn(),
-        onPause: jest.fn(),
-        onPlay: jest.fn(),
-        onClickPrevious: jest.fn(),
-        onClickNext: jest.fn(),
+        onAbort: vi.fn(),
+        onCanPlay: vi.fn(),
+        onCanPlayThrough: vi.fn(),
+        onEnded: vi.fn(),
+        onPlaying: vi.fn(),
+        onSeeking: vi.fn(),
+        onSeeked: vi.fn(),
+        onStalled: vi.fn(),
+        onSuspend: vi.fn(),
+        onLoadStart: vi.fn(),
+        onLoadedMetaData: vi.fn(),
+        onLoadedData: vi.fn(),
+        onWaiting: vi.fn(),
+        onEmptied: vi.fn(),
+        onError: vi.fn(),
+        onListen: vi.fn(),
+        onVolumeChange: vi.fn(),
+        onPause: vi.fn(),
+        onPlay: vi.fn(),
+        onClickPrevious: vi.fn(),
+        onClickNext: vi.fn(),
       }
 
       const { container } = render(<H5AudioPlayer {...eventHandlers} />)
@@ -412,8 +412,8 @@ describe('H5AudioPlayer', () => {
     })
 
     it('supports skip controls with callbacks', () => {
-      const onClickPrevious = jest.fn()
-      const onClickNext = jest.fn()
+      const onClickPrevious = vi.fn()
+      const onClickNext = vi.fn()
       
       const { container } = render(
         <H5AudioPlayer 
@@ -427,7 +427,7 @@ describe('H5AudioPlayer', () => {
     })
 
     it('handles listen interval configuration', () => {
-      const onListen = jest.fn()
+      const onListen = vi.fn()
       const { container } = render(
         <H5AudioPlayer onListen={onListen} listenInterval={100} />
       )
@@ -439,9 +439,9 @@ describe('H5AudioPlayer', () => {
   describe('MSE Support', () => {
     it('supports MSE configuration', () => {
       const mseProps = {
-        onSeek: jest.fn().mockResolvedValue(),
+        onSeek: vi.fn().mockResolvedValue(),
         srcDuration: 120,
-        onEcrypted: jest.fn(),
+        onEcrypted: vi.fn(),
       }
 
       const { container } = render(<H5AudioPlayer mse={mseProps} />)
@@ -450,7 +450,7 @@ describe('H5AudioPlayer', () => {
 
     it('displays MSE duration when provided', () => {
       const mseProps = {
-        onSeek: jest.fn().mockResolvedValue(),
+        onSeek: vi.fn().mockResolvedValue(),
         srcDuration: 120,
       }
 
@@ -461,7 +461,7 @@ describe('H5AudioPlayer', () => {
     })
 
     it('supports MSE onSeek callback', async () => {
-      const onSeek = jest.fn().mockResolvedValue()
+      const onSeek = vi.fn().mockResolvedValue()
       const mseProps = { onSeek, srcDuration: 120 }
       
       render(<H5AudioPlayer mse={mseProps} />)
@@ -613,7 +613,7 @@ describe('H5AudioPlayer', () => {
 
   describe('Edge Cases', () => {
     it('handles play error callback', async () => {
-      const onPlayError = jest.fn()
+      const onPlayError = vi.fn()
       const { container } = render(<H5AudioPlayer onPlayError={onPlayError} />)
       
       // Test that the callback prop is passed and component renders
@@ -631,7 +631,7 @@ describe('H5AudioPlayer', () => {
     })
 
     it('supports error handling props', () => {
-      const onError = jest.fn()
+      const onError = vi.fn()
       const { container } = render(<H5AudioPlayer onError={onError} />)
       
       expect(container.querySelector('.rhap_container')).toBeInTheDocument()

@@ -1,15 +1,16 @@
 import React from 'react'
 import { render, act } from '@testing-library/react'
+import { vi, describe, it, expect } from 'vitest'
 import Duration from './Duration'
 
 function createMockAudio({ duration = 0 } = {}) {
 	const listeners = {}
 	const audio = {
 		duration,
-		addEventListener: jest.fn((event, cb) => {
+		addEventListener: vi.fn((event, cb) => {
 			listeners[event] = cb
 		}),
-		removeEventListener: jest.fn((event) => {
+		removeEventListener: vi.fn((event) => {
 			delete listeners[event]
 		}),
 		dispatch(event) {

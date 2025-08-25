@@ -1,5 +1,6 @@
 import React from 'react'
 import { render, act } from '@testing-library/react'
+import { vi, describe, it, expect } from 'vitest'
 import CurrentTime from './CurrentTime'
 
 // Helper to create a mock HTMLAudioElement-like object
@@ -8,10 +9,10 @@ function createMockAudio({ currentTime = 0, duration = 0 } = {}) {
 	const audio = {
 		currentTime,
 		duration,
-		addEventListener: jest.fn((event, cb) => {
+		addEventListener: vi.fn((event, cb) => {
 			listeners[event] = cb
 		}),
-		removeEventListener: jest.fn((event) => {
+		removeEventListener: vi.fn((event) => {
 			delete listeners[event]
 		}),
 		// Utility to trigger an event

@@ -1,4 +1,11 @@
-// Mock Audio object in Jest: https://github.com/jsdom/jsdom/issues/2155#issuecomment-581862425
+import { expect, beforeEach } from 'vitest'
+import { cleanup } from '@testing-library/react'
+import * as matchers from '@testing-library/jest-dom/matchers'
+
+// Extend expect with custom matchers - we'll use @testing-library/jest-dom's matchers via vitest
+expect.extend(matchers)
+
+// Mock Audio object in Vitest: https://github.com/jsdom/jsdom/issues/2155#issuecomment-581862425
 // Mock data and helper methods
 global.window.HTMLMediaElement.prototype._mock = {
   paused: true,
@@ -74,3 +81,17 @@ global.window.HTMLMediaElement.prototype.pause = function pauseMock() {
   this._mock.paused = true
   this.dispatchEvent(new Event('pause'))
 }
+
+// Reset and reload the media element
+global.window.HTMLMediaElement.prototype.load = function loadMock() {
+  this._mock._resetMock(this)
+  this._mock._loaded = false
+  this.dispatchEvent(new Event('loadstart'))
+  // Trigger the loading process
+  this._mock._load(this)
+}
+
+// Cleanup after each test run
+beforeEach(() => {
+  cleanup()
+})

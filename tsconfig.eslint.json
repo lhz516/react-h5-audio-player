@@ -4,6 +4,7 @@
     "./src",
     "./.eslintrc.js",
     "./stories/**/*.tsx",
+    "./vitest-setup.ts",
     "babel.config.js",
     "webpack.config.js"
   ]
