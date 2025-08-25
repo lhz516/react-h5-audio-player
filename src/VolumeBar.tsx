@@ -151,7 +151,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
     // Remove the animation flag shortly after so subsequent rapid updates don't queue transitions
     this.volumeAnimationTimer = setTimeout(() => {
       this.setState({ hasVolumeAnimation: false })
-    }, 100)
+    }, 100) as unknown as number
   }
 
   componentDidUpdate(): void {

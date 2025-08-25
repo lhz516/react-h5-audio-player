@@ -229,7 +229,7 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     this.setState({ downloadProgressArr, hasDownloadProgressAnimation: true })
     this.downloadProgressAnimationTimer = setTimeout(() => {
       this.setState({ hasDownloadProgressAnimation: false })
-    }, 200)
+    }, 200) as unknown as number
   }
 
   initialize(): void {
