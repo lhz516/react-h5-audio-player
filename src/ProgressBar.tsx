@@ -2,6 +2,23 @@ import React, { Component, forwardRef, SyntheticEvent } from 'react'
 import { getPosX, throttle } from './utils'
 import { OnSeek } from './index'
 
+// ProgressBar encapsulates all logic related to displaying and interacting with
+// the audio playback progress: (1) current position, (2) buffered segments,
+// (3) drag & seek interactions (mouse + touch), and (4) accessibility ARIA data.
+//
+// NOTABLE BEHAVIOR / DESIGN CHOICES:
+// - Drag logic is fully managed by adding / removing global window listeners so that
+//   seeking continues even if the pointer leaves the bar's bounding box.
+// - Time updates are throttled via the provided progressUpdateInterval to limit
+//   React re-renders during playback (performance optimization).
+// - When an optional async onSeek callback is provided, UI waits (state.waitingForSeekCallback)
+//   so that timeupdate events do not fight with the in-flight seek.
+// - Download (buffer) progress is animated by toggling a short-lived flag which
+//   influences CSS transition durations.
+// - Supports externally supplied srcDuration (e.g., for streams where metadata
+//   duration might be unknown or unreliable initially). If srcDuration is passed
+//   it short-circuits reliance on audio.duration.
+
 interface ProgressBarForwardRefProps {
   audio: HTMLAudioElement
   progressUpdateInterval: number
@@ -37,8 +54,14 @@ interface TimePosInfo {
 class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   audio?: HTMLAudioElement
 
+  // The candidate time (in seconds) corresponding to the most recent pointer move
+  // while the user is actively dragging. We don't update audio.currentTime until
+  // the drag ends (unless an async onSeek handler is provided) to avoid excessive
+  // media seeks and to keep UI snappy.
   timeOnMouseMove = 0 // Audio's current time while mouse is down and moving over the progress bar
 
+  // Prevents adding duplicate media element listeners if component re-renders
+  // or receives the same audio element again.
   hasAddedAudioEventListener = false
 
   downloadProgressAnimationTimer?: number
@@ -59,6 +82,9 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   // Get time info while dragging indicator by mouse or touch
   getCurrentProgress = (event: MouseEvent | TouchEvent): TimePosInfo => {
     const { audio, progressBar } = this.props
+    // A single-file progressive download (non-blob) can have transient states
+    // where currentTime is not yet finite. In those cases return zeros to avoid
+    // NaN propagation.
     const isSingleFileProgressiveDownload =
       audio.src.indexOf('blob:') !== 0 && typeof this.props.srcDuration === 'undefined'
 
@@ -92,6 +118,8 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     if (isFinite(currentTime)) {
       this.timeOnMouseMove = currentTime
       this.setState({ isDraggingProgress: true, currentTimePos })
+      // Attach global listeners so drag remains responsive even if the pointer
+      // leaves the progress bar element. Distinguish mouse vs touch for proper events.
       if (event.nativeEvent instanceof MouseEvent) {
         window.addEventListener('mousemove', this.handleWindowMouseOrTouchMove)
         window.addEventListener('mouseup', this.handleWindowMouseOrTouchUp)
@@ -127,6 +155,10 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     const { audio, onChangeCurrentTimeError, onSeek } = this.props
 
     if (onSeek) {
+      // When an async onSeek is provided, we don't update audio.currentTime here;
+      // instead we delegate timing to the callback so the integrator can control
+      // buffering / custom seek logic (e.g., remote media, HLS, etc.). While
+      // waiting, we suppress timeupdate-driven UI updates.
       this.setState({ isDraggingProgress: false, waitingForSeekCallback: true }, () => {
         onSeek(audio, newTime).then(
           () => this.setState({ waitingForSeekCallback: false }),
@@ -165,6 +197,8 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   handleAudioTimeUpdate = throttle((e: Event): void => {
     const { isDraggingProgress } = this.state
     const audio = e.target as HTMLAudioElement
+    // Avoid updating UI while user is dragging (we show the drag position instead)
+    // or while an async seek is pending (prevents jitter / race conditions).
     if (isDraggingProgress || this.state.waitingForSeekCallback === true) return
 
     const { currentTime } = audio
@@ -190,6 +224,8 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
     }
 
     clearTimeout(this.downloadProgressAnimationTimer)
+    // Setting animation flag makes subsequent render use CSS transition for a
+    // short burst, creating a smooth buffer-bar update effect.
     this.setState({ downloadProgressArr, hasDownloadProgressAnimation: true })
     this.downloadProgressAnimationTimer = setTimeout(() => {
       this.setState({ hasDownloadProgressAnimation: false })

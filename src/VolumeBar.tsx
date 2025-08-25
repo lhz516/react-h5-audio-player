@@ -29,6 +29,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
 
   volumeAnimationTimer = 0
 
+  // Keep track of the last non-muted volume so we can restore it when user toggles mute
   lastVolume = this.props.volume // To store the volume before clicking mute button
 
   state: VolumeControlsState = {
@@ -37,7 +38,9 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
     isDraggingVolume: false,
   }
 
-  // get volume info while dragging by indicator mouse or touch
+  // Calculate (prospective) volume based on the pointer position.
+  // This method is shared by mouse & touch flows so we pass the native event directly.
+  // It returns both the numeric volume (0~1) and a percentage string used for inline styles.
   getCurrentVolume = (event: TouchEvent | MouseEvent): VolumePosInfo => {
     const { audio } = this.props
     if (!this.volumeBar.current) {
@@ -87,6 +90,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
     audio.volume = currentVolume
     this.setState({ isDraggingVolume: true, currentVolumePos })
 
+    // Subscribe to move / up events on window so dragging continues even if pointer leaves the bar
     if (event.nativeEvent instanceof MouseEvent) {
       window.addEventListener('mousemove', this.handleWindowMouseOrTouchMove)
       window.addEventListener('mouseup', this.handleWindowMouseOrTouchUp)
@@ -102,7 +106,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
     }
     event.stopPropagation()
     const { audio } = this.props
-    // Prevent Chrome drag selection bug
+    // Prevent Chrome drag selection bug (text selection while dragging)
     const windowSelection: Selection | null = window.getSelection()
     if (windowSelection && windowSelection.type === 'Range') {
       windowSelection.empty()
@@ -132,16 +136,19 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
   handleAudioVolumeChange = (e: Event): void => {
     const { isDraggingVolume } = this.state
     const { volume } = e.target as HTMLAudioElement
+    // Fire mute change callback only when toggling between muted and unmuted state
     if ((this.lastVolume > 0 && volume === 0) || (this.lastVolume === 0 && volume > 0)) {
       this.props.onMuteChange()
     }
     this.lastVolume = volume
     if (isDraggingVolume) return
+    // When not dragging, we animate the indicator briefly to make programmatic changes smooth
     this.setState({
       hasVolumeAnimation: true,
       currentVolumePos: `${((volume / 1) * 100 || 0).toFixed(2)}%`,
     })
     clearTimeout(this.volumeAnimationTimer)
+    // Remove the animation flag shortly after so subsequent rapid updates don't queue transitions
     this.volumeAnimationTimer = setTimeout(() => {
       this.setState({ hasVolumeAnimation: false })
     }, 100)
@@ -152,12 +159,14 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
     if (audio && !this.hasAddedAudioEventListener) {
       this.audio = audio
       this.hasAddedAudioEventListener = true
+      // Attach a single native listener once the <audio> element becomes available
       audio.addEventListener('volumechange', this.handleAudioVolumeChange)
     }
   }
 
   componentWillUnmount(): void {
     if (this.audio && this.hasAddedAudioEventListener) {
+      // Clean up native listener to avoid memory leaks when component unmounts
       this.audio.removeEventListener('volumechange', this.handleAudioVolumeChange)
     }
 
@@ -186,6 +195,7 @@ class VolumeControls extends Component<VolumeControlsProps, VolumeControlsState>
         <div className="rhap_volume-bar">
           <div
             className="rhap_volume-indicator"
+            // We only animate when hasVolumeAnimation is true (usually non-drag volume changes)
             style={{ left: currentVolumePos, transitionDuration: hasVolumeAnimation ? '.1s' : '0s' }}
           />
           {showFilledVolume && <div className="rhap_volume-filled" style={{ width: currentVolumePos }} />}
