@@ -1,11 +1,11 @@
 import React from 'react'
-import { render, fireEvent, act, screen, waitFor } from '@testing-library/react'
-import { vi, describe, it, expect, beforeEach } from 'vitest'
+import { render, fireEvent, screen } from '@testing-library/react'
+import { vi, describe, expect } from 'vitest'
 import H5AudioPlayer, { RHAP_UI } from './index'
 
 // Mock Icon component from iconify
 vi.mock('@iconify/react', () => ({
-  Icon: ({ icon }) => <span data-testid={`icon-${icon}`}>{icon}</span>
+  Icon: ({ icon }) => <span data-testid={`icon-${icon}`}>{icon}</span>,
 }))
 
 describe('H5AudioPlayer', () => {
@@ -22,46 +22,27 @@ describe('H5AudioPlayer', () => {
         removeEventListener: vi.fn(),
         dispatchEvent: vi.fn(),
       }
-      
-      const mockProperties = {
-        currentTime: 0,
-        duration: 100,
-        volume: 1,
-        loop: false,
-        muted: false,
-        ended: false,
-        error: null,
-        src: '',
-        readyState: 4,
-        buffered: { length: 0, start: () => 0, end: () => 0 },
-        HAVE_NOTHING: 0,
-        HAVE_METADATA: 1,
-        HAVE_CURRENT_DATA: 2,
-        HAVE_FUTURE_DATA: 3,
-        HAVE_ENOUGH_DATA: 4,
-        ...options
-      }
-      
+
       // Only assign methods and writable properties
       Object.assign(audioElement, mockMethods)
-      
+
       // Mock read-only properties using defineProperty
       Object.defineProperty(audioElement, 'paused', {
-        value: options.paused !== undefined ? options.paused : true,
+        value: typeof options.paused !== 'undefined' ? options.paused : true,
         writable: true,
-        configurable: true
+        configurable: true,
       })
       Object.defineProperty(audioElement, 'currentTime', {
         value: options.currentTime || 0,
         writable: true,
-        configurable: true
+        configurable: true,
       })
       Object.defineProperty(audioElement, 'duration', {
         value: options.duration || 100,
         writable: true,
-        configurable: true
+        configurable: true,
       })
-      
+
       return audioElement
     }
     return null
@@ -89,7 +70,7 @@ describe('H5AudioPlayer', () => {
       const header = <div data-testid="header">Header Content</div>
       const footer = <div data-testid="footer">Footer Content</div>
       render(<H5AudioPlayer header={header} footer={footer} />)
-      
+
       expect(screen.getByTestId('header')).toBeInTheDocument()
       expect(screen.getByTestId('footer')).toBeInTheDocument()
     })
@@ -160,9 +141,7 @@ describe('H5AudioPlayer', () => {
 
     it('renders custom progress bar section', () => {
       const customProgressBarSection = [RHAP_UI.CURRENT_LEFT_TIME, RHAP_UI.PROGRESS_BAR]
-      const { container } = render(
-        <H5AudioPlayer customProgressBarSection={customProgressBarSection} />
-      )
+      const { container } = render(<H5AudioPlayer customProgressBarSection={customProgressBarSection} />)
       expect(container.querySelector('#rhap_current-left-time')).toBeInTheDocument()
       expect(container.querySelector('.rhap_progress-container')).toBeInTheDocument()
       expect(container.querySelector('.rhap_total-time')).not.toBeInTheDocument()
@@ -185,13 +164,7 @@ describe('H5AudioPlayer', () => {
     })
 
     it('renders skip controls when enabled', () => {
-      const { container } = render(
-        <H5AudioPlayer 
-          showSkipControls 
-          onClickPrevious={() => {}} 
-          onClickNext={() => {}} 
-        />
-      )
+      const { container } = render(<H5AudioPlayer showSkipControls onClickPrevious={() => {}} onClickNext={() => {}} />)
       const mainControls = container.querySelector('.rhap_main-controls')
       expect(mainControls).toBeInTheDocument()
     })
@@ -268,7 +241,7 @@ describe('H5AudioPlayer', () => {
     it('renders play button when audio is paused', () => {
       const { container } = render(<H5AudioPlayer />)
       setupAudioElement(container, { paused: true })
-      
+
       const playButton = container.querySelector('.rhap_play-pause-button')
       expect(playButton).toBeInTheDocument()
       expect(playButton).toHaveAttribute('aria-label', 'Play')
@@ -276,7 +249,7 @@ describe('H5AudioPlayer', () => {
 
     it('renders pause button when audio is playing', () => {
       const { container } = render(<H5AudioPlayer />)
-      
+
       // The component starts with Play button, we'll test that it exists
       const playButton = container.querySelector('.rhap_play-pause-button')
       expect(playButton).toBeInTheDocument()
@@ -286,7 +259,7 @@ describe('H5AudioPlayer', () => {
     it('handles play error callback', async () => {
       const onPlayError = vi.fn()
       const { container } = render(<H5AudioPlayer onPlayError={onPlayError} />)
-      
+
       // Test that the callback prop is passed and component renders
       expect(container.querySelector('.rhap_play-pause-button')).toBeInTheDocument()
       expect(onPlayError).toBeDefined()
@@ -309,7 +282,7 @@ describe('H5AudioPlayer', () => {
     it('supports keyboard navigation', () => {
       const { container } = render(<H5AudioPlayer />)
       const playerContainer = container.querySelector('.rhap_container')
-      
+
       expect(playerContainer).toHaveAttribute('tabindex', '0')
       expect(playerContainer).toHaveAttribute('role', 'group')
     })
@@ -317,7 +290,7 @@ describe('H5AudioPlayer', () => {
     it('can disable keyboard controls', () => {
       const { container } = render(<H5AudioPlayer hasDefaultKeyBindings={false} />)
       const playerContainer = container.querySelector('.rhap_container')
-      
+
       // This test just ensures the prop is passed and component renders
       expect(playerContainer).toBeInTheDocument()
     })
@@ -325,7 +298,7 @@ describe('H5AudioPlayer', () => {
     it('responds to keyboard events', () => {
       const { container } = render(<H5AudioPlayer />)
       const playerContainer = container.querySelector('.rhap_container')
-      
+
       // Test that keydown events can be fired without errors (avoiding volume controls)
       expect(() => {
         fireEvent.keyDown(playerContainer, { key: ' ' })
@@ -340,24 +313,22 @@ describe('H5AudioPlayer', () => {
   describe('Jump Controls', () => {
     it('supports custom jump steps configuration', () => {
       const progressJumpSteps = { backward: 10, forward: 15 }
-      const { container } = render(
-        <H5AudioPlayer progressJumpSteps={progressJumpSteps} />
-      )
-      
+      const { container } = render(<H5AudioPlayer progressJumpSteps={progressJumpSteps} />)
+
       // Just test that the component renders with custom jump steps
       expect(container.querySelector('.rhap_container')).toBeInTheDocument()
     })
 
     it('supports fallback jump step configuration', () => {
       const { container } = render(<H5AudioPlayer progressJumpStep={10} />)
-      
+
       // Just test that the component renders with fallback jump step
       expect(container.querySelector('.rhap_container')).toBeInTheDocument()
     })
 
     it('has default jump controls enabled', () => {
       const { container } = render(<H5AudioPlayer />)
-      
+
       // Check that jump control buttons are rendered
       expect(container.querySelector('.rhap_rewind-button')).toBeInTheDocument()
       expect(container.querySelector('.rhap_forward-button')).toBeInTheDocument()
@@ -365,17 +336,15 @@ describe('H5AudioPlayer', () => {
 
     it('can disable jump controls', () => {
       const { container } = render(<H5AudioPlayer showJumpControls={false} />)
-      
+
       // When jump controls are disabled, main controls still exist but without jump buttons
       expect(container.querySelector('.rhap_main-controls')).toBeInTheDocument()
     })
 
     it('handles error callbacks', () => {
       const onChangeCurrentTimeError = vi.fn()
-      const { container } = render(
-        <H5AudioPlayer onChangeCurrentTimeError={onChangeCurrentTimeError} />
-      )
-      
+      const { container } = render(<H5AudioPlayer onChangeCurrentTimeError={onChangeCurrentTimeError} />)
+
       // Test that the component renders with error handler
       expect(container.querySelector('.rhap_container')).toBeInTheDocument()
     })
@@ -414,24 +383,18 @@ describe('H5AudioPlayer', () => {
     it('supports skip controls with callbacks', () => {
       const onClickPrevious = vi.fn()
       const onClickNext = vi.fn()
-      
+
       const { container } = render(
-        <H5AudioPlayer 
-          showSkipControls 
-          onClickPrevious={onClickPrevious}
-          onClickNext={onClickNext}
-        />
+        <H5AudioPlayer showSkipControls onClickPrevious={onClickPrevious} onClickNext={onClickNext} />
       )
-      
+
       expect(container.querySelector('.rhap_main-controls')).toBeInTheDocument()
     })
 
     it('handles listen interval configuration', () => {
       const onListen = vi.fn()
-      const { container } = render(
-        <H5AudioPlayer onListen={onListen} listenInterval={100} />
-      )
-      
+      const { container } = render(<H5AudioPlayer onListen={onListen} listenInterval={100} />)
+
       expect(container.querySelector('.rhap_container')).toBeInTheDocument()
     })
   })
@@ -463,9 +426,9 @@ describe('H5AudioPlayer', () => {
     it('supports MSE onSeek callback', async () => {
       const onSeek = vi.fn().mockResolvedValue()
       const mseProps = { onSeek, srcDuration: 120 }
-      
+
       render(<H5AudioPlayer mse={mseProps} />)
-      
+
       // Test that the callback can be called
       await onSeek({}, 60)
       expect(onSeek).toHaveBeenCalledWith({}, 60)
@@ -476,7 +439,7 @@ describe('H5AudioPlayer', () => {
     it('supports autoPlayAfterSrcChange prop', () => {
       const { rerender } = render(<H5AudioPlayer src="test1.mp3" autoPlayAfterSrcChange />)
       rerender(<H5AudioPlayer src="test2.mp3" autoPlayAfterSrcChange />)
-      
+
       // Test that component can handle src changes
       expect(screen.queryByRole('group')).toBeInTheDocument()
     })
@@ -484,7 +447,7 @@ describe('H5AudioPlayer', () => {
     it('handles src changes without autoplay', () => {
       const { rerender } = render(<H5AudioPlayer src="test1.mp3" />)
       rerender(<H5AudioPlayer src="test2.mp3" />)
-      
+
       // Test that component can handle src changes
       expect(screen.queryByRole('group')).toBeInTheDocument()
     })
@@ -504,7 +467,7 @@ describe('H5AudioPlayer', () => {
     it('renders custom UI module', () => {
       const customModule = <div data-testid="custom-module">Custom Content</div>
       const customProgressBarSection = [customModule, RHAP_UI.PROGRESS_BAR]
-      
+
       render(<H5AudioPlayer customProgressBarSection={customProgressBarSection} />)
       expect(screen.getByTestId('custom-module')).toBeInTheDocument()
     })
@@ -512,7 +475,7 @@ describe('H5AudioPlayer', () => {
     it('renders custom controls section', () => {
       const customModule = <button data-testid="custom-button">Custom Button</button>
       const customControlsSection = [RHAP_UI.MAIN_CONTROLS, customModule]
-      
+
       render(<H5AudioPlayer customControlsSection={customControlsSection} />)
       expect(screen.getByTestId('custom-button')).toBeInTheDocument()
     })
@@ -520,7 +483,7 @@ describe('H5AudioPlayer', () => {
     it('renders custom additional controls', () => {
       const customModule = <span data-testid="custom-control">Custom Control</span>
       const customAdditionalControls = [RHAP_UI.LOOP, customModule]
-      
+
       render(<H5AudioPlayer customAdditionalControls={customAdditionalControls} />)
       expect(screen.getByTestId('custom-control')).toBeInTheDocument()
     })
@@ -528,7 +491,7 @@ describe('H5AudioPlayer', () => {
     it('renders custom volume controls', () => {
       const customModule = <div data-testid="custom-volume">Custom Volume</div>
       const customVolumeControls = [RHAP_UI.VOLUME, customModule]
-      
+
       render(<H5AudioPlayer customVolumeControls={customVolumeControls} />)
       expect(screen.getByTestId('custom-volume')).toBeInTheDocument()
     })
@@ -536,31 +499,23 @@ describe('H5AudioPlayer', () => {
 
   describe('Time Display', () => {
     it('displays default current time when no audio', () => {
-      const { container } = render(
-        <H5AudioPlayer defaultCurrentTime="--:--" />
-      )
+      const { container } = render(<H5AudioPlayer defaultCurrentTime="--:--" />)
       expect(container.querySelector('#rhap_current-time').textContent).toBe('--:--')
     })
 
     it('displays default duration when no audio', () => {
-      const { container } = render(
-        <H5AudioPlayer defaultDuration="--:--" />
-      )
+      const { container } = render(<H5AudioPlayer defaultDuration="--:--" />)
       expect(container.querySelector('.rhap_total-time').textContent).toBe('--:--')
     })
 
     it('displays left time correctly', () => {
       const customProgressBarSection = [RHAP_UI.CURRENT_LEFT_TIME]
-      const { container } = render(
-        <H5AudioPlayer customProgressBarSection={customProgressBarSection} />
-      )
+      const { container } = render(<H5AudioPlayer customProgressBarSection={customProgressBarSection} />)
       expect(container.querySelector('#rhap_current-left-time')).toBeInTheDocument()
     })
 
     it('uses custom time format', () => {
-      const { container } = render(
-        <H5AudioPlayer timeFormat="hh:mm:ss" />
-      )
+      const { container } = render(<H5AudioPlayer timeFormat="hh:mm:ss" />)
       // The time format would be handled by CurrentTime and Duration components
       expect(container.querySelector('.rhap_total-time')).toBeInTheDocument()
     })
@@ -602,11 +557,11 @@ describe('H5AudioPlayer', () => {
     it('applies play status classes', () => {
       const { container } = render(<H5AudioPlayer />)
       const playerContainer = container.querySelector('.rhap_container')
-      
+
       // Should have either playing or paused class
       expect(
         playerContainer.classList.contains('rhap_play-status--playing') ||
-        playerContainer.classList.contains('rhap_play-status--paused')
+          playerContainer.classList.contains('rhap_play-status--paused')
       ).toBe(true)
     })
   })
@@ -615,7 +570,7 @@ describe('H5AudioPlayer', () => {
     it('handles play error callback', async () => {
       const onPlayError = vi.fn()
       const { container } = render(<H5AudioPlayer onPlayError={onPlayError} />)
-      
+
       // Test that the callback prop is passed and component renders
       expect(container.querySelector('.rhap_play-pause-button')).toBeInTheDocument()
       expect(onPlayError).toBeDefined()
@@ -624,7 +579,7 @@ describe('H5AudioPlayer', () => {
     it('handles invalid UI module gracefully', () => {
       const invalidModule = null
       const customProgressBarSection = [RHAP_UI.CURRENT_TIME, invalidModule, RHAP_UI.PROGRESS_BAR]
-      
+
       expect(() => {
         render(<H5AudioPlayer customProgressBarSection={customProgressBarSection} />)
       }).not.toThrow()
@@ -633,13 +588,13 @@ describe('H5AudioPlayer', () => {
     it('supports error handling props', () => {
       const onError = vi.fn()
       const { container } = render(<H5AudioPlayer onError={onError} />)
-      
+
       expect(container.querySelector('.rhap_container')).toBeInTheDocument()
     })
 
     it('supports volume jump step configuration', () => {
       const { container } = render(<H5AudioPlayer volumeJumpStep={0.5} />)
-      
+
       expect(container.querySelector('.rhap_container')).toBeInTheDocument()
     })
   })
@@ -648,7 +603,7 @@ describe('H5AudioPlayer', () => {
     it('has proper ARIA attributes', () => {
       const { container } = render(<H5AudioPlayer />)
       const playerContainer = container.querySelector('.rhap_container')
-      
+
       expect(playerContainer).toHaveAttribute('role', 'group')
       expect(playerContainer).toHaveAttribute('aria-label', 'Audio player')
       expect(playerContainer).toHaveAttribute('tabindex', '0')
@@ -657,7 +612,7 @@ describe('H5AudioPlayer', () => {
     it('progress bar has proper ARIA attributes', () => {
       const { container } = render(<H5AudioPlayer />)
       const progressBar = container.querySelector('.rhap_progress-container')
-      
+
       expect(progressBar).toHaveAttribute('role', 'progressbar')
       expect(progressBar).toHaveAttribute('aria-label', 'Audio progress control')
       expect(progressBar).toHaveAttribute('aria-valuemin', '0')
@@ -668,7 +623,7 @@ describe('H5AudioPlayer', () => {
     it('volume bar has proper ARIA attributes', () => {
       const { container } = render(<H5AudioPlayer />)
       const volumeBar = container.querySelector('.rhap_volume-bar-area')
-      
+
       expect(volumeBar).toHaveAttribute('role', 'progressbar')
       expect(volumeBar).toHaveAttribute('aria-label', 'Volume control')
       expect(volumeBar).toHaveAttribute('tabindex', '0')

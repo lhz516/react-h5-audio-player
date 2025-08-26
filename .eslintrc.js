@@ -5,6 +5,7 @@ module.exports = {
     es6: true,
     browser: true,
     node: true,
+    jest: true,
   },
   extends: [
     'eslint:recommended',
@@ -55,10 +56,11 @@ module.exports = {
         functions: 'only-multiline',
       },
     ],
+    'react/prop-types': 0,
     'func-call-spacing': 2,
     'eol-last': 2,
     'no-empty': [2, { allowEmptyCatch: true }],
-    'no-undefined': 2,
+    'no-undefined': 0,
     'no-use-before-define': 0, // ts lint will take care of it
     'no-multi-assign': 2,
     'no-useless-concat': 2,
@@ -119,7 +121,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['src/*.test.js', './webpack.config.js'],
+      files: ['src/*.test.js'],
       rules: {
         '@typescript-eslint/ban-ts-ignore': 0,
         '@typescript-eslint/no-empty-function': 0,

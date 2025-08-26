@@ -3,6 +3,7 @@ lib/
 es/
 coverage/
 .vscode/
+debug-storybook.log
 
 # yarn
 .yarn/

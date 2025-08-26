@@ -1,13 +1,12 @@
 import React from 'react'
 import { render, fireEvent, act } from '@testing-library/react'
-import { vi, describe, it, expect, beforeEach } from 'vitest'
-import ProgressBarDefault, { ProgressBar as RawProgressBar } from './ProgressBar'
+import { vi, describe, expect, beforeEach } from 'vitest'
+import { ProgressBar as RawProgressBar } from './ProgressBar'
 
 // Helper to create a mock HTMLAudioElement with configurable duration & currentTime
 function createMockAudio({ duration = 120, currentTime = 0 } = {}) {
   const listeners = {}
   const bufferedRanges = []
-  let audio
   const obj = {
     duration,
     currentTime,
@@ -23,7 +22,7 @@ function createMockAudio({ duration = 120, currentTime = 0 } = {}) {
       listeners[evt] = (listeners[evt] || []).filter((fn) => fn !== cb)
     }),
     dispatch(evt) {
-      ;(listeners[evt] || []).forEach((cb) => cb({ target: audio }))
+      ;(listeners[evt] || []).forEach((cb) => cb({ target: obj }))
     },
     load: vi.fn(),
     buffered: {
@@ -37,7 +36,6 @@ function createMockAudio({ duration = 120, currentTime = 0 } = {}) {
       bufferedRanges.push([start, end])
     },
   }
-  audio = obj
   return obj
 }
 
@@ -124,13 +122,19 @@ describe('ProgressBar component', () => {
 
     // Update currentTime again but within throttle window -> still 25
     props.audio.currentTime = 60
-    act(() => { props.audio.dispatch('timeupdate') })
+    act(() => {
+      props.audio.dispatch('timeupdate')
+    })
 
     expect(progress).toHaveAttribute('aria-valuenow', '25')
 
     // Advance past throttle interval, next dispatch should update
-    act(() => { vi.advanceTimersByTime(201) })
-    act(() => { props.audio.dispatch('timeupdate') })
+    act(() => {
+      vi.advanceTimersByTime(201)
+    })
+    act(() => {
+      props.audio.dispatch('timeupdate')
+    })
     expect(progress).toHaveAttribute('aria-valuenow', '50')
   })
 
@@ -141,9 +145,15 @@ describe('ProgressBar component', () => {
     mockProgressBarRect(progress, { width: 400, left: 100 })
 
     // mousedown at 100px inside bar (left edge) -> 0%
-  act(() => { fireEvent.mouseDown(progress, { clientX: 100 }) })
-  act(() => { captured.mousemove.forEach((fn) => fn(new MouseEvent('mousemove', { clientX: 300 }))) })
-  act(() => { captured.mouseup.forEach((fn) => fn(new MouseEvent('mouseup', { clientX: 300 }))) })
+    act(() => {
+      fireEvent.mouseDown(progress, { clientX: 100 })
+    })
+    act(() => {
+      captured.mousemove.forEach((fn) => fn(new MouseEvent('mousemove', { clientX: 300 })))
+    })
+    act(() => {
+      captured.mouseup.forEach((fn) => fn(new MouseEvent('mouseup', { clientX: 300 })))
+    })
 
     expect(props.audio.currentTime).toBeCloseTo(60) // 50% of 120 duration
     const indicator = container.querySelector('.rhap_progress-indicator')
@@ -156,9 +166,22 @@ describe('ProgressBar component', () => {
     const progress = getByRole('progressbar')
     mockProgressBarRect(progress, { width: 200, left: 0 })
 
-  act(() => { fireEvent.touchStart(progress, { touches: [{ clientX: 0 }] }) })
-  act(() => { captured.touchmove.forEach((fn) => fn({ touches: [{ clientX: 150 }], stopPropagation() {}, preventDefault() {} })) })
-  act(() => { captured.touchend.forEach((fn) => fn({ changedTouches: [{ clientX: 150 }], touches: [{ clientX: 150 }], stopPropagation() {}, preventDefault() {} })) })
+    act(() => {
+      fireEvent.touchStart(progress, { touches: [{ clientX: 0 }] })
+    })
+    act(() => {
+      captured.touchmove.forEach((fn) => fn({ touches: [{ clientX: 150 }], stopPropagation() {}, preventDefault() {} }))
+    })
+    act(() => {
+      captured.touchend.forEach((fn) =>
+        fn({
+          changedTouches: [{ clientX: 150 }],
+          touches: [{ clientX: 150 }],
+          stopPropagation() {},
+          preventDefault() {},
+        })
+      )
+    })
 
     expect(props.audio.currentTime).toBeCloseTo(90) // 75% of 120
   })
@@ -171,16 +194,24 @@ describe('ProgressBar component', () => {
     const progress = getByRole('progressbar')
     mockProgressBarRect(progress, { width: 100, left: 0 })
 
-  act(() => { fireEvent.mouseDown(progress, { clientX: 0 }) })
-  act(() => { captured.mousemove.forEach((fn) => fn(new MouseEvent('mousemove', { clientX: 50 }))) })
-  act(() => { captured.mouseup.forEach((fn) => fn(new MouseEvent('mouseup', { clientX: 50 }))) })
+    act(() => {
+      fireEvent.mouseDown(progress, { clientX: 0 })
+    })
+    act(() => {
+      captured.mousemove.forEach((fn) => fn(new MouseEvent('mousemove', { clientX: 50 })))
+    })
+    act(() => {
+      captured.mouseup.forEach((fn) => fn(new MouseEvent('mouseup', { clientX: 50 })))
+    })
 
     // audio.currentTime should still be 0 because async handler responsible
     expect(props.audio.currentTime).toBe(0)
     expect(onSeek).toHaveBeenCalledTimes(1)
     expect(onSeek.mock.calls[0][1]).toBeCloseTo(60)
     // Resolve async tasks
-  await act(async () => { await onSeekPromise })
+    await act(async () => {
+      await onSeekPromise
+    })
   })
 
   test('progress (buffered) bars rendered and animation flag toggles', () => {
@@ -190,7 +221,10 @@ describe('ProgressBar component', () => {
     const { container } = renderWithRef(props)
 
     // Trigger progress event to populate buffer segments
-  act(() => { props.audio.dispatch('progress'); vi.advanceTimersByTime(210) })
+    act(() => {
+      props.audio.dispatch('progress')
+      vi.advanceTimersByTime(210)
+    })
 
     const bufferEls = container.querySelectorAll('.rhap_download-progress')
     expect(bufferEls.length).toBe(2)
@@ -222,9 +256,15 @@ describe('ProgressBar component', () => {
     const progress = getByRole('progressbar')
     mockProgressBarRect(progress, { width: 100, left: 0 })
 
-  act(() => { fireEvent.mouseDown(progress, { clientX: 0 }) })
-  act(() => { captured.mousemove.forEach((fn) => fn(new MouseEvent('mousemove', { clientX: 100 }))) })
-  act(() => { captured.mouseup.forEach((fn) => fn(new MouseEvent('mouseup', { clientX: 100 }))) })
+    act(() => {
+      fireEvent.mouseDown(progress, { clientX: 0 })
+    })
+    act(() => {
+      captured.mousemove.forEach((fn) => fn(new MouseEvent('mousemove', { clientX: 100 })))
+    })
+    act(() => {
+      captured.mouseup.forEach((fn) => fn(new MouseEvent('mouseup', { clientX: 100 })))
+    })
 
     expect(props.audio.currentTime).toBeCloseTo(60) // full overridden duration
   })
@@ -235,9 +275,15 @@ describe('ProgressBar component', () => {
     const progress = getByRole('progressbar')
     mockProgressBarRect(progress, { width: 100, left: 0 })
 
-  act(() => { fireEvent.mouseDown(progress, { clientX: 0 }) })
-  act(() => { captured.mousemove.forEach((fn) => fn(new MouseEvent('mousemove', { clientX: 150 }))) })
-  act(() => { captured.mouseup.forEach((fn) => fn(new MouseEvent('mouseup', { clientX: 150 }))) })
+    act(() => {
+      fireEvent.mouseDown(progress, { clientX: 0 })
+    })
+    act(() => {
+      captured.mousemove.forEach((fn) => fn(new MouseEvent('mousemove', { clientX: 150 })))
+    })
+    act(() => {
+      captured.mouseup.forEach((fn) => fn(new MouseEvent('mouseup', { clientX: 150 })))
+    })
 
     expect(props.audio.currentTime).toBeCloseTo(120)
   })
@@ -248,11 +294,16 @@ describe('ProgressBar component', () => {
     const progress = getByRole('progressbar')
     mockProgressBarRect(progress, { width: 100, left: 50 })
 
-  act(() => { fireEvent.mouseDown(progress, { clientX: 0 }) })
-  act(() => { captured.mousemove.forEach((fn) => fn(new MouseEvent('mousemove', { clientX: -20 }))) })
-  act(() => { captured.mouseup.forEach((fn) => fn(new MouseEvent('mouseup', { clientX: -20 }))) })
+    act(() => {
+      fireEvent.mouseDown(progress, { clientX: 0 })
+    })
+    act(() => {
+      captured.mousemove.forEach((fn) => fn(new MouseEvent('mousemove', { clientX: -20 })))
+    })
+    act(() => {
+      captured.mouseup.forEach((fn) => fn(new MouseEvent('mouseup', { clientX: -20 })))
+    })
 
     expect(props.audio.currentTime).toBeCloseTo(0)
   })
 })
-
