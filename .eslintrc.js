@@ -109,6 +109,13 @@ module.exports = {
     '@typescript-eslint/ban-ts-comment': 0,
     '@typescript-eslint/no-misused-promises': 0,
     '@typescript-eslint/no-unsafe-member-access': 0,
+    '@typescript-eslint/no-unused-expressions': [
+      'error',
+      {
+        allowShortCircuit: true,
+        allowTernary: true,
+      },
+    ],
   },
   overrides: [
     {
