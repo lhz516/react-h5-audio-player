@@ -29,10 +29,6 @@ const config: StorybookConfig = {
       '.js': 'jsx',
     };
 
-    config.css = config.css || {};
-    config.css.preprocessorOptions = config.css.preprocessorOptions || {};
-    config.css.preprocessorOptions.scss = {};
-
     return config;
   },
 };
