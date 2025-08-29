@@ -1,4 +1,4 @@
-import React, { PureComponent, ReactNode } from 'react'
+import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import { TIME_FORMAT } from './constants'
 import { getDisplayTimeBySeconds } from './utils'
 
@@ -9,76 +9,58 @@ interface CurrentTimeProps {
   timeFormat: TIME_FORMAT
 }
 
-interface CurrentTimeState {
-  currentTime: ReactNode
-}
+const CurrentTime = ({ audio, defaultCurrentTime, isLeftTime, timeFormat }: CurrentTimeProps): React.ReactNode => {
+  const [currentTime, setCurrentTime] = useState<ReactNode>(defaultCurrentTime)
+  const hasAddedListenersRef = useRef(false)
+  const latestParamsRef = useRef({ isLeftTime, timeFormat, defaultCurrentTime })
+  latestParamsRef.current = { isLeftTime, timeFormat, defaultCurrentTime }
 
-class CurrentTime extends PureComponent<CurrentTimeProps, CurrentTimeState> {
-  audio?: HTMLAudioElement
-
-  hasAddedAudioEventListener = false
-
-  constructor(props: CurrentTimeProps) {
-    super(props)
-    const { audio, defaultCurrentTime, isLeftTime, timeFormat } = props
-    let currentTime = defaultCurrentTime
-    if (audio) {
-      currentTime = getDisplayTimeBySeconds(
-        isLeftTime ? audio.duration - audio.currentTime : audio.currentTime,
-        audio.duration,
-        timeFormat
-      )
+  // Effect: attach listeners once per audio element
+  useEffect(() => {
+    if (!audio) {
+      setCurrentTime(defaultCurrentTime)
+      return
     }
-    this.state = {
-      currentTime,
-    }
-  }
-
-  state: CurrentTimeState = {
-    currentTime: this.props.defaultCurrentTime,
-  }
-
-  handleAudioCurrentTimeChange = (e: Event): void => {
-    const audio = e.target as HTMLAudioElement
-    const { isLeftTime, timeFormat, defaultCurrentTime } = this.props
-    this.setState({
-      currentTime:
+    const update = () => {
+      const { isLeftTime, timeFormat, defaultCurrentTime } = latestParamsRef.current
+      setCurrentTime(
         getDisplayTimeBySeconds(
           isLeftTime ? audio.duration - audio.currentTime : audio.currentTime,
           audio.duration,
           timeFormat
-        ) || defaultCurrentTime,
-    })
-  }
-
-  addAudioEventListeners = (): void => {
-    const { audio } = this.props
-    if (audio && !this.hasAddedAudioEventListener) {
-      this.audio = audio
-      this.hasAddedAudioEventListener = true
-      audio.addEventListener('timeupdate', this.handleAudioCurrentTimeChange)
-      audio.addEventListener('loadedmetadata', this.handleAudioCurrentTimeChange)
+        ) || defaultCurrentTime
+      )
     }
-  }
-
-  componentDidMount(): void {
-    this.addAudioEventListeners()
-  }
-
-  componentDidUpdate(): void {
-    this.addAudioEventListeners()
-  }
-
-  componentWillUnmount(): void {
-    if (this.audio && this.hasAddedAudioEventListener) {
-      this.audio.removeEventListener('timeupdate', this.handleAudioCurrentTimeChange)
-      this.audio.removeEventListener('loadedmetadata', this.handleAudioCurrentTimeChange)
+    if (!hasAddedListenersRef.current) {
+      hasAddedListenersRef.current = true
+      audio.addEventListener('timeupdate', update)
+      audio.addEventListener('loadedmetadata', update)
     }
-  }
+    // Sync immediately
+    update()
+    return () => {
+      // Clean up only when audio element itself changes/unmounts
+      if (hasAddedListenersRef.current) {
+        audio.removeEventListener('timeupdate', update)
+        audio.removeEventListener('loadedmetadata', update)
+        hasAddedListenersRef.current = false
+      }
+    }
+  }, [audio, defaultCurrentTime])
 
-  render(): React.ReactNode {
-    return this.state.currentTime
-  }
+  // Effect: recompute display when formatting-related props change without re-adding listeners
+  useEffect(() => {
+    if (!audio) return
+    setCurrentTime(
+      getDisplayTimeBySeconds(
+        isLeftTime ? audio.duration - audio.currentTime : audio.currentTime,
+        audio.duration,
+        timeFormat
+      ) || defaultCurrentTime
+    )
+  }, [isLeftTime, timeFormat, defaultCurrentTime, audio])
+
+  return currentTime
 }
 
 export default CurrentTime
