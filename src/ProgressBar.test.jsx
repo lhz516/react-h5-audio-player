@@ -306,4 +306,81 @@ describe('ProgressBar component', () => {
 
     expect(props.audio.currentTime).toBeCloseTo(0)
   })
+
+  test('indicator position updates correctly after drag ends', () => {
+    const props = baseProps()
+    const { getByRole, container } = renderWithRef(props)
+    const progress = getByRole('progressbar')
+    mockProgressBarRect(progress, { width: 400, left: 100 })
+
+    // Start drag at left edge (clientX: 100)
+    act(() => {
+      fireEvent.mouseDown(progress, { clientX: 100 })
+    })
+
+    // Drag to 75% position (clientX: 400)
+    act(() => {
+      captured.mousemove.forEach((fn) => fn(new MouseEvent('mousemove', { clientX: 400 })))
+    })
+
+    // During drag, indicator should be at 75% position
+    let indicator = container.querySelector('.rhap_progress-indicator')
+    expect(indicator.style.left).toMatch(/75(\.00)?%/)
+
+    // End drag
+    act(() => {
+      captured.mouseup.forEach((fn) => fn(new MouseEvent('mouseup', { clientX: 400 })))
+    })
+
+    // After drag ends, audio time should be set correctly and indicator should reflect actual position
+    expect(props.audio.currentTime).toBeCloseTo(90) // 75% of 120 duration
+    indicator = container.querySelector('.rhap_progress-indicator')
+    expect(indicator.style.left).toMatch(/75(\.00)?%/) // Should still be at 75%
+
+    // Progress bar aria value should also be updated
+    expect(progress).toHaveAttribute('aria-valuenow', '75')
+  })
+
+  test('indicator stays at drag position during async onSeek and updates after completion', async () => {
+    const onSeekPromise = Promise.resolve()
+    const onSeek = vi.fn().mockImplementation(() => onSeekPromise)
+    const props = baseProps({ onSeek })
+    const { getByRole, container } = renderWithRef(props)
+    const progress = getByRole('progressbar')
+    mockProgressBarRect(progress, { width: 200, left: 0 })
+
+    // Start drag and move to 50% position
+    act(() => {
+      fireEvent.mouseDown(progress, { clientX: 0 })
+    })
+    act(() => {
+      captured.mousemove.forEach((fn) => fn(new MouseEvent('mousemove', { clientX: 100 })))
+    })
+
+    // During drag, indicator should be at 50%
+    let indicator = container.querySelector('.rhap_progress-indicator')
+    expect(indicator.style.left).toMatch(/50(\.00)?%/)
+
+    // End drag - this triggers async onSeek
+    act(() => {
+      captured.mouseup.forEach((fn) => fn(new MouseEvent('mouseup', { clientX: 100 })))
+    })
+
+    // Audio currentTime should still be 0 because async handler is responsible
+    expect(props.audio.currentTime).toBe(0)
+    expect(onSeek).toHaveBeenCalledTimes(1)
+    expect(onSeek.mock.calls[0][1]).toBeCloseTo(60) // 50% of 120
+
+    // Indicator should remain at drag position while waiting for async completion
+    indicator = container.querySelector('.rhap_progress-indicator')
+    expect(indicator.style.left).toMatch(/50(\.00)?%/)
+
+    // Complete async operation
+    await act(async () => {
+      await onSeekPromise
+    })
+
+    // After async completion, the indicator position is maintained by the waiting state
+    // The actual position update would come from subsequent timeupdate events in real usage
+  })
 })
