@@ -17,6 +17,104 @@ export const getMainLayoutClassName = (layout: MAIN_LAYOUT): string => {
   }
 }
 
+/**
+ * Calculate the new time after a jump operation
+ * @param currentTime - Current time in seconds
+ * @param duration - Total duration in seconds
+ * @param jumpTime - Jump time in milliseconds (can be negative for backward jumps)
+ * @returns New time in seconds, clamped between 0 and duration
+ */
+export const calculateJumpTime = (currentTime: number, duration: number, jumpTime: number): number => {
+  if (!isFinite(duration) || !isFinite(currentTime)) {
+    return currentTime
+  }
+
+  const newTime = currentTime + jumpTime / 1000
+  if (newTime < 0) {
+    return 0
+  } else if (newTime > duration) {
+    return duration
+  }
+  return newTime
+}
+
+/**
+ * Calculate the new volume after a jump operation
+ * @param currentVolume - Current volume (0-1)
+ * @param jumpVolume - Volume jump amount (can be negative)
+ * @returns New volume clamped between 0 and 1
+ */
+export const calculateJumpVolume = (currentVolume: number, jumpVolume: number): number => {
+  const newVolume = currentVolume + jumpVolume
+  if (newVolume < 0) {
+    return 0
+  } else if (newVolume > 1) {
+    return 1
+  }
+  return newVolume
+}
+
+/**
+ * Get CSS class names for player state
+ * @param isLooping - Whether the player is in loop mode
+ * @param isPlaying - Whether the player is currently playing
+ * @param customClassName - Additional custom class name
+ * @returns Combined CSS class names
+ */
+export const getPlayerStateClassName = (
+  isLooping: boolean,
+  isPlaying: boolean,
+  customClassName: string = ''
+): string => {
+  const loopClass = isLooping ? 'rhap_loop--on' : 'rhap_loop--off'
+  const playingClass = isPlaying ? 'rhap_play-status--playing' : 'rhap_play-status--paused'
+  const trimmedCustom = customClassName.trim()
+  return `rhap_container ${loopClass} ${playingClass}${trimmedCustom ? ` ${trimmedCustom}` : ''}`.trim()
+}
+
+/**
+ * Check if audio is ready for time manipulation
+ * @param readyState - HTMLAudioElement readyState value
+ * @returns True if audio is ready for time operations
+ */
+export const isAudioReadyForTimeManipulation = (readyState: number): boolean => {
+  // readyState constants: HAVE_NOTHING = 0, HAVE_METADATA = 1, HAVE_CURRENT_DATA = 2, HAVE_FUTURE_DATA = 3, HAVE_ENOUGH_DATA = 4
+  return readyState > 1 // Greater than HAVE_METADATA
+}
+
+/**
+ * Get the appropriate volume level category
+ * @param volume - Volume level (0-1)
+ * @returns Volume category string for UI purposes
+ */
+export const getVolumeLevel = (volume: number): 'mute' | 'low' | 'medium' | 'high' => {
+  if (volume === 0) return 'mute'
+  if (volume <= 0.33) return 'low'
+  if (volume <= 0.66) return 'medium'
+  return 'high'
+}
+
+/**
+ * Get the default volume icon name based on volume level
+ * @param volume - Volume level (0-1)
+ * @returns Iconify icon name for the volume level
+ */
+export const getVolumeIconName = (volume: number): string => {
+  const level = getVolumeLevel(volume)
+  switch (level) {
+    case 'mute':
+      return 'mdi:volume-mute'
+    case 'low':
+      return 'mdi:volume-low'
+    case 'medium':
+      return 'mdi:volume-medium'
+    case 'high':
+      return 'mdi:volume-high'
+    default:
+      return 'mdi:volume-high'
+  }
+}
+
 export const getPosX = (event: TouchEvent | MouseEvent): number => {
   if (event instanceof MouseEvent) {
     return event.clientX

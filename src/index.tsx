@@ -14,7 +14,16 @@ import CurrentTime from './CurrentTime'
 import Duration from './Duration'
 import VolumeBar from './VolumeBar'
 import { RHAP_UI, MAIN_LAYOUT, AUDIO_PRELOAD_ATTRIBUTE, TIME_FORMAT } from './constants'
-import { throttle, getMainLayoutClassName, getDisplayTimeBySeconds } from './utils'
+import {
+  throttle,
+  getMainLayoutClassName,
+  getDisplayTimeBySeconds,
+  calculateJumpTime,
+  calculateJumpVolume,
+  getPlayerStateClassName,
+  isAudioReadyForTimeManipulation,
+  getVolumeIconName,
+} from './utils'
 
 type CustomUIModule = RHAP_UI | ReactElement
 type CustomUIModules = Array<CustomUIModule>
@@ -276,34 +285,19 @@ class H5AudioPlayer extends Component<PlayerProps> {
   setJumpTime = (time: number): void => {
     const audio = this.audio.current
     const { duration, currentTime: prevTime } = audio
-    if (
-      audio.readyState === audio.HAVE_NOTHING ||
-      audio.readyState === audio.HAVE_METADATA ||
-      !isFinite(duration) ||
-      !isFinite(prevTime)
-    ) {
+    if (!isAudioReadyForTimeManipulation(audio.readyState) || !isFinite(duration) || !isFinite(prevTime)) {
       try {
         audio.load()
       } catch (err) {
         return this.props.onChangeCurrentTimeError && this.props.onChangeCurrentTimeError(err as Error)
       }
     }
-    let currentTime = prevTime + time / 1000
-    if (currentTime < 0) {
-      audio.currentTime = 0
-      currentTime = 0
-    } else if (currentTime > duration) {
-      audio.currentTime = duration
-      currentTime = duration
-    } else {
-      audio.currentTime = currentTime
-    }
+    const newTime = calculateJumpTime(prevTime, duration, time)
+    audio.currentTime = newTime
   }
 
   setJumpVolume = (volume: number): void => {
-    let newVolume = this.audio.current.volume + volume
-    if (newVolume < 0) newVolume = 0
-    else if (newVolume > 1) newVolume = 1
+    const newVolume = calculateJumpVolume(this.audio.current.volume, volume)
     this.audio.current.volume = newVolume
   }
 
@@ -514,10 +508,10 @@ class H5AudioPlayer extends Component<PlayerProps> {
         const { volume = muted ? 0 : volumeProp } = this.audio.current || {}
 
         let volumeIcon: ReactNode
-        if (volume) {
-          volumeIcon = customIcons.volume ? customIcons.volume : <Icon icon="mdi:volume-high" />
+        if (volume > 0) {
+          volumeIcon = customIcons.volume ? customIcons.volume : <Icon icon={getVolumeIconName(volume)} />
         } else {
-          volumeIcon = customIcons.volume ? customIcons.volumeMute : <Icon icon="mdi:volume-mute" />
+          volumeIcon = customIcons.volumeMute ? customIcons.volumeMute : <Icon icon="mdi:volume-mute" />
         }
         return (
           <div key={key} className="rhap_volume-container">
@@ -693,8 +687,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
       i18nAriaLabels = H5AudioPlayer.defaultI18nAriaLabels,
     } = this.props
     const loop = this.audio.current ? this.audio.current.loop : loopProp
-    const loopClass = loop ? 'rhap_loop--on' : 'rhap_loop--off'
-    const isPlayingClass = this.isPlaying() ? 'rhap_play-status--playing' : 'rhap_play-status--paused'
+    const playerClassName = getPlayerStateClassName(loop, this.isPlaying(), className)
 
     return (
       /* We want the container to catch bubbled events */
@@ -704,7 +697,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
         /* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */
         tabIndex={0}
         aria-label={i18nAriaLabels.player}
-        className={`rhap_container ${loopClass} ${isPlayingClass} ${className}`}
+        className={playerClassName}
         onKeyDown={this.handleKeyDown}
         ref={this.container}
         style={style}
