@@ -2,12 +2,12 @@ import {
   SAMPLE_MP3_URL,
   SAMPLE_MP3_URL_B,
   SAMPLE_MP3_URL_C,
-  SAMPLE_URL_A_OGG,
-  SAMPLE_URL_A_MP3,
-  SAMPLE_URL_A_FLAC,
-  SAMPLE_URL_B_OGG,
-  SAMPLE_URL_B_MP3,
-  SAMPLE_URL_B_FLAC,
+  BRAHMS_OGG_URL,
+  BRAHMS_MP3_URL,
+  BRAHMS_FLAC_URL,
+  MOZART_OGG_URL,
+  MOZART_MP3_URL,
+  MOZART_FLAC_URL,
 } from './utils.js'
 import PlayList from "./playlist.tsx";
 import React from "react";
@@ -20,19 +20,19 @@ const mp3Playlist = [
 
 const multiSourcePlaylist = [
   {
-    src: SAMPLE_URL_A_OGG,
+    src: BRAHMS_OGG_URL,
     type: 'audio/ogg',
     additionalSrcs: [
-      { src: SAMPLE_URL_A_MP3, type: 'audio/mpeg' },
-      { src: SAMPLE_URL_A_FLAC, type: 'audio/flac' },
+      { src: BRAHMS_MP3_URL, type: 'audio/mpeg' },
+      { src: BRAHMS_FLAC_URL, type: 'audio/flac' },
     ]
   },
   {
-    src: SAMPLE_URL_B_OGG,
+    src: MOZART_OGG_URL,
     type: 'audio/ogg',
     additionalSrcs: [
-      { src: SAMPLE_URL_B_MP3, type: 'audio/mpeg' },
-      { src: SAMPLE_URL_B_FLAC,type: 'audio/flac' },
+      { src: MOZART_MP3_URL, type: 'audio/mpeg' },
+      { src: MOZART_FLAC_URL, type: 'audio/flac' },
     ]
   }  
 ]
