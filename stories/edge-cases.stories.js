@@ -49,5 +49,5 @@ export const ChildSourceElements = {
     </AudioPlayer>  
   ),
 
-  name: "Child <source> elements",
+  name: "Source elements",
 };

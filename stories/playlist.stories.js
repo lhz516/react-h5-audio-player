@@ -12,29 +12,23 @@ import {
 import PlayList from "./playlist.tsx";
 import React from "react";
 
-const mp3Playlist = [
-  { src: SAMPLE_MP3_URL, type: 'audio/mpeg' },
-  { src: SAMPLE_MP3_URL_B, type: 'audio/mpeg' },
-  { src: SAMPLE_MP3_URL_C, type: 'audio/mpeg'},
+const singleSourcePlaylist = [
+  SAMPLE_MP3_URL,
+  SAMPLE_MP3_URL_B,
+  SAMPLE_MP3_URL_C,
 ]
 
 const multiSourcePlaylist = [
-  {
-    src: BRAHMS_OGG_URL,
-    type: 'audio/ogg',
-    additionalSrcs: [
+  [
+      { src: BRAHMS_OGG_URL, type: 'audio/ogg' },
       { src: BRAHMS_MP3_URL, type: 'audio/mpeg' },
       { src: BRAHMS_FLAC_URL, type: 'audio/flac' },
-    ]
-  },
-  {
-    src: MOZART_OGG_URL,
-    type: 'audio/ogg',
-    additionalSrcs: [
-      { src: MOZART_MP3_URL, type: 'audio/mpeg' },
-      { src: MOZART_FLAC_URL, type: 'audio/flac' },
-    ]
-  }  
+  ],
+  [
+    { src: MOZART_OGG_URL, type: 'audio/ogg' },
+    { src: MOZART_MP3_URL, type: 'audio/mpeg' },
+    { src: MOZART_FLAC_URL, type: 'audio/flac' },
+  ]
 ]
 
 export default {
@@ -43,11 +37,11 @@ export default {
 };
 
 export const Playlist = {
-  render: () => <PlayList playlist={mp3Playlist} />,
+  render: () => <PlayList playlist={singleSourcePlaylist} />,
   name: "Playlist",
 };
 
 export const PlaylistWithSourceElements = {
-  render: () => <PlayList playlist={multiSourcePlaylist} useSourceElements={true} />,
+  render: () => <PlayList playlist={multiSourcePlaylist} />,
   name: "Playlist with <source> elements",
 };

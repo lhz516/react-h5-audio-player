@@ -3,6 +3,7 @@ lib/
 es/
 coverage/
 .vscode/
+.DS_Store
 
 # yarn
 .yarn/

@@ -7,6 +7,7 @@ import React, {
   CSSProperties,
   ReactElement,
   Key,
+  Children,
 } from 'react'
 import { Icon } from '@iconify/react'
 import ProgressBar from './ProgressBar'
@@ -35,11 +36,6 @@ interface PlayerProps {
    * Whether to play audio after src prop is changed
    */
   autoPlayAfterSrcChange?: boolean
-  /**
-   * Whether to load the audio after changing the src. This is necessary when
-   * using child `<source>` elements
-   */
-  autoLoadAfterSrcChange?: boolean
   /**
    * custom classNames
    */
@@ -95,11 +91,6 @@ interface PlayerProps {
    * HTML5 Audio tag src property
    */
   src?: string
-  /**
-   * A unique key for the current audio source when not using the `src` prop,
-   * i.e., when using child <source> elements
-   */
-  srcKey?: string
   defaultCurrentTime?: ReactNode
   defaultDuration?: ReactNode
   volume?: number
@@ -673,13 +664,26 @@ class H5AudioPlayer extends Component<PlayerProps> {
   }
 
   componentDidUpdate(prevProps: PlayerProps): void {
-    const { src, srcKey, autoPlayAfterSrcChange, autoLoadAfterSrcChange = true } = this.props
+    const { src, autoPlayAfterSrcChange, children } = this.props
 
-    if (prevProps.src !== src || prevProps.srcKey !== srcKey) {
-      if (autoLoadAfterSrcChange && this.audio.current) {
-        this.audio.current.load()
-      }
+    let isAudioSrcChanged = false
 
+    if (prevProps.src !== src) {
+      isAudioSrcChanged = true
+    } else if (children && Children.count(children) > 0) {
+      const prevSrcs: string[] = []
+      Children.toArray(prevProps.children).forEach((c) => {
+        if (isValidElement(c) && c.type === 'source') {
+          prevSrcs.push(c.key)
+        }
+      })
+
+      isAudioSrcChanged = Children.toArray(children).some(
+        (c) => isValidElement(c) && c.type === 'source' && !prevSrcs.includes(c.key)
+      )
+    }
+
+    if (isAudioSrcChanged) {
       if (autoPlayAfterSrcChange) {
         this.playAudioPromise()
       } else {

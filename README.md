@@ -103,8 +103,7 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | showFilledProgress       | boolean           | true    | Show filled (already played) area on progress bar |
 | showFilledVolume         | boolean           | false   | Show filled volume area on volume bar |
 | hasDefaultKeyBindings    | boolean           | true    | Whether has default keyboard shortcuts |
-| autoPlayAfterSrcChange   | boolean           | true    | Play audio after `src` or `srcKey` is changed, no matter `autoPlay` is `true` or `false` |
-| autoLoadAfterSrcChange   | boolean           | true    | Load audio after `src` or `srcKey` is changed, necessary if using child `<source>` elements |
+| autoPlayAfterSrcChange   | boolean           | true    | Play audio after `src` is changed, no matter `autoPlay` is `true` or `false` |
 | volumeJumpStep           | number            | 0.1     | Indicates the volume jump step when pressing up/down arrow key, volume range is `0` to `1` |
 | progressJumpStep         | number            | 5000    | **Deprecated, use progressJumpSteps.** Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key |
 | progressJumpSteps        | object            | `{ backward: 5000, forward: 5000 }`    | Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key|
@@ -126,12 +125,6 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | mse.srcDuration          | number           | -        | The complete duration of the MSE audio chunks together (this is a key of the _mse_ prop) |
 | mse.onSeek               | Function (Event) | -        | The callback to be used when seek happens (this is a key of the _mse_ prop) |
 | mse.srcDuration          | number           | -        | The callback to be used when encrypted audio is detected and needs to be decrypted (this is a key of the _mse_ prop) |
-
-### Other Props
-
-| Props                    | Type              | Default | Note |
-| ------------------------ | ----------------- | ------- | ---- |
-| srcKey                   | string            | ''      | A unique key for the current audio source when not using the `src` prop, i.e., when using child `<source>` elements with a playlist. |
 
 ### Event Props
 
@@ -218,14 +211,29 @@ You can use child `<source>` elements instead of the `src` prop, for example [to
 </AudioPlayer>
 ```
 
-When using `<source>` elements in playlists, use the `srcKey` prop to specify a unique identifier for the current src.
+When using `<source>` elements in playlists, be sure to set a unique `key`
+property for each element.
 
 ```jsx
-<AudioPlayer srcKey="https://example.com/audio.wav">
-  <source src="https://example.com/audio.aac" type="audio/aac" />
-  <source src="https://example.com/audio.ogg" type="audio/ogg" />
-  <source src="https://example.com/audio.mp3" type="audio/mpeg" />
-  <source src="https://example.com/audio.wav" type="audio/wav" />
+const srcs = [
+  [
+    { src: 'https://example.com/audio1.aac', type: 'audio/aac' },
+    { src: 'https://example.com/audio1.mp3', type: 'audio/mpeg' },
+    { src: 'https://example.com/audio1.wav', type: 'audio/wav' },
+  ],
+  [
+    { src: 'https://example.com/audio2.aac', type: 'audio/aac' },
+    { src: 'https://example.com/audio2.mp3', type: 'audio/mpeg' },
+    { src: 'https://example.com/audio2.wav', type: 'audio/wav' },
+  ],
+]
+
+const currentIndex = 0
+
+<AudioPlayer>
+  {srcs[currentIndex].map(({ src, type }) => (
+    <source key={src} src={src} type={type} />
+  ))}
 </AudioPlayer>
 ```
 

@@ -1,20 +1,13 @@
 import React, { Component } from 'react'
 import AudioPlayer from '../src/index'
 
-interface Track {
+interface AudioSource {
   src: string
-  type: string
-  additionalSrcs?: [
-    {
-      src: string
-      type: string
-    }
-  ]
+  type?: string
 }
 
 interface PlaylistProps {
-  playlist: Track[]
-  useSourceElements?: boolean
+  playlist: string[] | AudioSource[][]
 }
 
 interface PlayListState {
@@ -22,8 +15,7 @@ interface PlayListState {
 }
 
 class PlayList extends Component<PlaylistProps, PlayListState> {
-  playlist: Track[]
-  useSourceElements?: boolean = false
+  playlist: string[] | AudioSource[][]
 
   state = {
     currentMusicIndex: 0,
@@ -32,7 +24,6 @@ class PlayList extends Component<PlaylistProps, PlayListState> {
   constructor(props: PlaylistProps) {
     super(props)
     this.playlist = props.playlist
-    this.useSourceElements = props.useSourceElements
   }
 
   handleClickPrevious = (): void => {
@@ -50,36 +41,24 @@ class PlayList extends Component<PlaylistProps, PlayListState> {
   render(): React.ReactNode {
     const { currentMusicIndex } = this.state
     const track = this.playlist[currentMusicIndex]
+    const singleStringSrc = typeof track === 'string' ? track : null
+    const multipleSrcs: AudioSource[] | null = Array.isArray(track) ? track : null
 
     return (
       <div>
         <p>currentMusicIndex: {currentMusicIndex}</p>
 
-        {this.useSourceElements ? (
-          <AudioPlayer
-            srcKey={track.src}
-            onEnded={this.handleClickNext}
-            autoPlayAfterSrcChange={true}
-            showSkipControls={true}
-            showJumpControls={false}
-            onClickPrevious={this.handleClickPrevious}
-            onClickNext={this.handleClickNext}
-          >
-            <source src={track.src} type={track.type} />
-            {track.additionalSrcs &&
-              track.additionalSrcs.map(({ src, type }) => <source key={src} src={src} type={type} />)}
-          </AudioPlayer>
-        ) : (
-          <AudioPlayer
-            src={track.src}
-            onEnded={this.handleClickNext}
-            autoPlayAfterSrcChange={true}
-            showSkipControls={true}
-            showJumpControls={false}
-            onClickPrevious={this.handleClickPrevious}
-            onClickNext={this.handleClickNext}
-          />
-        )}
+        <AudioPlayer
+          onEnded={this.handleClickNext}
+          autoPlayAfterSrcChange={true}
+          showSkipControls={true}
+          showJumpControls={false}
+          onClickPrevious={this.handleClickPrevious}
+          onClickNext={this.handleClickNext}
+          {...(singleStringSrc ? { src: singleStringSrc } : {})}
+        >
+          {multipleSrcs && multipleSrcs.map(({ src, type }) => <source key={src} src={src} type={type} />)}
+        </AudioPlayer>
       </div>
     )
   }
