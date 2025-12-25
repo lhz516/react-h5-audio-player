@@ -82,39 +82,6 @@ export const isAudioReadyForTimeManipulation = (readyState: number): boolean => 
   return readyState > 1 // Greater than HAVE_METADATA
 }
 
-/**
- * Get the appropriate volume level category
- * @param volume - Volume level (0-1)
- * @returns Volume category string for UI purposes
- */
-export const getVolumeLevel = (volume: number): 'mute' | 'low' | 'medium' | 'high' => {
-  if (volume === 0) return 'mute'
-  if (volume <= 0.33) return 'low'
-  if (volume <= 0.66) return 'medium'
-  return 'high'
-}
-
-/**
- * Get the default volume icon name based on volume level
- * @param volume - Volume level (0-1)
- * @returns Iconify icon name for the volume level
- */
-export const getVolumeIconName = (volume: number): string => {
-  const level = getVolumeLevel(volume)
-  switch (level) {
-    case 'mute':
-      return 'mdi:volume-mute'
-    case 'low':
-      return 'mdi:volume-low'
-    case 'medium':
-      return 'mdi:volume-medium'
-    case 'high':
-      return 'mdi:volume-high'
-    default:
-      return 'mdi:volume-high'
-  }
-}
-
 export const getPosX = (event: TouchEvent | MouseEvent): number => {
   if (event instanceof MouseEvent) {
     return event.clientX

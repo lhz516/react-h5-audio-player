@@ -5,8 +5,6 @@ import {
   calculateJumpVolume,
   getPlayerStateClassName,
   isAudioReadyForTimeManipulation,
-  getVolumeLevel,
-  getVolumeIconName,
 } from './utils'
 
 describe('Utils', () => {
@@ -134,31 +132,6 @@ describe('Utils', () => {
       expect(isAudioReadyForTimeManipulation(2)).toBe(true) // HAVE_CURRENT_DATA
       expect(isAudioReadyForTimeManipulation(3)).toBe(true) // HAVE_FUTURE_DATA
       expect(isAudioReadyForTimeManipulation(4)).toBe(true) // HAVE_ENOUGH_DATA
-    })
-  })
-
-  describe('getVolumeLevel', () => {
-    it('should return correct volume levels', () => {
-      expect(getVolumeLevel(0)).toBe('mute')
-      expect(getVolumeLevel(0.1)).toBe('low')
-      expect(getVolumeLevel(0.33)).toBe('low')
-      expect(getVolumeLevel(0.34)).toBe('medium')
-      expect(getVolumeLevel(0.5)).toBe('medium')
-      expect(getVolumeLevel(0.66)).toBe('medium')
-      expect(getVolumeLevel(0.67)).toBe('high')
-      expect(getVolumeLevel(1)).toBe('high')
-    })
-  })
-
-  describe('getVolumeIconName', () => {
-    it('should return correct icon names for different volume levels', () => {
-      expect(getVolumeIconName(0)).toBe('mdi:volume-mute')
-      expect(getVolumeIconName(0.1)).toBe('mdi:volume-low')
-      expect(getVolumeIconName(0.33)).toBe('mdi:volume-low')
-      expect(getVolumeIconName(0.5)).toBe('mdi:volume-medium')
-      expect(getVolumeIconName(0.66)).toBe('mdi:volume-medium')
-      expect(getVolumeIconName(0.8)).toBe('mdi:volume-high')
-      expect(getVolumeIconName(1)).toBe('mdi:volume-high')
     })
   })
 })

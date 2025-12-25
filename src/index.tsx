@@ -24,7 +24,6 @@ import {
   calculateJumpVolume,
   getPlayerStateClassName,
   isAudioReadyForTimeManipulation,
-  getVolumeIconName,
 } from './utils'
 
 type CustomUIModule = RHAP_UI | ReactElement
@@ -320,6 +319,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
       } else {
         audioEl.volume = lastVolume.current
       }
+      forceUpdate({})
     }
   }, [])
 
@@ -563,7 +563,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
 
           let volumeIcon: ReactNode
           if (volume > 0) {
-            volumeIcon = customIcons.volume ? customIcons.volume : <Icon icon={getVolumeIconName(volume)} />
+            volumeIcon = customIcons.volume ? customIcons.volume : <Icon icon="mdi:volume-high" />
           } else {
             volumeIcon = customIcons.volumeMute ? customIcons.volumeMute : <Icon icon="mdi:volume-mute" />
           }
@@ -627,7 +627,9 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
 
   const renderUIModules = useCallback(
     (modules: CustomUIModules): Array<ReactElement> => {
-      return modules.map((comp, i) => renderUIModule(comp, i))
+      return modules
+        .map((comp, index) => renderUIModule(comp, comp?.toString() || `module-${index}`))
+        .filter((el) => el !== null)
     },
     [renderUIModule]
   )
@@ -722,6 +724,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
     }, listenInterval)
 
     const handleVolumeChange = (e: Event) => {
+      forceUpdate({})
       onVolumeChange && onVolumeChange(e)
     }
 
