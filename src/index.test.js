@@ -357,6 +357,20 @@ describe('H5AudioPlayer', () => {
 
       expect(audioElement.volume).toBe(0.5)
     })
+
+    it('skips volume updates when current volume is non-finite', () => {
+      const { container } = render(<H5AudioPlayer />)
+      const audioElement = setupAudioElement(container)
+      Object.defineProperty(audioElement, 'volume', { value: NaN, writable: true, configurable: true })
+      const playerContainer = container.querySelector('.rhap_container')
+
+      expect(() => {
+        fireEvent.keyDown(playerContainer, { key: 'ArrowUp', preventDefault: jest.fn() })
+        fireEvent.keyDown(playerContainer, { key: 'ArrowDown', preventDefault: jest.fn() })
+      }).not.toThrow()
+
+      expect(Number.isNaN(audioElement.volume)).toBe(true)
+    })
   })
 
   describe('Jump Controls', () => {
