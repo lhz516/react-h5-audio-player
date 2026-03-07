@@ -308,6 +308,54 @@ describe('H5AudioPlayer', () => {
         fireEvent.keyDown(playerContainer, { key: 'm' })
       }).not.toThrow()
     })
+
+    it('uses default volume jump step even when volume controls are hidden', () => {
+      const { container } = render(<H5AudioPlayer customVolumeControls={[]} />)
+      const audioElement = setupAudioElement(container)
+      Object.defineProperty(audioElement, 'volume', {
+        value: 0.5,
+        writable: true,
+        configurable: true,
+      })
+      const playerContainer = container.querySelector('.rhap_container')
+
+      fireEvent.keyDown(playerContainer, { key: 'ArrowUp', preventDefault: vi.fn() })
+
+      expect(audioElement.volume).toBeCloseTo(0.6)
+    })
+
+    it('ignores non-finite volume jump values', () => {
+      const { container } = render(<H5AudioPlayer volumeJumpStep={NaN} />)
+      const audioElement = setupAudioElement(container)
+      Object.defineProperty(audioElement, 'volume', {
+        value: 0.5,
+        writable: true,
+        configurable: true,
+      })
+      const playerContainer = container.querySelector('.rhap_container')
+
+      fireEvent.keyDown(playerContainer, { key: 'ArrowDown', preventDefault: vi.fn() })
+
+      expect(audioElement.volume).toBe(0.5)
+    })
+
+    it('skips volume updates when current volume is non-finite', () => {
+      const { container } = render(<H5AudioPlayer />)
+      const audioElement = setupAudioElement(container)
+      Object.defineProperty(audioElement, 'volume', {
+        value: NaN,
+        writable: true,
+        configurable: true,
+      })
+      const playerContainer = container.querySelector('.rhap_container')
+
+      expect(() => {
+        fireEvent.keyDown(playerContainer, { key: 'ArrowUp', preventDefault: vi.fn() })
+        fireEvent.keyDown(playerContainer, { key: 'ArrowDown', preventDefault: vi.fn() })
+      }).not.toThrow()
+
+      expect(Number.isNaN(audioElement.volume)).toBe(true)
+    })
   })
 
   describe('Jump Controls', () => {
@@ -637,6 +685,10 @@ describe('H5AudioPlayer', () => {
         forward: 5000,
       })
       expect(H5AudioPlayer.defaultProps.progressJumpStep).toBe(5000)
+    })
+
+    it('has correct default volume jump step', () => {
+      expect(H5AudioPlayer.defaultProps.volumeJumpStep).toBe(0.1)
     })
 
     it('has correct default i18n labels', () => {

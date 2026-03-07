@@ -173,6 +173,7 @@ const defaultProps: Partial<PlayerProps> = {
     forward: 5_000,
   },
   progressJumpStep: 5_000,
+  volumeJumpStep: 0.1,
 }
 
 const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
@@ -214,7 +215,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
     hasDefaultKeyBindings = true,
     progressJumpSteps = defaultProps.progressJumpSteps,
     progressJumpStep = defaultProps.progressJumpStep,
-    volumeJumpStep,
+    volumeJumpStep = defaultProps.volumeJumpStep,
     listenInterval = 1000, // Default to 1000ms
     onAbort,
     onCanPlay,
@@ -363,10 +364,15 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
   }, [progressJumpSteps, progressJumpStep, setJumpTime])
 
   const setJumpVolume = useCallback((volume: number): void => {
-    if (audio.current) {
-      const newVolume = calculateJumpVolume(audio.current.volume, volume)
-      audio.current.volume = newVolume
+    const el = audio.current
+    const volumeStep = Number(volume)
+    const currentVolume = el?.volume
+
+    if (!el || !Number.isFinite(volumeStep) || !Number.isFinite(currentVolume)) {
+      return
     }
+
+    el.volume = calculateJumpVolume(currentVolume, volumeStep)
   }, [])
 
   const handleKeyDown = useCallback(
