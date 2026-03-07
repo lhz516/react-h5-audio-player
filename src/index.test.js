@@ -702,4 +702,22 @@ describe('H5AudioPlayer', () => {
       })
     })
   })
+
+  describe('Multiple Source Elements', () => {
+    it('renders child <source> elements', () => {
+      const srcAac = 'test-audio.aac'
+      const srcMp3 = 'test-audio.mp3'
+
+      const { container } = render(
+        <H5AudioPlayer>
+          <source src={srcAac} type="audio/aac" data-testid="aac" />
+          <source src={srcMp3} type="audio/mpeg" data-testid="mp3" />
+        </H5AudioPlayer>
+      )
+
+      expect(screen.getByTestId('aac')).toBeInTheDocument()
+      expect(screen.getByTestId('mp3')).toBeInTheDocument()
+      expect(container.querySelector('audio')).not.toHaveAttribute('src')
+    })
+  })
 })

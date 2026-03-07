@@ -82,13 +82,15 @@ class ProgressBar extends Component<ProgressBarProps, ProgressBarState> {
   // Get time info while dragging indicator by mouse or touch
   getCurrentProgress = (event: MouseEvent | TouchEvent): TimePosInfo => {
     const { audio, progressBar } = this.props
+    const audioSrc = audio.src || audio.currentSrc
+
     // A single-file progressive download (non-blob) can have transient states
     // where currentTime is not yet finite. In those cases return zeros to avoid
     // NaN propagation.
     const isSingleFileProgressiveDownload =
-      audio.src.indexOf('blob:') !== 0 && typeof this.props.srcDuration === 'undefined'
+      audioSrc.indexOf('blob:') !== 0 && typeof this.props.srcDuration === 'undefined'
 
-    if (isSingleFileProgressiveDownload && (!audio.src || !isFinite(audio.currentTime) || !progressBar.current)) {
+    if (isSingleFileProgressiveDownload && (!audioSrc || !isFinite(audio.currentTime) || !progressBar.current)) {
       return { currentTime: 0, currentTimePos: '0%' }
     }
 

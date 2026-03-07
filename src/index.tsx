@@ -7,6 +7,7 @@ import React, {
   CSSProperties,
   ReactElement,
   Key,
+  Children,
 } from 'react'
 import { Icon } from '@iconify/react'
 import ProgressBar from './ProgressBar'
@@ -183,7 +184,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
   togglePlay = (e: React.SyntheticEvent): void => {
     e.stopPropagation()
     const audio = this.audio.current
-    if ((audio.paused || audio.ended) && audio.src) {
+    if ((audio.paused || audio.ended) && (audio.src || audio.currentSrc)) {
       this.playAudioPromise()
     } else if (!audio.paused) {
       audio.pause()
@@ -663,8 +664,26 @@ class H5AudioPlayer extends Component<PlayerProps> {
   }
 
   componentDidUpdate(prevProps: PlayerProps): void {
-    const { src, autoPlayAfterSrcChange } = this.props
+    const { src, autoPlayAfterSrcChange, children } = this.props
+
+    let isAudioSrcChanged = false
+
     if (prevProps.src !== src) {
+      isAudioSrcChanged = true
+    } else if (children && Children.count(children) > 0) {
+      const prevSrcs: string[] = []
+      Children.toArray(prevProps.children).forEach((c) => {
+        if (isValidElement(c) && c.type === 'source') {
+          prevSrcs.push(c.key)
+        }
+      })
+
+      isAudioSrcChanged = Children.toArray(children).some(
+        (c) => isValidElement(c) && c.type === 'source' && !prevSrcs.includes(c.key)
+      )
+    }
+
+    if (isAudioSrcChanged) {
       if (autoPlayAfterSrcChange) {
         this.playAudioPromise()
       } else {

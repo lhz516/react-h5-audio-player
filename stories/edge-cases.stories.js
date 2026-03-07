@@ -1,5 +1,5 @@
 import { action } from "storybook/actions";
-import { SAMPLE_MP3_URL } from "./utils";
+import { BRAHMS_FLAC_URL, BRAHMS_MP3_URL } from "./utils";
 import AudioPlayer from "../src/index.tsx";
 import React from "react";
 
@@ -39,4 +39,15 @@ export const InvalidSrc = {
   ),
 
   name: "Invalid src",
+};
+
+export const ChildSourceElements = {
+  render: () => (
+    <AudioPlayer>
+      <source src={BRAHMS_FLAC_URL} type="audio/flac" />
+      <source src={BRAHMS_MP3_URL} type="audio/mpeg" />
+    </AudioPlayer>  
+  ),
+
+  name: "Source elements",
 };

@@ -198,6 +198,45 @@ Then you can access the audio element like this:
 
 You can use [Media Source Extensions](https://developer.mozilla.org/en-US/docs/Web/API/Media_Source_Extensions_API) and [Encrypted Media Extensions](https://developer.mozilla.org/en-US/docs/Web/API/Encrypted_Media_Extensions_API) with this player. You need to provide the complete duration, and also a onSeek and onEncrypted callbacks. The logic for feeding the audio buffer and providing the decryption keys (if using encryption) must be set in the consumer side. The player does not provide that logic. Check the [StoryBook example](https://github.com/lhz516/react-h5-audio-player/blob/master/stories/mse-eme-player.tsx) to understand better how to use.
 
+### Using `<source>` Elements
+
+You can use child `<source>` elements instead of the `src` prop, for example [to provide different file types or codecs based on browser support](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio#usage_notes).
+
+```jsx
+<AudioPlayer>
+  <source src="https://example.com/audio.aac" type="audio/aac" />
+  <source src="https://example.com/audio.ogg" type="audio/ogg" />
+  <source src="https://example.com/audio.mp3" type="audio/mpeg" />
+  <source src="https://example.com/audio.wav" type="audio/wav" />
+</AudioPlayer>
+```
+
+When using `<source>` elements in playlists, be sure to set a unique `key`
+property for each element.
+
+```jsx
+const srcs = [
+  [
+    { src: 'https://example.com/audio1.aac', type: 'audio/aac' },
+    { src: 'https://example.com/audio1.mp3', type: 'audio/mpeg' },
+    { src: 'https://example.com/audio1.wav', type: 'audio/wav' },
+  ],
+  [
+    { src: 'https://example.com/audio2.aac', type: 'audio/aac' },
+    { src: 'https://example.com/audio2.mp3', type: 'audio/mpeg' },
+    { src: 'https://example.com/audio2.wav', type: 'audio/wav' },
+  ],
+]
+
+const currentIndex = 0
+
+<AudioPlayer>
+  {srcs[currentIndex].map(({ src, type }) => (
+    <source key={src} src={src} type={type} />
+  ))}
+</AudioPlayer>
+```
+
 ## Release Notes
 
 https://github.com/lhz516/react-h5-audio-player/releases
