@@ -335,6 +335,28 @@ describe('H5AudioPlayer', () => {
         fireEvent.keyDown(playerContainer, { key: 'm' })
       }).not.toThrow()
     })
+
+    it('uses default volume jump step even when volume controls are hidden', () => {
+      const { container } = render(<H5AudioPlayer customVolumeControls={[]} />)
+      const audioElement = setupAudioElement(container)
+      audioElement.volume = 0.5
+      const playerContainer = container.querySelector('.rhap_container')
+
+      fireEvent.keyDown(playerContainer, { key: 'ArrowUp', preventDefault: jest.fn() })
+
+      expect(audioElement.volume).toBeCloseTo(0.6)
+    })
+
+    it('ignores non-finite volume jump values', () => {
+      const { container } = render(<H5AudioPlayer volumeJumpStep={NaN} />)
+      const audioElement = setupAudioElement(container)
+      audioElement.volume = 0.5
+      const playerContainer = container.querySelector('.rhap_container')
+
+      fireEvent.keyDown(playerContainer, { key: 'ArrowDown', preventDefault: jest.fn() })
+
+      expect(audioElement.volume).toBe(0.5)
+    })
   })
 
   describe('Jump Controls', () => {
@@ -682,6 +704,10 @@ describe('H5AudioPlayer', () => {
         forward: 5000,
       })
       expect(H5AudioPlayer.defaultProps.progressJumpStep).toBe(5000)
+    })
+
+    it('has correct default volume jump step', () => {
+      expect(H5AudioPlayer.defaultProps.volumeJumpStep).toBe(0.1)
     })
 
     it('has correct default i18n labels', () => {
