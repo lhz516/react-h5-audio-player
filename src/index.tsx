@@ -426,9 +426,9 @@ class H5AudioPlayer extends Component<PlayerProps> {
         const isPlaying = this.isPlaying()
         let actionIcon: ReactNode
         if (isPlaying) {
-          actionIcon = customIcons.pause ? customIcons.pause : <Icon icon="mdi:pause-circle" />
+          actionIcon = customIcons.pause ? customIcons.pause : <Icon icon="mdi:pause-circle" ssr={true} />
         } else {
-          actionIcon = customIcons.play ? customIcons.play : <Icon icon="mdi:play-circle" />
+          actionIcon = customIcons.play ? customIcons.play : <Icon icon="mdi:play-circle" ssr={true} />
         }
         return (
           <div key={key} className="rhap_main-controls">
@@ -439,7 +439,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
                 type="button"
                 onClick={onClickPrevious}
               >
-                {customIcons.previous ? customIcons.previous : <Icon icon="mdi:skip-previous" />}
+                {customIcons.previous ? customIcons.previous : <Icon icon="mdi:skip-previous" ssr={true} />}
               </button>
             )}
             {showJumpControls && (
@@ -449,7 +449,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
                 type="button"
                 onClick={this.handleClickRewind}
               >
-                {customIcons.rewind ? customIcons.rewind : <Icon icon="mdi:rewind" />}
+                {customIcons.rewind ? customIcons.rewind : <Icon icon="mdi:rewind" ssr={true} />}
               </button>
             )}
             <button
@@ -467,7 +467,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
                 type="button"
                 onClick={this.handleClickForward}
               >
-                {customIcons.forward ? customIcons.forward : <Icon icon="mdi:fast-forward" />}
+                {customIcons.forward ? customIcons.forward : <Icon icon="mdi:fast-forward" ssr={true} />}
               </button>
             )}
             {showSkipControls && (
@@ -477,7 +477,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
                 type="button"
                 onClick={onClickNext}
               >
-                {customIcons.next ? customIcons.next : <Icon icon="mdi:skip-next" />}
+                {customIcons.next ? customIcons.next : <Icon icon="mdi:skip-next" ssr={true} />}
               </button>
             )}
           </div>
@@ -494,9 +494,9 @@ class H5AudioPlayer extends Component<PlayerProps> {
 
         let loopIcon: ReactNode
         if (loop) {
-          loopIcon = customIcons.loop ? customIcons.loop : <Icon icon="mdi:repeat" />
+          loopIcon = customIcons.loop ? customIcons.loop : <Icon icon="mdi:repeat" ssr={true} />
         } else {
-          loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon="mdi:repeat-off" />
+          loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon="mdi:repeat-off" ssr={true} />
         }
         return (
           <button
@@ -515,9 +515,9 @@ class H5AudioPlayer extends Component<PlayerProps> {
 
         let volumeIcon: ReactNode
         if (volume) {
-          volumeIcon = customIcons.volume ? customIcons.volume : <Icon icon="mdi:volume-high" />
+          volumeIcon = customIcons.volume ? customIcons.volume : <Icon icon="mdi:volume-high" ssr={true} />
         } else {
-          volumeIcon = customIcons.volume ? customIcons.volumeMute : <Icon icon="mdi:volume-mute" />
+          volumeIcon = customIcons.volume ? customIcons.volumeMute : <Icon icon="mdi:volume-mute" ssr={true} />
         }
         return (
           <div key={key} className="rhap_volume-container">
