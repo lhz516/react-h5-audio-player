@@ -474,9 +474,9 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
           const isPlayingState = isPlaying()
           let actionIcon: ReactNode
           if (isPlayingState) {
-            actionIcon = customIcons.pause ? customIcons.pause : <Icon icon="mdi:pause-circle" />
+            actionIcon = customIcons.pause ? customIcons.pause : <Icon icon="mdi:pause-circle" ssr={true} />
           } else {
-            actionIcon = customIcons.play ? customIcons.play : <Icon icon="mdi:play-circle" />
+            actionIcon = customIcons.play ? customIcons.play : <Icon icon="mdi:play-circle" ssr={true} />
           }
           return (
             <div key={key} className="rhap_main-controls">
@@ -487,7 +487,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
                   type="button"
                   onClick={onClickPrevious}
                 >
-                  {customIcons.previous ? customIcons.previous : <Icon icon="mdi:skip-previous" />}
+                  {customIcons.previous ? customIcons.previous : <Icon icon="mdi:skip-previous" ssr={true} />}
                 </button>
               )}
               {showJumpControls && (
@@ -497,7 +497,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
                   type="button"
                   onClick={handleClickRewind}
                 >
-                  {customIcons.rewind ? customIcons.rewind : <Icon icon="mdi:rewind" />}
+                  {customIcons.rewind ? customIcons.rewind : <Icon icon="mdi:rewind" ssr={true} />}
                 </button>
               )}
               <button
@@ -515,7 +515,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
                   type="button"
                   onClick={handleClickForward}
                 >
-                  {customIcons.forward ? customIcons.forward : <Icon icon="mdi:fast-forward" />}
+                  {customIcons.forward ? customIcons.forward : <Icon icon="mdi:fast-forward" ssr={true} />}
                 </button>
               )}
               {showSkipControls && (
@@ -525,7 +525,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
                   type="button"
                   onClick={onClickNext}
                 >
-                  {customIcons.next ? customIcons.next : <Icon icon="mdi:skip-next" />}
+                  {customIcons.next ? customIcons.next : <Icon icon="mdi:skip-next" ssr={true} />}
                 </button>
               )}
             </div>
@@ -542,9 +542,9 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
 
           let loopIcon: ReactNode
           if (loop) {
-            loopIcon = customIcons.loop ? customIcons.loop : <Icon icon="mdi:repeat" />
+            loopIcon = customIcons.loop ? customIcons.loop : <Icon icon="mdi:repeat" ssr={true} />
           } else {
-            loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon="mdi:repeat-off" />
+            loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon icon="mdi:repeat-off" ssr={true} />
           }
           return (
             <button
@@ -563,9 +563,9 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
 
           let volumeIcon: ReactNode
           if (volume > 0) {
-            volumeIcon = customIcons.volume ? customIcons.volume : <Icon icon="mdi:volume-high" />
+            volumeIcon = customIcons.volume ? customIcons.volume : <Icon icon="mdi:volume-high" ssr={true} />
           } else {
-            volumeIcon = customIcons.volumeMute ? customIcons.volumeMute : <Icon icon="mdi:volume-mute" />
+            volumeIcon = customIcons.volumeMute ? customIcons.volumeMute : <Icon icon="mdi:volume-mute" ssr={true} />
           }
           return (
             <div key={key} className="rhap_volume-container">
