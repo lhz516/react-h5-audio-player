@@ -164,6 +164,7 @@ class H5AudioPlayer extends Component<PlayerProps> {
       forward: 5_000,
     },
     progressJumpStep: 5_000,
+    volumeJumpStep: 0.1,
   }
 
   audio = createRef<HTMLAudioElement>()
@@ -301,10 +302,18 @@ class H5AudioPlayer extends Component<PlayerProps> {
   }
 
   setJumpVolume = (volume: number): void => {
-    let newVolume = this.audio.current.volume + volume
+    const audio = this.audio.current
+    const volumeStep = Number(volume)
+    const currentVolume = audio?.volume
+
+    if (!audio || !Number.isFinite(volumeStep) || !Number.isFinite(currentVolume)) {
+      return
+    }
+
+    let newVolume = currentVolume + volumeStep
     if (newVolume < 0) newVolume = 0
     else if (newVolume > 1) newVolume = 1
-    this.audio.current.volume = newVolume
+    audio.volume = newVolume
   }
 
   handleKeyDown = (e: React.KeyboardEvent): void => {
