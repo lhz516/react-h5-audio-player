@@ -208,5 +208,4 @@ Issues and PR's are welcome.
 ## Credits
 
 - Inspired by [React Audio Player](https://github.com/justinmc/react-audio-player).
-- Icon wrapper [iconify](https://iconify.design/)
 - Icons [Material Design Icons](https://github.com/Templarian/MaterialDesign)

@@ -3,11 +3,6 @@ import { render, fireEvent, screen } from '@testing-library/react'
 import { vi, describe, expect } from 'vitest'
 import H5AudioPlayer, { RHAP_UI } from './index'
 
-// Mock Icon component from iconify
-vi.mock('@iconify/react', () => ({
-  Icon: ({ icon }) => <span data-testid={`icon-${icon}`}>{icon}</span>,
-}))
-
 describe('H5AudioPlayer', () => {
   // Helper function to setup the audio element after component renders
   const setupAudioElement = (container, options = {}) => {
