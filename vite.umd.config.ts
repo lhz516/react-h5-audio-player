@@ -22,6 +22,7 @@ export default defineConfig({
       },
     },
     outDir: 'lib',
+    emptyOutDir: false,
     minify: true,
     // Ensure we're building for browser compatibility similar to webpack config
     target: 'es2015',
