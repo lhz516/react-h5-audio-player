@@ -21,9 +21,3 @@ export const ForwardAndBackwardJumpStep = {
   name: 'Forward and backward jump step',
   height: 'auto',
 }
-
-export const DeprecatedJumpStep = {
-  render: () => <AudioPlayer progressJumpStep={10000} src={SAMPLE_MP3_URL} />,
-  name: 'Deprecated jump step',
-  height: 'auto',
-}

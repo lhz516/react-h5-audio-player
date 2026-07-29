@@ -31,7 +31,7 @@ Try it on CodePen: [Basic](https://codepen.io/lhz516/pen/dyGpmgP), [Playlist](ht
 
 Supported browsers: Chrome, Firefox, Safari, Edge
 
-## [Migrate from v2.x to v3](https://github.com/lhz516/react-h5-audio-player/releases/tag/v3.0.0)
+## [Migrate from v3.x to v4](https://github.com/lhz516/react-h5-audio-player/releases/tag/v4.0.0)
 
 ## Installation
 
@@ -103,7 +103,6 @@ The `controls` attribute defaults to `false` and should never be changed to `tru
 | hasDefaultKeyBindings    | boolean           | true    | Whether has default keyboard shortcuts |
 | autoPlayAfterSrcChange   | boolean           | true    | Play audio after `src` is changed, no matter `autoPlay` is `true` or `false` |
 | volumeJumpStep           | number            | 0.1     | Indicates the volume jump step when pressing up/down arrow key, volume range is `0` to `1` |
-| progressJumpStep         | number            | 5000    | **Deprecated, use progressJumpSteps.** Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key |
 | progressJumpSteps        | object            | `{ backward: 5000, forward: 5000 }`    | Indicates the progress jump step (ms) when clicking rewind/forward button or left/right arrow key|
 | progressUpdateInterval   | number            | 20      | Indicates the interval (ms) that the progress bar UI updates,  |
 | listenInterval           | number            | 1000    | Indicates the interval (ms) to call the `onListened` prop during playback |

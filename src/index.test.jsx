@@ -359,19 +359,16 @@ describe('H5AudioPlayer', () => {
   })
 
   describe('Jump Controls', () => {
-    it('supports custom jump steps configuration', () => {
-      const progressJumpSteps = { backward: 10, forward: 15 }
+    it('supports custom jump steps and defaults an omitted direction', () => {
+      const progressJumpSteps = { backward: 10000 }
       const { container } = render(<H5AudioPlayer progressJumpSteps={progressJumpSteps} />)
+      const audioElement = setupAudioElement(container, { currentTime: 50, duration: 100 })
 
-      // Just test that the component renders with custom jump steps
-      expect(container.querySelector('.rhap_container')).toBeInTheDocument()
-    })
+      fireEvent.click(container.querySelector('.rhap_rewind-button'))
+      expect(audioElement.currentTime).toBe(40)
 
-    it('supports fallback jump step configuration', () => {
-      const { container } = render(<H5AudioPlayer progressJumpStep={10} />)
-
-      // Just test that the component renders with fallback jump step
-      expect(container.querySelector('.rhap_container')).toBeInTheDocument()
+      fireEvent.click(container.querySelector('.rhap_forward-button'))
+      expect(audioElement.currentTime).toBe(45)
     })
 
     it('has default jump controls enabled', () => {
@@ -684,7 +681,6 @@ describe('H5AudioPlayer', () => {
         backward: 5000,
         forward: 5000,
       })
-      expect(H5AudioPlayer.defaultProps.progressJumpStep).toBe(5000)
     })
 
     it('has correct default volume jump step', () => {

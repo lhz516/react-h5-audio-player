@@ -53,7 +53,6 @@ interface PlayerProps {
    * The time interval to trigger onListen
    */
   listenInterval?: number
-  progressJumpStep?: number
   progressJumpSteps?: {
     backward?: number
     forward?: number
@@ -172,7 +171,6 @@ const defaultProps: Partial<PlayerProps> = {
     backward: 5_000,
     forward: 5_000,
   },
-  progressJumpStep: 5_000,
   volumeJumpStep: 0.1,
 }
 
@@ -214,7 +212,6 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
     autoPlayAfterSrcChange,
     hasDefaultKeyBindings = true,
     progressJumpSteps = defaultProps.progressJumpSteps,
-    progressJumpStep = defaultProps.progressJumpStep,
     volumeJumpStep = defaultProps.volumeJumpStep,
     listenInterval = 1000, // Default to 1000ms
     onAbort,
@@ -354,14 +351,14 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
   )
 
   const handleClickRewind = useCallback((): void => {
-    const jumpStep = progressJumpSteps!.backward || progressJumpStep!
+    const jumpStep = progressJumpSteps!.backward || defaultProps.progressJumpSteps!.backward!
     setJumpTime(-jumpStep)
-  }, [progressJumpSteps, progressJumpStep, setJumpTime])
+  }, [progressJumpSteps, setJumpTime])
 
   const handleClickForward = useCallback((): void => {
-    const jumpStep = progressJumpSteps!.forward || progressJumpStep!
+    const jumpStep = progressJumpSteps!.forward || defaultProps.progressJumpSteps!.forward!
     setJumpTime(jumpStep)
-  }, [progressJumpSteps, progressJumpStep, setJumpTime])
+  }, [progressJumpSteps, setJumpTime])
 
   const setJumpVolume = useCallback((volume: number): void => {
     const el = audio.current
