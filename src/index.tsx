@@ -150,7 +150,7 @@ interface I18nAriaLabels {
   volumeMute?: string
 }
 
-const defaultI18nAriaLabels: I18nAriaLabels = {
+const DEFAULT_I18N_ARIA_LABELS: I18nAriaLabels = {
   player: 'Audio player',
   progressControl: 'Audio progress control',
   volumeControl: 'Volume control',
@@ -166,13 +166,11 @@ const defaultI18nAriaLabels: I18nAriaLabels = {
   volumeMute: 'Unmute',
 }
 
-const defaultProps: Partial<PlayerProps> = {
-  progressJumpSteps: {
-    backward: 5_000,
-    forward: 5_000,
-  },
-  volumeJumpStep: 0.1,
+const DEFAULT_PROGRESS_JUMP_STEPS = {
+  backward: 5_000,
+  forward: 5_000,
 }
+const DEFAULT_VOLUME_JUMP_STEP = 0.1
 
 const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
   const {
@@ -190,7 +188,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
     customControlsSection = [RHAP_UI.ADDITIONAL_CONTROLS, RHAP_UI.MAIN_CONTROLS, RHAP_UI.VOLUME_CONTROLS],
     children,
     style,
-    i18nAriaLabels = defaultI18nAriaLabels,
+    i18nAriaLabels = DEFAULT_I18N_ARIA_LABELS,
     defaultCurrentTime = '--:--',
     progressUpdateInterval = 20,
     showDownloadProgress = true,
@@ -211,8 +209,8 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
     mse,
     autoPlayAfterSrcChange,
     hasDefaultKeyBindings = true,
-    progressJumpSteps = defaultProps.progressJumpSteps,
-    volumeJumpStep = defaultProps.volumeJumpStep,
+    progressJumpSteps = DEFAULT_PROGRESS_JUMP_STEPS,
+    volumeJumpStep = DEFAULT_VOLUME_JUMP_STEP,
     listenInterval = 1000, // Default to 1000ms
     onAbort,
     onCanPlay,
@@ -351,12 +349,12 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
   )
 
   const handleClickRewind = useCallback((): void => {
-    const jumpStep = progressJumpSteps!.backward || defaultProps.progressJumpSteps!.backward!
+    const jumpStep = progressJumpSteps.backward || DEFAULT_PROGRESS_JUMP_STEPS.backward
     setJumpTime(-jumpStep)
   }, [progressJumpSteps, setJumpTime])
 
   const handleClickForward = useCallback((): void => {
-    const jumpStep = progressJumpSteps!.forward || defaultProps.progressJumpSteps!.forward!
+    const jumpStep = progressJumpSteps.forward || DEFAULT_PROGRESS_JUMP_STEPS.forward
     setJumpTime(jumpStep)
   }, [progressJumpSteps, setJumpTime])
 
@@ -843,15 +841,5 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
   )
 }
 
-interface H5AudioPlayerComponent extends React.FC<PlayerProps> {
-  defaultProps: Partial<PlayerProps>
-  defaultI18nAriaLabels: I18nAriaLabels
-}
-
-// Add static properties for backward compatibility with tests
-const H5AudioPlayerWithStatics = H5AudioPlayer as H5AudioPlayerComponent
-H5AudioPlayerWithStatics.defaultProps = defaultProps
-H5AudioPlayerWithStatics.defaultI18nAriaLabels = defaultI18nAriaLabels
-
-export default H5AudioPlayerWithStatics
+export default H5AudioPlayer
 export { RHAP_UI, OnSeek }

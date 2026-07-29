@@ -669,35 +669,4 @@ describe('H5AudioPlayer', () => {
       expect(volumeBar).toHaveAttribute('tabindex', '0')
     })
   })
-
-  describe('Default Props', () => {
-    it('has correct default jump steps', () => {
-      expect(H5AudioPlayer.defaultProps.progressJumpSteps).toEqual({
-        backward: 5000,
-        forward: 5000,
-      })
-    })
-
-    it('has correct default volume jump step', () => {
-      expect(H5AudioPlayer.defaultProps.volumeJumpStep).toBe(0.1)
-    })
-
-    it('has correct default i18n labels', () => {
-      expect(H5AudioPlayer.defaultI18nAriaLabels).toEqual({
-        player: 'Audio player',
-        progressControl: 'Audio progress control',
-        volumeControl: 'Volume control',
-        play: 'Play',
-        pause: 'Pause',
-        rewind: 'Rewind',
-        forward: 'Forward',
-        previous: 'Previous',
-        next: 'Skip',
-        loop: 'Disable loop',
-        loopOff: 'Enable loop',
-        volume: 'Mute',
-        volumeMute: 'Unmute',
-      })
-    })
-  })
 })
