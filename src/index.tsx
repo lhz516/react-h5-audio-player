@@ -4,13 +4,14 @@ import React, {
   useRef,
   useEffect,
   useCallback,
+  useMemo,
   useState,
   ReactNode,
   CSSProperties,
   ReactElement,
   Key,
 } from 'react'
-import Icon from './icons'
+import Icon, { IconName } from './icons'
 import ProgressBar from './ProgressBar'
 import CurrentTime from './CurrentTime'
 import Duration from './Duration'
@@ -171,6 +172,28 @@ const DEFAULT_PROGRESS_JUMP_STEPS = {
   forward: 5_000,
 }
 const DEFAULT_VOLUME_JUMP_STEP = 0.1
+const DEFAULT_CUSTOM_ICONS: CustomIcons = {}
+const DEFAULT_PROGRESS_BAR_SECTION: CustomUIModules = [RHAP_UI.CURRENT_TIME, RHAP_UI.PROGRESS_BAR, RHAP_UI.DURATION]
+const DEFAULT_CONTROLS_SECTION: CustomUIModules = [
+  RHAP_UI.ADDITIONAL_CONTROLS,
+  RHAP_UI.MAIN_CONTROLS,
+  RHAP_UI.VOLUME_CONTROLS,
+]
+const DEFAULT_ADDITIONAL_CONTROLS: CustomUIModules = [RHAP_UI.LOOP]
+const DEFAULT_VOLUME_CONTROLS: CustomUIModules = [RHAP_UI.VOLUME]
+
+const DEFAULT_ICON_NAMES: Record<keyof CustomIcons, IconName> = {
+  play: 'play-circle',
+  pause: 'pause-circle',
+  rewind: 'rewind',
+  forward: 'fast-forward',
+  previous: 'skip-previous',
+  next: 'skip-next',
+  loop: 'repeat',
+  loopOff: 'repeat-off',
+  volume: 'volume-high',
+  volumeMute: 'volume-mute',
+}
 
 const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
   const {
@@ -184,55 +207,46 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
     header,
     footer,
     layout = 'stacked',
-    customProgressBarSection = [RHAP_UI.CURRENT_TIME, RHAP_UI.PROGRESS_BAR, RHAP_UI.DURATION],
-    customControlsSection = [RHAP_UI.ADDITIONAL_CONTROLS, RHAP_UI.MAIN_CONTROLS, RHAP_UI.VOLUME_CONTROLS],
+    customProgressBarSection = DEFAULT_PROGRESS_BAR_SECTION,
+    customControlsSection = DEFAULT_CONTROLS_SECTION,
     children,
     style,
-    i18nAriaLabels = DEFAULT_I18N_ARIA_LABELS,
+    i18nAriaLabels: i18nAriaLabelsProp,
     defaultCurrentTime = '--:--',
     progressUpdateInterval = 20,
     showDownloadProgress = true,
     showFilledProgress = true,
     showFilledVolume = false,
     defaultDuration = '--:--',
-    customIcons = {},
+    customIcons = DEFAULT_CUSTOM_ICONS,
     showSkipControls = false,
     onClickPrevious,
     onClickNext,
     onChangeCurrentTimeError,
     showJumpControls = true,
-    customAdditionalControls = [RHAP_UI.LOOP],
-    customVolumeControls = [RHAP_UI.VOLUME],
+    customAdditionalControls = DEFAULT_ADDITIONAL_CONTROLS,
+    customVolumeControls = DEFAULT_VOLUME_CONTROLS,
     muted = false,
     timeFormat = 'auto',
     volume: volumeProp = 1,
     mse,
     autoPlayAfterSrcChange,
     hasDefaultKeyBindings = true,
-    progressJumpSteps = DEFAULT_PROGRESS_JUMP_STEPS,
+    progressJumpSteps: progressJumpStepsProp,
     volumeJumpStep = DEFAULT_VOLUME_JUMP_STEP,
     listenInterval = 1000, // Default to 1000ms
-    onAbort,
-    onCanPlay,
-    onCanPlayThrough,
-    onEnded,
-    onPlaying,
-    onSeeking,
-    onSeeked,
-    onStalled,
-    onSuspend,
-    onLoadStart,
-    onLoadedMetaData,
-    onLoadedData,
-    onWaiting,
-    onEmptied,
-    onError,
-    onListen,
-    onVolumeChange,
-    onPause,
-    onPlay,
     onPlayError,
   } = props
+
+  // Both props are partial overrides, so they are merged key by key rather than replaced.
+  const i18nAriaLabels = useMemo(() => ({ ...DEFAULT_I18N_ARIA_LABELS, ...i18nAriaLabelsProp }), [i18nAriaLabelsProp])
+  const progressJumpSteps = useMemo(
+    () => ({
+      backward: progressJumpStepsProp?.backward ?? DEFAULT_PROGRESS_JUMP_STEPS.backward,
+      forward: progressJumpStepsProp?.forward ?? DEFAULT_PROGRESS_JUMP_STEPS.forward,
+    }),
+    [progressJumpStepsProp]
+  )
 
   const audio = useRef<HTMLAudioElement>(null)
   const progressBar = useRef<HTMLDivElement>(null)
@@ -240,6 +254,12 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
 
   const lastVolume = useRef<number>(volumeProp ?? 1)
   const [, forceUpdate] = useState({})
+
+  // Consumers routinely pass inline callbacks; reading them from a ref keeps the audio
+  // listeners (and the listenInterval throttle) attached instead of being torn down and
+  // recreated on every render.
+  const latestProps = useRef(props)
+  latestProps.current = props
 
   const playAudioPromise = useCallback((): void => {
     if (audio.current?.error) {
@@ -273,39 +293,6 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
     return !audioEl.paused && !audioEl.ended
   }, [])
 
-  const handlePlay = useCallback(
-    (e: Event): void => {
-      forceUpdate({})
-      onPlay && onPlay(e)
-    },
-    [onPlay]
-  )
-
-  const handlePause = useCallback(
-    (e: Event): void => {
-      if (!audio.current) return
-      forceUpdate({})
-      onPause && onPause(e)
-    },
-    [onPause]
-  )
-
-  const handleEnded = useCallback(
-    (e: Event): void => {
-      if (!audio.current) return
-      forceUpdate({})
-      onEnded && onEnded(e)
-    },
-    [onEnded]
-  )
-
-  const handleAbort = useCallback(
-    (e: Event): void => {
-      onAbort && onAbort(e)
-    },
-    [onAbort]
-  )
-
   const handleClickVolumeButton = useCallback((): void => {
     const audioEl = audio.current
     if (audioEl) {
@@ -317,10 +304,6 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
       }
       forceUpdate({})
     }
-  }, [])
-
-  const handleMuteChange = useCallback((): void => {
-    // Force re-render equivalent - React will re-render when state changes
   }, [])
 
   const handleClickLoopButton = useCallback((): void => {
@@ -349,13 +332,11 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
   )
 
   const handleClickRewind = useCallback((): void => {
-    const jumpStep = progressJumpSteps.backward || DEFAULT_PROGRESS_JUMP_STEPS.backward
-    setJumpTime(-jumpStep)
+    setJumpTime(-progressJumpSteps.backward)
   }, [progressJumpSteps, setJumpTime])
 
   const handleClickForward = useCallback((): void => {
-    const jumpStep = progressJumpSteps.forward || DEFAULT_PROGRESS_JUMP_STEPS.forward
-    setJumpTime(jumpStep)
+    setJumpTime(progressJumpSteps.forward)
   }, [progressJumpSteps, setJumpTime])
 
   const setJumpVolume = useCallback((volume: number): void => {
@@ -388,11 +369,11 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
             break
           case 'ArrowUp':
             e.preventDefault() // Prevent scrolling page by pressing arrow key
-            setJumpVolume(volumeJumpStep!)
+            setJumpVolume(volumeJumpStep)
             break
           case 'ArrowDown':
             e.preventDefault() // Prevent scrolling page by pressing arrow key
-            setJumpVolume(-volumeJumpStep!)
+            setJumpVolume(-volumeJumpStep)
             break
           case 'l':
             handleClickLoopButton()
@@ -413,6 +394,11 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
       handleClickLoopButton,
       handleClickVolumeButton,
     ]
+  )
+
+  const renderIcon = useCallback(
+    (name: keyof CustomIcons): ReactNode => customIcons[name] || <Icon name={DEFAULT_ICON_NAMES[name]} />,
+    [customIcons]
   )
 
   const renderUIModule = useCallback(
@@ -473,12 +459,6 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
           )
         case RHAP_UI.MAIN_CONTROLS: {
           const isPlayingState = isPlaying()
-          let actionIcon: ReactNode
-          if (isPlayingState) {
-            actionIcon = customIcons.pause ? customIcons.pause : <Icon name="pause-circle" />
-          } else {
-            actionIcon = customIcons.play ? customIcons.play : <Icon name="play-circle" />
-          }
           return (
             <div key={key} className="rhap_main-controls">
               {showSkipControls && (
@@ -488,7 +468,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
                   type="button"
                   onClick={onClickPrevious}
                 >
-                  {customIcons.previous ? customIcons.previous : <Icon name="skip-previous" />}
+                  {renderIcon('previous')}
                 </button>
               )}
               {showJumpControls && (
@@ -498,7 +478,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
                   type="button"
                   onClick={handleClickRewind}
                 >
-                  {customIcons.rewind ? customIcons.rewind : <Icon name="rewind" />}
+                  {renderIcon('rewind')}
                 </button>
               )}
               <button
@@ -507,7 +487,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
                 type="button"
                 onClick={togglePlay}
               >
-                {actionIcon}
+                {renderIcon(isPlayingState ? 'pause' : 'play')}
               </button>
               {showJumpControls && (
                 <button
@@ -516,7 +496,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
                   type="button"
                   onClick={handleClickForward}
                 >
-                  {customIcons.forward ? customIcons.forward : <Icon name="fast-forward" />}
+                  {renderIcon('forward')}
                 </button>
               )}
               {showSkipControls && (
@@ -526,7 +506,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
                   type="button"
                   onClick={onClickNext}
                 >
-                  {customIcons.next ? customIcons.next : <Icon name="skip-next" />}
+                  {renderIcon('next')}
                 </button>
               )}
             </div>
@@ -541,12 +521,6 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
         case RHAP_UI.LOOP: {
           const loop = audio.current ? audio.current.loop : loopProp
 
-          let loopIcon: ReactNode
-          if (loop) {
-            loopIcon = customIcons.loop ? customIcons.loop : <Icon name="repeat" />
-          } else {
-            loopIcon = customIcons.loopOff ? customIcons.loopOff : <Icon name="repeat-off" />
-          }
           return (
             <button
               key={key}
@@ -555,19 +529,13 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
               type="button"
               onClick={handleClickLoopButton}
             >
-              {loopIcon}
+              {renderIcon(loop ? 'loop' : 'loopOff')}
             </button>
           )
         }
         case RHAP_UI.VOLUME: {
           const { volume = muted ? 0 : volumeProp } = audio.current || {}
 
-          let volumeIcon: ReactNode
-          if (volume > 0) {
-            volumeIcon = customIcons.volume ? customIcons.volume : <Icon name="volume-high" />
-          } else {
-            volumeIcon = customIcons.volumeMute ? customIcons.volumeMute : <Icon name="volume-mute" />
-          }
           return (
             <div key={key} className="rhap_volume-container">
               <button
@@ -576,12 +544,11 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
                 type="button"
                 className="rhap_button-clear rhap_volume-button"
               >
-                {volumeIcon}
+                {renderIcon(volume > 0 ? 'volume' : 'volumeMute')}
               </button>
               <VolumeBar
                 audio={audio.current}
                 volume={volume}
-                onMuteChange={handleMuteChange}
                 showFilledVolume={showFilledVolume}
                 i18nVolumeControl={i18nAriaLabels.volumeControl}
               />
@@ -607,7 +574,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
       defaultDuration,
       customAdditionalControls,
       isPlaying,
-      customIcons,
+      renderIcon,
       showSkipControls,
       onClickPrevious,
       onClickNext,
@@ -621,7 +588,6 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
       muted,
       volumeProp,
       handleClickVolumeButton,
-      handleMuteChange,
       showFilledVolume,
     ]
   )
@@ -660,146 +626,57 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
     const audioEl = audio.current
     if (!audioEl) return
 
-    const handleError = (e: Event) => {
+    const cleanups: Array<() => void> = []
+    const on = (
+      event: string,
+      getHandler: (p: PlayerProps) => ((e: Event) => void) | undefined,
+      rerender = false
+    ): void => {
+      const listener = (e: Event): void => {
+        if (rerender) forceUpdate({})
+        getHandler(latestProps.current)?.(e)
+      }
+      audioEl.addEventListener(event, listener)
+      cleanups.push(() => audioEl.removeEventListener(event, listener))
+    }
+
+    on('canplay', (p) => p.onCanPlay)
+    on('canplaythrough', (p) => p.onCanPlayThrough)
+    on('playing', (p) => p.onPlaying)
+    on('seeking', (p) => p.onSeeking)
+    on('seeked', (p) => p.onSeeked)
+    on('waiting', (p) => p.onWaiting)
+    on('emptied', (p) => p.onEmptied)
+    on('stalled', (p) => p.onStalled)
+    on('suspend', (p) => p.onSuspend)
+    on('loadstart', (p) => p.onLoadStart)
+    on('abort', (p) => p.onAbort)
+    on('encrypted', (p) => p.mse?.onEcrypted)
+    on('loadedmetadata', (p) => p.onLoadedMetaData, true)
+    on('loadeddata', (p) => p.onLoadedData, true)
+    on('play', (p) => p.onPlay, true)
+    on('pause', (p) => p.onPause, true)
+    on('ended', (p) => p.onEnded, true)
+    on('volumechange', (p) => p.onVolumeChange, true)
+    on('error', (p) => (e) => {
       const target = e.target as HTMLAudioElement
       // Calls onEnded when currentTime is the same as duration even if there is an error
       if (target.error && target.currentTime === target.duration) {
-        return onEnded && onEnded(e)
+        p.onEnded?.(e)
+        return
       }
-      onError && onError(e)
-    }
-
-    const handleCanPlay = (e: Event) => {
-      onCanPlay && onCanPlay(e)
-    }
-
-    const handleCanPlayThrough = (e: Event) => {
-      onCanPlayThrough && onCanPlayThrough(e)
-    }
-
-    const handlePlaying = (e: Event) => {
-      onPlaying && onPlaying(e)
-    }
-
-    const handleSeeking = (e: Event) => {
-      onSeeking && onSeeking(e)
-    }
-
-    const handleSeeked = (e: Event) => {
-      onSeeked && onSeeked(e)
-    }
-
-    const handleWaiting = (e: Event) => {
-      onWaiting && onWaiting(e)
-    }
-
-    const handleEmptied = (e: Event) => {
-      onEmptied && onEmptied(e)
-    }
-
-    const handleStalled = (e: Event) => {
-      onStalled && onStalled(e)
-    }
-
-    const handleSuspend = (e: Event) => {
-      onSuspend && onSuspend(e)
-    }
-
-    const handleLoadStart = (e: Event) => {
-      onLoadStart && onLoadStart(e)
-    }
-
-    const handleLoadedMetaData = (e: Event) => {
-      forceUpdate({})
-      onLoadedMetaData && onLoadedMetaData(e)
-    }
-
-    const handleLoadedData = (e: Event) => {
-      forceUpdate({})
-      onLoadedData && onLoadedData(e)
-    }
+      p.onError?.(e)
+    })
 
     const handleTimeUpdate = throttle((e: Event) => {
       forceUpdate({})
-      onListen && onListen(e)
+      latestProps.current.onListen?.(e)
     }, listenInterval)
-
-    const handleVolumeChange = (e: Event) => {
-      forceUpdate({})
-      onVolumeChange && onVolumeChange(e)
-    }
-
-    const handleEncrypted = (e: Event) => {
-      mse && mse.onEcrypted && mse.onEcrypted(e)
-    }
-
-    audioEl.addEventListener('error', handleError)
-    audioEl.addEventListener('canplay', handleCanPlay)
-    audioEl.addEventListener('canplaythrough', handleCanPlayThrough)
-    audioEl.addEventListener('play', handlePlay)
-    audioEl.addEventListener('abort', handleAbort)
-    audioEl.addEventListener('ended', handleEnded)
-    audioEl.addEventListener('playing', handlePlaying)
-    audioEl.addEventListener('seeking', handleSeeking)
-    audioEl.addEventListener('seeked', handleSeeked)
-    audioEl.addEventListener('waiting', handleWaiting)
-    audioEl.addEventListener('emptied', handleEmptied)
-    audioEl.addEventListener('stalled', handleStalled)
-    audioEl.addEventListener('suspend', handleSuspend)
-    audioEl.addEventListener('loadstart', handleLoadStart)
-    audioEl.addEventListener('loadedmetadata', handleLoadedMetaData)
-    audioEl.addEventListener('loadeddata', handleLoadedData)
-    audioEl.addEventListener('pause', handlePause)
     audioEl.addEventListener('timeupdate', handleTimeUpdate)
-    audioEl.addEventListener('volumechange', handleVolumeChange)
-    audioEl.addEventListener('encrypted', handleEncrypted)
+    cleanups.push(() => audioEl.removeEventListener('timeupdate', handleTimeUpdate))
 
-    return () => {
-      audioEl.removeEventListener('error', handleError)
-      audioEl.removeEventListener('canplay', handleCanPlay)
-      audioEl.removeEventListener('canplaythrough', handleCanPlayThrough)
-      audioEl.removeEventListener('play', handlePlay)
-      audioEl.removeEventListener('abort', handleAbort)
-      audioEl.removeEventListener('ended', handleEnded)
-      audioEl.removeEventListener('playing', handlePlaying)
-      audioEl.removeEventListener('seeking', handleSeeking)
-      audioEl.removeEventListener('seeked', handleSeeked)
-      audioEl.removeEventListener('waiting', handleWaiting)
-      audioEl.removeEventListener('emptied', handleEmptied)
-      audioEl.removeEventListener('stalled', handleStalled)
-      audioEl.removeEventListener('suspend', handleSuspend)
-      audioEl.removeEventListener('loadstart', handleLoadStart)
-      audioEl.removeEventListener('loadedmetadata', handleLoadedMetaData)
-      audioEl.removeEventListener('loadeddata', handleLoadedData)
-      audioEl.removeEventListener('pause', handlePause)
-      audioEl.removeEventListener('timeupdate', handleTimeUpdate)
-      audioEl.removeEventListener('volumechange', handleVolumeChange)
-      audioEl.removeEventListener('encrypted', handleEncrypted)
-    }
-  }, [
-    onError,
-    onEnded,
-    onCanPlay,
-    onCanPlayThrough,
-    handlePlay,
-    handleAbort,
-    handleEnded,
-    onPlaying,
-    onSeeking,
-    onSeeked,
-    onWaiting,
-    onEmptied,
-    onStalled,
-    onSuspend,
-    onLoadStart,
-    onLoadedMetaData,
-    onLoadedData,
-    handlePause,
-    onListen,
-    listenInterval,
-    onVolumeChange,
-    mse,
-  ])
+    return () => cleanups.forEach((off) => off())
+  }, [listenInterval])
 
   const loop = audio.current ? audio.current.loop : loopProp
   const playerClassName = getPlayerStateClassName(loop, isPlaying(), className)

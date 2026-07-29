@@ -62,13 +62,11 @@ function ProgressBar(props: ProgressBarProps) {
   const [downloadProgressArr, setDownloadProgressArr] = useState<DownloadProgress[]>([])
 
   // Ref hooks for instance variables
-  const audioRef = useRef<HTMLAudioElement | undefined>(undefined)
   const isDraggingProgressRef = useRef(false)
   const waitingForSeekCallbackRef = useRef(false)
   const timeOnMouseMoveRef = useRef(0) // Audio's current time while mouse is down and moving over the progress bar
-  const hasAddedAudioEventListenerRef = useRef(false)
   const downloadProgressAnimationTimerRef = useRef<number | undefined>(undefined)
-  const throttledHandleAudioTimeUpdateRef = useRef<((e: Event) => void) | null>(null)
+  const lastDownloadProgressRef = useRef('')
 
   const getDuration = useCallback((): number => {
     if (!audio) return 0
@@ -225,6 +223,12 @@ function ProgressBar(props: ProgressBarProps) {
         })
       }
 
+      // Percentages are rounded, so most `progress` events resolve to the same bar
+      // geometry as the previous one; re-rendering for those is pure waste.
+      const signature = downloadProgressArray.map(({ left, width }) => `${left}|${width}`).join()
+      if (signature === lastDownloadProgressRef.current) return
+      lastDownloadProgressRef.current = signature
+
       clearTimeout(downloadProgressAnimationTimerRef.current)
       // Setting animation flag makes subsequent render use CSS transition for a
       // short burst, creating a smooth buffer-bar update effect.
@@ -237,9 +241,10 @@ function ProgressBar(props: ProgressBarProps) {
     [getDuration]
   )
 
-  // Create throttled timeupdate handler
   useEffect(() => {
-    throttledHandleAudioTimeUpdateRef.current = throttle((e: Event): void => {
+    if (!audio) return
+
+    const handleAudioTimeUpdate = throttle((e: Event): void => {
       // Avoid updating UI while user is dragging (we show the drag position instead)
       // or while an async seek is pending (prevents jitter / race conditions).
       if (isDraggingProgressRef.current || waitingForSeekCallbackRef.current === true) return
@@ -250,30 +255,17 @@ function ProgressBar(props: ProgressBarProps) {
 
       setCurrentTimePos(`${((currentTime / duration) * 100 || 0).toFixed(2)}%`)
     }, progressUpdateInterval)
-  }, [getDuration, progressUpdateInterval])
 
-  const initialize = useCallback((): void => {
-    if (audio && !hasAddedAudioEventListenerRef.current) {
-      audioRef.current = audio
-      hasAddedAudioEventListenerRef.current = true
-      audio.addEventListener('timeupdate', throttledHandleAudioTimeUpdateRef.current!)
-      audio.addEventListener('progress', handleAudioDownloadProgressUpdate)
-    }
-  }, [audio, handleAudioDownloadProgressUpdate])
+    audio.addEventListener('timeupdate', handleAudioTimeUpdate)
+    audio.addEventListener('progress', handleAudioDownloadProgressUpdate)
 
-  useEffect(() => {
-    initialize()
-  }, [initialize])
-
-  useEffect(() => {
     return () => {
-      if (audioRef.current && hasAddedAudioEventListenerRef.current) {
-        audioRef.current.removeEventListener('timeupdate', throttledHandleAudioTimeUpdateRef.current!)
-        audioRef.current.removeEventListener('progress', handleAudioDownloadProgressUpdate)
-      }
-      clearTimeout(downloadProgressAnimationTimerRef.current)
+      audio.removeEventListener('timeupdate', handleAudioTimeUpdate)
+      audio.removeEventListener('progress', handleAudioDownloadProgressUpdate)
     }
-  }, [handleAudioDownloadProgressUpdate])
+  }, [audio, progressUpdateInterval, getDuration, handleAudioDownloadProgressUpdate])
+
+  useEffect(() => () => clearTimeout(downloadProgressAnimationTimerRef.current), [])
 
   return (
     <div

@@ -76,12 +76,19 @@ describe('Duration component', () => {
     expect(container.textContent).toBe(defaultDisplay)
   })
 
-  it('adds listeners only once across re-renders', () => {
+  it('keeps exactly one set of listeners attached across re-renders', () => {
     const audio = createMockAudio({ duration: 100 })
-    const { rerender } = render(<Duration audio={audio} defaultDuration={defaultDisplay} timeFormat="mm:ss" />)
+    const { container, rerender } = render(
+      <Duration audio={audio} defaultDuration={defaultDisplay} timeFormat="mm:ss" />
+    )
     // Re-render with different timeFormat
     rerender(<Duration audio={audio} defaultDuration={defaultDisplay} timeFormat="hh:mm:ss" />)
-    expect(audio.addEventListener).toHaveBeenCalledTimes(2) // durationchange + abort
+    const attached = audio.addEventListener.mock.calls.length - audio.removeEventListener.mock.calls.length
+    expect(attached).toBe(2) // durationchange + abort
+    act(() => {
+      audio.dispatch('durationchange')
+    })
+    expect(container.textContent).toBe('0:01:40')
   })
 
   it('removes listeners on unmount', () => {

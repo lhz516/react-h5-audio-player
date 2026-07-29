@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, ReactNode } from 'react'
+import React, { useState, useEffect, useCallback, ReactNode } from 'react'
 import { TIME_FORMAT } from './constants'
 import { getDisplayTimeBySeconds } from './utils'
 
@@ -9,9 +9,6 @@ interface DurationProps {
 }
 
 const Duration: React.FC<DurationProps> = ({ audio, defaultDuration, timeFormat }) => {
-  const audioRef = useRef<HTMLAudioElement | undefined>(undefined)
-  const hasAddedAudioEventListener = useRef(false)
-
   const [duration, setDuration] = useState<ReactNode>(() => {
     return audio ? getDisplayTimeBySeconds(audio.duration, audio.duration, timeFormat) : defaultDuration
   })
@@ -25,18 +22,14 @@ const Duration: React.FC<DurationProps> = ({ audio, defaultDuration, timeFormat 
   )
 
   useEffect(() => {
-    if (audio && !hasAddedAudioEventListener.current) {
-      audioRef.current = audio
-      hasAddedAudioEventListener.current = true
-      audio.addEventListener('durationchange', handleAudioDurationChange)
-      audio.addEventListener('abort', handleAudioDurationChange)
-    }
+    if (!audio) return
+
+    audio.addEventListener('durationchange', handleAudioDurationChange)
+    audio.addEventListener('abort', handleAudioDurationChange)
 
     return () => {
-      if (audioRef.current && hasAddedAudioEventListener.current) {
-        audioRef.current.removeEventListener('durationchange', handleAudioDurationChange)
-        audioRef.current.removeEventListener('abort', handleAudioDurationChange)
-      }
+      audio.removeEventListener('durationchange', handleAudioDurationChange)
+      audio.removeEventListener('abort', handleAudioDurationChange)
     }
   }, [audio, handleAudioDurationChange])
 

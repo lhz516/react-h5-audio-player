@@ -4,7 +4,7 @@ import { getPosX } from './utils'
 interface VolumeControlsProps {
   audio: HTMLAudioElement | null
   volume: number
-  onMuteChange: () => void
+  onMuteChange?: () => void
   showFilledVolume: boolean
   i18nVolumeControl: string
 }
@@ -160,7 +160,7 @@ const VolumeControls: React.FC<VolumeControlsProps> = ({
       const newVolume = target ? target.volume : volume
       // Fire mute change callback only when toggling between muted and unmuted state
       if ((lastVolumeRef.current > 0 && newVolume === 0) || (lastVolumeRef.current === 0 && newVolume > 0)) {
-        onMuteChange()
+        onMuteChange?.()
       }
       lastVolumeRef.current = newVolume
       if (isDraggingRef.current) return
