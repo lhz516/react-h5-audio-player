@@ -35,11 +35,13 @@ Supported browsers: Chrome, Firefox, Safari, Edge
 
 ## Installation
 
-`$ npm i react-h5-audio-player`
+Install with `@next` for v4, without `@next` for v3
+
+`$ npm i react-h5-audio-player@next`
 
 Or
 
-`$ yarn add react-h5-audio-player`
+`$ yarn add react-h5-audio-player@next`
 
 ## Usage
 
