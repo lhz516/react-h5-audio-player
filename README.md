@@ -31,7 +31,7 @@ Try it on CodePen: [Basic](https://codepen.io/lhz516/pen/dyGpmgP), [Playlist](ht
 
 Supported browsers: Chrome, Firefox, Safari, Edge
 
-## [Migrate from v3.x to v4](https://github.com/lhz516/react-h5-audio-player/releases/tag/v4.0.0)
+## [Migrate from v3.x to v4](https://github.com/lhz516/react-h5-audio-player/releases/tag/v4.0.0-rc.1)
 
 ## Installation
 
