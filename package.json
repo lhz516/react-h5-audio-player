@@ -6,6 +6,7 @@
   "module": "./es/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
+    "prebuild": "node -e \"for (const dir of ['lib', 'es']) if (!require('fs').existsSync(dir)) require('fs').mkdirSync(dir)\"",
     "build": "run-p build:cjs build:d.ts build:es build:umd build:css",
     "build:cjs": "cross-env NODE_ENV=cjs babel src --out-dir lib --extensions .tsx,.ts",
     "build:es": "cross-env NODE_ENV=es babel src --out-dir es --extensions .tsx,.ts",
