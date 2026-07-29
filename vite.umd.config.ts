@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.tsx'),
+      entry: resolve(__dirname, 'vite.umd.entry.ts'),
       name: 'ReactH5AudioPlayer',
       fileName: () => 'react-h5-audio-player.min.js',
       formats: ['umd'],
@@ -18,7 +18,7 @@ export default defineConfig({
           react: 'React',
           'react-dom': 'ReactDOM',
         },
-        exports: 'named',
+        exports: 'default',
       },
     },
     outDir: 'lib',
