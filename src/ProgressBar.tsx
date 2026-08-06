@@ -28,6 +28,10 @@ interface ProgressBarForwardRefProps {
   onSeek?: OnSeek
   onChangeCurrentTimeError?: (err: Error) => void
   i18nProgressBar: string
+  progressJumpSteps?: {
+    backward?: number
+    forward?: number
+  }
 }
 interface ProgressBarProps extends ProgressBarForwardRefProps {
   progressBar: React.RefObject<HTMLDivElement>
@@ -54,6 +58,7 @@ function ProgressBar(props: ProgressBarProps) {
     onChangeCurrentTimeError,
     i18nProgressBar,
     progressBar,
+    progressJumpSteps = { backward: 5000, forward: 5000 },
   } = props
 
   // State hooks
@@ -267,12 +272,73 @@ function ProgressBar(props: ProgressBarProps) {
 
   useEffect(() => () => clearTimeout(downloadProgressAnimationTimerRef.current), [])
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
+    if (!audio) return
+    const duration = getDuration()
+    if (!isFinite(duration) || duration <= 0) return
+
+    let newTime = audio.currentTime
+    const backwardStep = (progressJumpSteps.backward ?? 5000) / 1000
+    const forwardStep = (progressJumpSteps.forward ?? 5000) / 1000
+
+    switch (event.key) {
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        event.preventDefault()
+        event.stopPropagation()
+        newTime = Math.max(0, audio.currentTime - backwardStep)
+        break
+      case 'ArrowRight':
+      case 'ArrowUp':
+        event.preventDefault()
+        event.stopPropagation()
+        newTime = Math.min(duration, audio.currentTime + forwardStep)
+        break
+      case 'Home':
+        event.preventDefault()
+        event.stopPropagation()
+        newTime = 0
+        break
+      case 'End':
+        event.preventDefault()
+        event.stopPropagation()
+        newTime = duration
+        break
+      default:
+        return
+    }
+
+    if (onSeek) {
+      waitingForSeekCallbackRef.current = true
+      onSeek(audio, newTime).then(
+        () => (waitingForSeekCallbackRef.current = false),
+        (err: unknown) => {
+          waitingForSeekCallbackRef.current = false
+          const message = err instanceof Error ? err.message : String(err)
+          throw new Error(message)
+        }
+      )
+    } else {
+      if (audio.readyState === audio.HAVE_NOTHING || audio.readyState === audio.HAVE_METADATA || !isFinite(newTime)) {
+        try {
+          audio.load()
+        } catch (err) {
+          setCurrentTimePos('0%')
+          return onChangeCurrentTimeError && onChangeCurrentTimeError(err as Error)
+        }
+      }
+      audio.currentTime = newTime
+      const actualCurrentTimePos = `${((newTime / duration) * 100 || 0).toFixed(2)}%`
+      setCurrentTimePos(actualCurrentTimePos)
+    }
+  }
+
   return (
     <div
       className="rhap_progress-container"
       ref={progressBar}
       aria-label={i18nProgressBar}
-      role="progressbar"
+      role="slider"
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Number(currentTimePos.split('%')[0])}
@@ -280,6 +346,7 @@ function ProgressBar(props: ProgressBarProps) {
       onMouseDown={handleMouseDownOrTouchStartProgressBar}
       onTouchStart={handleMouseDownOrTouchStartProgressBar}
       onContextMenu={handleContextMenu}
+      onKeyDown={handleKeyDown}
     >
       <div className={`rhap_progress-bar ${showDownloadProgress ? 'rhap_progress-bar-show-download' : ''}`}>
         <div className="rhap_progress-indicator" style={{ left: currentTimePos }} />

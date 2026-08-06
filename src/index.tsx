@@ -439,6 +439,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
               onChangeCurrentTimeError={onChangeCurrentTimeError}
               srcDuration={mse && mse.srcDuration}
               i18nProgressBar={i18nAriaLabels.progressControl}
+              progressJumpSteps={progressJumpSteps}
             />
           )
         case RHAP_UI.DURATION:
@@ -551,6 +552,7 @@ const H5AudioPlayer: React.FC<PlayerProps> = (props) => {
                 volume={volume}
                 showFilledVolume={showFilledVolume}
                 i18nVolumeControl={i18nAriaLabels.volumeControl}
+                volumeJumpStep={volumeJumpStep}
               />
             </div>
           )

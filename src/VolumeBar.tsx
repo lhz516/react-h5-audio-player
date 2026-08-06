@@ -7,6 +7,7 @@ interface VolumeControlsProps {
   onMuteChange?: () => void
   showFilledVolume: boolean
   i18nVolumeControl: string
+  volumeJumpStep?: number
 }
 
 interface VolumePosInfo {
@@ -20,12 +21,14 @@ interface VolumePosInfo {
 // - Programmatic volume changes animate briefly (100ms) unless user is dragging
 // - onMuteChange fires only when crossing mute boundary (0 <-> non-zero)
 // - lastVolume remembers pre-mute value for restoration
+// - keyboard controls conform to slider role (Arrow keys, Home, End)
 const VolumeControls: React.FC<VolumeControlsProps> = ({
   audio,
   volume,
   onMuteChange,
   showFilledVolume,
   i18nVolumeControl,
+  volumeJumpStep = 0.1,
 }) => {
   const volumeBar = useRef<HTMLDivElement>(null)
   const lastVolumeRef = useRef(volume) // Store last non-zero volume for mute toggle
@@ -195,6 +198,41 @@ const VolumeControls: React.FC<VolumeControlsProps> = ({
     [detachWindowListeners]
   )
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
+    if (!audio) return
+    let newVolume = audio.volume
+    switch (event.key) {
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        event.preventDefault()
+        event.stopPropagation()
+        newVolume = Math.max(0, audio.volume - volumeJumpStep)
+        audio.volume = newVolume
+        break
+      case 'ArrowRight':
+      case 'ArrowUp':
+        event.preventDefault()
+        event.stopPropagation()
+        newVolume = Math.min(1, audio.volume + volumeJumpStep)
+        audio.volume = newVolume
+        break
+      case 'Home':
+        event.preventDefault()
+        event.stopPropagation()
+        newVolume = 0
+        audio.volume = newVolume
+        break
+      case 'End':
+        event.preventDefault()
+        event.stopPropagation()
+        newVolume = 1
+        audio.volume = newVolume
+        break
+      default:
+        break
+    }
+  }
+
   const currentVolumeVal = audio ? audio.volume : volume
 
   return (
@@ -203,12 +241,13 @@ const VolumeControls: React.FC<VolumeControlsProps> = ({
       onMouseDown={handleVolumnControlMouseOrTouchDown}
       onTouchStart={handleVolumnControlMouseOrTouchDown}
       onContextMenu={handleContextMenu}
-      role="progressbar"
+      role="slider"
       aria-label={i18nVolumeControl}
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Number(((currentVolumeVal || 0) * 100).toFixed(0))}
       tabIndex={0}
+      onKeyDown={handleKeyDown}
       className="rhap_volume-bar-area"
     >
       <div className="rhap_volume-bar">
