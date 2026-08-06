@@ -68,7 +68,7 @@ describe('VolumeBar component', () => {
       />
     )
 
-    const area = utils.getByRole('progressbar')
+    const area = utils.getByRole('slider')
     mockBarRect(area)
     return { ...utils, audio, onMuteChange, area, initialVolume }
   }
@@ -153,5 +153,33 @@ describe('VolumeBar component', () => {
     const filled = area.querySelector('.rhap_volume-filled')
     expect(filled).toBeTruthy()
     expect(filled.style.width).toMatch(/33(\.00)?%/)
+  })
+
+  test('keyboard interactions adjust volume', () => {
+    const { area, audio } = setup({ initialVolume: 0.5 })
+
+    // ArrowUp increases volume
+    fireEvent.keyDown(area, { key: 'ArrowUp' })
+    expect(audio.volume).toBeCloseTo(0.6, 2)
+
+    // ArrowRight increases volume
+    fireEvent.keyDown(area, { key: 'ArrowRight' })
+    expect(audio.volume).toBeCloseTo(0.7, 2)
+
+    // ArrowDown decreases volume
+    fireEvent.keyDown(area, { key: 'ArrowDown' })
+    expect(audio.volume).toBeCloseTo(0.6, 2)
+
+    // ArrowLeft decreases volume
+    fireEvent.keyDown(area, { key: 'ArrowLeft' })
+    expect(audio.volume).toBeCloseTo(0.5, 2)
+
+    // End sets volume to max (1.0)
+    fireEvent.keyDown(area, { key: 'End' })
+    expect(audio.volume).toBe(1.0)
+
+    // Home sets volume to min (0.0)
+    fireEvent.keyDown(area, { key: 'Home' })
+    expect(audio.volume).toBe(0.0)
   })
 })

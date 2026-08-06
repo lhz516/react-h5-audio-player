@@ -101,7 +101,7 @@ describe('ProgressBar component', () => {
 
   test('renders with initial ARIA values', () => {
     const { getByRole } = renderWithRef(baseProps())
-    const progress = getByRole('progressbar')
+    const progress = getByRole('slider')
     expect(progress).toHaveAttribute('aria-valuemin', '0')
     expect(progress).toHaveAttribute('aria-valuemax', '100')
     expect(progress).toHaveAttribute('aria-valuenow', '0')
@@ -110,7 +110,7 @@ describe('ProgressBar component', () => {
   test('timeupdate updates currentTimePos (throttled)', () => {
     const props = baseProps()
     const { getByRole } = renderWithRef(props)
-    const progress = getByRole('progressbar')
+    const progress = getByRole('slider')
 
     // Move currentTime and dispatch multiple timeupdates rapidly
     props.audio.currentTime = 30 // 25%
@@ -141,7 +141,7 @@ describe('ProgressBar component', () => {
   test('mouse drag sets indicator position and seeks audio on mouseup (no onSeek)', () => {
     const props = baseProps()
     const { getByRole, container } = renderWithRef(props)
-    const progress = getByRole('progressbar')
+    const progress = getByRole('slider')
     mockProgressBarRect(progress, { width: 400, left: 100 })
 
     // mousedown at 100px inside bar (left edge) -> 0%
@@ -163,7 +163,7 @@ describe('ProgressBar component', () => {
   test('touch drag uses touch events', () => {
     const props = baseProps()
     const { getByRole } = renderWithRef(props)
-    const progress = getByRole('progressbar')
+    const progress = getByRole('slider')
     mockProgressBarRect(progress, { width: 200, left: 0 })
 
     act(() => {
@@ -191,7 +191,7 @@ describe('ProgressBar component', () => {
     const onSeek = vi.fn().mockImplementation(() => onSeekPromise)
     const props = baseProps({ onSeek })
     const { getByRole } = renderWithRef(props)
-    const progress = getByRole('progressbar')
+    const progress = getByRole('slider')
     mockProgressBarRect(progress, { width: 100, left: 0 })
 
     act(() => {
@@ -236,7 +236,7 @@ describe('ProgressBar component', () => {
   test('prevents context menu', () => {
     const props = baseProps()
     const { getByRole } = renderWithRef(props)
-    const progress = getByRole('progressbar')
+    const progress = getByRole('slider')
     const evt = new MouseEvent('contextmenu', { bubbles: true, cancelable: true })
     progress.dispatchEvent(evt)
     expect(evt.defaultPrevented).toBe(true)
@@ -253,7 +253,7 @@ describe('ProgressBar component', () => {
   test('uses srcDuration override when supplied', () => {
     const props = baseProps({ srcDuration: 60 }) // shorter duration
     const { getByRole } = renderWithRef(props)
-    const progress = getByRole('progressbar')
+    const progress = getByRole('slider')
     mockProgressBarRect(progress, { width: 100, left: 0 })
 
     act(() => {
@@ -272,7 +272,7 @@ describe('ProgressBar component', () => {
   test('clamps drag beyond right edge to 100%', () => {
     const props = baseProps()
     const { getByRole } = renderWithRef(props)
-    const progress = getByRole('progressbar')
+    const progress = getByRole('slider')
     mockProgressBarRect(progress, { width: 100, left: 0 })
 
     act(() => {
@@ -291,7 +291,7 @@ describe('ProgressBar component', () => {
   test('clamps drag before left edge to 0%', () => {
     const props = baseProps()
     const { getByRole } = renderWithRef(props)
-    const progress = getByRole('progressbar')
+    const progress = getByRole('slider')
     mockProgressBarRect(progress, { width: 100, left: 50 })
 
     act(() => {
@@ -310,7 +310,7 @@ describe('ProgressBar component', () => {
   test('indicator position updates correctly after drag ends', () => {
     const props = baseProps()
     const { getByRole, container } = renderWithRef(props)
-    const progress = getByRole('progressbar')
+    const progress = getByRole('slider')
     mockProgressBarRect(progress, { width: 400, left: 100 })
 
     // Start drag at left edge (clientX: 100)
@@ -346,7 +346,7 @@ describe('ProgressBar component', () => {
     const onSeek = vi.fn().mockImplementation(() => onSeekPromise)
     const props = baseProps({ onSeek })
     const { getByRole, container } = renderWithRef(props)
-    const progress = getByRole('progressbar')
+    const progress = getByRole('slider')
     mockProgressBarRect(progress, { width: 200, left: 0 })
 
     // Start drag and move to 50% position
@@ -382,5 +382,55 @@ describe('ProgressBar component', () => {
 
     // After async completion, the indicator position is maintained by the waiting state
     // The actual position update would come from subsequent timeupdate events in real usage
+  })
+
+  test('keyboard interactions seek audio (no onSeek)', () => {
+    const props = baseProps()
+    const { getByRole } = renderWithRef(props)
+    const progress = getByRole('slider')
+
+    // Initial state
+    expect(props.audio.currentTime).toBe(0)
+
+    // ArrowRight seeks forward (default 5s)
+    fireEvent.keyDown(progress, { key: 'ArrowRight' })
+    expect(props.audio.currentTime).toBe(5)
+
+    // ArrowUp seeks forward (default 5s)
+    fireEvent.keyDown(progress, { key: 'ArrowUp' })
+    expect(props.audio.currentTime).toBe(10)
+
+    // ArrowLeft seeks backward (default 5s)
+    fireEvent.keyDown(progress, { key: 'ArrowLeft' })
+    expect(props.audio.currentTime).toBe(5)
+
+    // ArrowDown seeks backward (default 5s)
+    fireEvent.keyDown(progress, { key: 'ArrowDown' })
+    expect(props.audio.currentTime).toBe(0)
+
+    // End seeks to duration (120)
+    fireEvent.keyDown(progress, { key: 'End' })
+    expect(props.audio.currentTime).toBe(120)
+
+    // Home seeks to 0
+    fireEvent.keyDown(progress, { key: 'Home' })
+    expect(props.audio.currentTime).toBe(0)
+  })
+
+  test('keyboard interactions with async onSeek', async () => {
+    const onSeekPromise = Promise.resolve()
+    const onSeek = vi.fn().mockImplementation(() => onSeekPromise)
+    const props = baseProps({ onSeek })
+    const { getByRole } = renderWithRef(props)
+    const progress = getByRole('slider')
+
+    // ArrowRight calls onSeek
+    fireEvent.keyDown(progress, { key: 'ArrowRight' })
+    expect(onSeek).toHaveBeenCalledTimes(1)
+    expect(onSeek.mock.calls[0][1]).toBe(5)
+
+    await act(async () => {
+      await onSeekPromise
+    })
   })
 })

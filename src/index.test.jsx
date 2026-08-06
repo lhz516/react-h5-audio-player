@@ -653,7 +653,7 @@ describe('H5AudioPlayer', () => {
       const { container } = render(<H5AudioPlayer />)
       const progressBar = container.querySelector('.rhap_progress-container')
 
-      expect(progressBar).toHaveAttribute('role', 'progressbar')
+      expect(progressBar).toHaveAttribute('role', 'slider')
       expect(progressBar).toHaveAttribute('aria-label', 'Audio progress control')
       expect(progressBar).toHaveAttribute('aria-valuemin', '0')
       expect(progressBar).toHaveAttribute('aria-valuemax', '100')
@@ -664,7 +664,7 @@ describe('H5AudioPlayer', () => {
       const { container } = render(<H5AudioPlayer />)
       const volumeBar = container.querySelector('.rhap_volume-bar-area')
 
-      expect(volumeBar).toHaveAttribute('role', 'progressbar')
+      expect(volumeBar).toHaveAttribute('role', 'slider')
       expect(volumeBar).toHaveAttribute('aria-label', 'Volume control')
       expect(volumeBar).toHaveAttribute('tabindex', '0')
     })
